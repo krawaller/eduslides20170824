@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: styleable</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>styleable</span></div></div>
+<div class="wrapper">
+<div id="container"></div>
+
+<script type="text/babel">
+
+let Hero = (props)=> (
+	<div className={"hero "+props.mode} >{props.text}</div>
+);
+Hero = ReactStyleable(loadedCSS.hero)(Hero); // scroll down to see what `loadedCSS` is!
+
+let List = (props)=> {
+	let heroes = props.heroes.map((t,n)=> (
+		<Hero key={n} mode={props.mode} text={t}/>
+	));
+	return <div className="container">{heroes}</div>;
+};
+List = ReactStyleable(loadedCSS.herolist)(React.createFactory(List));
+
+class App extends React.Component {
+	constructor(){
+		super();
+		this.state = {mode: 'day'};
+		this.toggle = ()=> {
+			this.setState({mode: this.state.mode === 'day' ? 'night' : 'day'});
+		}
+	}
+	render() {
+		let mode = this.state.mode;
+		return <div>
+			<p>
+				<input id='mode' type='checkbox' onChange={this.toggle} checked={mode === 'night'}/>
+				<label htmlFor='mode'>Night mode</label>
+			</p>
+			<List heroes={this.props.heroes} mode={mode}/>
+		</div>;
+	}
+}
+
+ReactDOM.render(
+	<App heroes={['Batman','Superman','Spiderman','He-man']}/>,
+	document.getElementById("container")
+);
+
+/*
+`loadedCSS.hero` contains the contents from this CSS file:
+
+.hero {
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	width: 100px;
+	height: 100px;
+	align-items: center;
+	font-weight: bold;
+	transition: color 1s, background-color 1s;
+}
+
+.day {
+	color: black;
+	background-color: white;
+	border-color: #AAA;
+}
+
+.night {
+	color: white;
+	background-color: #285666;
+	border-color: #E6B863;
+}
+
+
+...and `loadedCSS.herolist` contains the contents from this file:
+
+.container {
+	display: flex;
+	justify-content: space-around;
+}
+
+*/
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

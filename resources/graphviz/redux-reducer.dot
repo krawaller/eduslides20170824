@@ -1,0 +1,10 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	Currentstate [label="Current\nstate"]
+	Reducer [shape=box]
+	Newstate [label="New\nstate"]
+	Currentstate -> Reducer
+	Action -> Reducer
+	Reducer -> Newstate
+}

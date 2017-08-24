@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>A Redux example</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 6 of 12 </div>
+            <h1>A Redux example</h1>
+            <span>Learning by doing</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p>We&#39;ll now <strong>walk through</strong> a simple <strong>Redux example app</strong> in order to internalise the <strong>basic Redux concepts</strong>.</p>
+<p>We won&#39;t use React or any other dependencies.</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">App&nbsp;idea</a></li><li><a href="#/4">State&nbsp;shape</a></li><li><a href="#/5">Initial&nbsp;state</a></li><li><a href="#/6">Action&nbsp;shapes</a></li><li><a href="#/7">Reducer</a></li><li><a href="#/8">Store</a></li><li><a href="#/9">Action&nbsp;creators</a></li><li><a href="#/10">UI</a></li><li><a href="#/11">UI&nbsp;updater</a></li><li><a href="#/12">Interaction</a></li><li><a href="#/13">Tying&nbsp;it&nbsp;together</a></li><li><a href="#/14">Exercise&nbsp;4</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/12</div>
+      <h3>App idea</h3>
+      <p>What are we going to build?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-1-1">
+<span class="pos">6-1-1</span>
+<div class="slidecontent"><p>Let&#39;s make a simple <strong>counter</strong> app. The counter increases whenever the user clicks a <strong>button</strong>, by an amount controlled by an <strong>input</strong>. It should look something like this:</p>
+<p><img src="resources/images/redux-example-screen.png" alt="Map"></p>
+</div></section>
+<section class="slide" data-pos="6-1-2">
+<span class="pos">6-1-2</span>
+<div class="slidecontent"><p>As we&#39;ll find this makes for a very tiny app, yet it will still touch on all the various aspects of Redux.</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/12</div>
+      <h3>State shape</h3>
+      <p>What should our data look like?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-2-1">
+<span class="pos">6-2-1</span>
+<div class="slidecontent"><p>Now that we have an <strong>app idea</strong>, let&#39;s decide on the <strong>state shape</strong> for our app!</p>
+</div></section>
+<section class="slide" data-pos="6-2-2">
+<span class="pos">6-2-2</span>
+<div class="slidecontent"><p>In Redux, all the <strong>app state</strong> is contained in <strong>one single object</strong>. One of the first things we need to do is therefore to design the shape of that state.</p>
+</div></section>
+<section class="slide" data-pos="6-2-3">
+<span class="pos">6-2-3</span>
+<div class="slidecontent"><p>However, in our simple counter app, we only need to track one single thing - the current count. Thus the state for our app could simply be a <strong>single number</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-2-4">
+<span class="pos">6-2-4</span>
+<div class="slidecontent"><p>But to make it somewhat less artificial, let&#39;s make it into an <strong>object</strong> like this:</p>
+<pre><code class="lang-javascript">{<span class="hljs-attr">count</span>: <span class="hljs-number">7</span>}
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/12</div>
+      <h3>Initial state</h3>
+      <p>Kicking things off</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-3-1">
+<span class="pos">6-3-1</span>
+<div class="slidecontent"><p>Having decided on a <strong>state shape</strong>, however simple, we can now define an <strong>initial state</strong>.</p>
+</div></section>
+<section class="slide" data-pos="6-3-2">
+<span class="pos">6-3-2</span>
+<div class="slidecontent"><p>For our little app that only entails <strong>one single decision</strong> - at what number should we start the count?</p>
+<p>Let&#39;s go with 0!</p>
+</div></section>
+<section class="slide" data-pos="6-3-3">
+<span class="pos">6-3-3</span>
+<div class="slidecontent"><p>Now we can write our <strong>first line of code</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> initialstate = {<span class="hljs-attr">count</span>: <span class="hljs-number">0</span>};
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/12</div>
+      <h3>Action shapes</h3>
+      <p>What can happen?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-4-1">
+<span class="pos">6-4-1</span>
+<div class="slidecontent"><p>Let&#39;s design the <strong>actions</strong> needed for our <strong>app idea</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-4-2">
+<span class="pos">6-4-2</span>
+<div class="slidecontent"><p>In a Redux app, everything that <strong>affects app state</strong> is represented by an <strong>action object</strong> with...</p>
+<ul>
+<li>a mandatory <strong><code>type</code></strong> property</li>
+<li>and eventual further <strong>data</strong> payload props.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="6-4-3">
+<span class="pos">6-4-3</span>
+<div class="slidecontent"><p><strong>Incrementing the counter</strong> is the only thing that happens in our app. Let&#39;s decide that the <strong>action</strong> describing this event looks like this:</p>
+<pre><code class="lang-json">{
+  type: &#39;INCREMENT&#39;,
+  by: 3
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="6-4-4">
+<span class="pos">6-4-4</span>
+<div class="slidecontent"><p>A side note - Normally we would <strong>isolate all string constants</strong> such as <code>&quot;INCREMENT&quot;</code> to a <strong>separate file</strong>, but in this simple example we&#39;ll live with having a single magic string like this.</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/12</div>
+      <h3>Reducer</h3>
+      <p>Introducing the heart</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-5-1">
+<span class="pos">6-5-1</span>
+<div class="slidecontent"><p>Now that we have designed the <strong>action shapes</strong> and the <strong>state shape</strong> we can move on to define our <strong>reducer</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-5-2">
+<span class="pos">6-5-2</span>
+<div class="slidecontent"><p>Remember: a <strong>reducer</strong> in Redux lingo is simply a function that <strong>takes the current state and an action</strong>, and <strong>returns a new state</strong>:</p>
+<p><img src="resources/graphviz/redux-reducer.svg" alt="Reducer"></p>
+</div></section>
+<section class="slide" data-pos="6-5-3">
+<span class="pos">6-5-3</span>
+<div class="slidecontent"><p>The reducer in our app just needs to <strong>deal with a single action</strong>, namely <code>INCREMENT</code>.</p>
+<p>When that action happens we <strong>create a new state</strong> with <code>count</code> increased by <code>action.by</code>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> reducer = <span class="hljs-function">(<span class="hljs-params">state,action</span>)=&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'INCREMENT'</span>: <span class="hljs-keyword">return</span> {<span class="hljs-attr">count</span>: state.count + action.by};
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> state;
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="6-5-4">
+<span class="pos">6-5-4</span>
+<div class="slidecontent"><p>Two small <strong>comments</strong> to this code:</p>
+<ul>
+<li>Remember that we must <strong>always have a default case</strong> returning the current state, to deal with internal Redux startup actions.</li>
+<li>Since our reducer deals with just a single action it would be <strong>better phrased as an <code>if-else</code></strong>. We only used a <code>switch</code> because that&#39;s what a reducer normally looks like.</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/12</div>
+      <h3>Store</h3>
+      <p>A house for the data</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-6-1">
+<span class="pos">6-6-1</span>
+<div class="slidecontent"><p>With the <strong>initial state</strong> and <strong>reducer</strong> in place, we can now create a <strong>store</strong> for our app state!</p>
+</div></section>
+<section class="slide" data-pos="6-6-2">
+<span class="pos">6-6-2</span>
+<div class="slidecontent"><p>A <strong>store</strong> is <strong>instantiated</strong> using <strong><code>Redux.createStore</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> store = Redux.createStore(reducer,initialstate);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="6-6-3">
+<span class="pos">6-6-3</span>
+<div class="slidecontent"><p>An <strong>alternative</strong> to providing an <code>initialstate</code> on store creation is to have a <strong>default return value</strong> inside the <strong>reducer</strong>.</p>
+<p>However it can be <strong>valuable</strong> to <strong>explicitly define</strong> the full <strong>initial state</strong> in a single place.</p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/12</div>
+      <h3>Action creators</h3>
+      <p>How are actions spawned?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-7-1">
+<span class="pos">6-7-1</span>
+<div class="slidecontent"><p>Knowing the shape of the <strong>actions</strong> lets us define <strong>action creators</strong> to be consumed by our <strong>UI</strong>.</p>
+</div></section>
+<section class="slide" data-pos="6-7-2">
+<span class="pos">6-7-2</span>
+<div class="slidecontent"><p>Only one single action creator is needed in our app:</p>
+<pre><code><span class="hljs-keyword">let</span> actionCreators = {
+  increment(amount) {
+    <span class="hljs-keyword">return</span> {<span class="hljs-keyword">type</span>: <span class="hljs-string">'INCREMENT'</span>, <span class="hljs-keyword">by</span>: amount};
+  }
+};
+</code></pre><p>We pass in an <strong>amount</strong>, and return an <strong>action</strong> shaped according to our previous decision.</p>
+</div></section>
+<section class="slide" data-pos="6-7-3">
+<span class="pos">6-7-3</span>
+<div class="slidecontent"><p>Now we create a version of our action creators that is <strong>bound to our store</strong>, so they&#39;re easier to consume in our views:</p>
+<pre><code>let <span class="hljs-keyword">boundActionCreators </span>= Redux.<span class="hljs-keyword">bindActionCreators(
+</span>  actionCreators,
+  store.<span class="hljs-keyword">dispatch
+</span>)<span class="hljs-comment">;</span>
+</code></pre></div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/12</div>
+      <h3>UI</h3>
+      <p>Designing the interface</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-8-1">
+<span class="pos">6-8-1</span>
+<div class="slidecontent"><p>Let&#39;s design the <strong>UI</strong> needed for our <strong>app idea</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-8-2">
+<span class="pos">6-8-2</span>
+<div class="slidecontent"><p>To create our UI we translate our <strong>mental screenshot</strong>...</p>
+<p><img src="resources/images/redux-example-screen.png" alt="screenshot"></p>
+</div></section>
+<section class="slide" data-pos="6-8-3">
+<span class="pos">6-8-3</span>
+<div class="slidecontent"><p>...to this <strong>html</strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Counter is now at <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"num"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"incbtn"</span>&gt;</span>Increase<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span> by <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"number"</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"amount"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">1</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--STARTSECTION9--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 9/12</div>
+      <h3>UI updater</h3>
+      <p>data templating</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-9-1">
+<span class="pos">6-9-1</span>
+<div class="slidecontent"><p>Now that we know the <strong>state shape</strong> and the <strong>UI</strong>, we can define a <strong>UI updater</strong> function!</p>
+</div></section>
+<section class="slide" data-pos="6-9-2">
+<span class="pos">6-9-2</span>
+<div class="slidecontent"><p>We need to update the <strong>UI</strong> depending on the current <strong>state</strong> which is passed in as an argument:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> updateUI = <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> element = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"num"</span>);
+  element.innerHTML = state.count;
+};
+</code></pre>
+<p>All we need to do is update the <code>#num</code> element with <code>state.count</code>.</p>
+</div></section>
+<section class="slide" data-pos="6-9-3">
+<span class="pos">6-9-3</span>
+<div class="slidecontent"><p>In a React app this would rather be a <strong>render</strong> function that <strong>defined the whole UI</strong> instead of mutating existing DOM.</p>
+</div></section>
+</section>
+<!--ENDSECTION9--><!--STARTSECTION10--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 10/12</div>
+      <h3>Interaction</h3>
+      <p>connecting the user</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-10-1">
+<span class="pos">6-10-1</span>
+<div class="slidecontent"><p>Now we can introduce <strong>interaction</strong> through hooking up the <strong>action creators</strong> to the <strong>UI</strong> and dispatch the result to the <strong>store</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-10-2">
+<span class="pos">6-10-2</span>
+<div class="slidecontent"><p>So what needs to happen when the user clicks the button?</p>
+<ol>
+<li>We must <strong>collect the increase value</strong> from the input field</li>
+<li>Then we <strong>create an action</strong> by <strong>passing the increase value</strong> to the <strong>Increment action creator</strong></li>
+<li>We use a <strong>bound action creator</strong> so that the action is <strong>passed to the store</strong></li>
+</ol>
+</div></section>
+<section class="slide" data-pos="6-10-3">
+<span class="pos">6-10-3</span>
+<div class="slidecontent"><p>Here&#39;s the code:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> button = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"incbtn"</span>);
+button.addEventListener(<span class="hljs-string">"click"</span>,()=&gt; {
+  <span class="hljs-keyword">let</span> input = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"amount"</span>),
+    increase = <span class="hljs-built_in">parseInt</span>(input.value);
+  boundActionCreators.increment(increase);
+});
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION10--><!--STARTSECTION11--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 11/12</div>
+      <h3>Tying it together</h3>
+      <p>Ship it!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-11-1">
+<span class="pos">6-11-1</span>
+<div class="slidecontent"><p>We now have all the pieces we need to finalize our app!</p>
+</div></section>
+<section class="slide" data-pos="6-11-2">
+<span class="pos">6-11-2</span>
+<div class="slidecontent"><p>There&#39;s only two things remaining to do:</p>
+<ul>
+<li>Make our <strong>UI updater</strong> run whenever the <strong>store</strong> is updated</li>
+<li>Run an <strong>initial rendering</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="6-11-3">
+<span class="pos">6-11-3</span>
+<div class="slidecontent"><p>It sounds easy, and it is easy! Here&#39;s the code:</p>
+<pre><code class="lang-javascript">store.subscribe(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> { <span class="hljs-comment">// &lt;-- not called with state!</span>
+  updateUI(store.getState());
+});
+
+updateUI(store.getState());
+</code></pre>
+<p>Note how the <strong>callback</strong> is <strong>not called with state</strong>, which you might expect! You have to <strong>explicitly get it</strong> if you need it.</p>
+</div></section>
+<section class="slide" data-pos="6-11-4">
+<span class="pos">6-11-4</span>
+<div class="slidecontent"><p>You can <strong>play with this example</strong> in the <a href="resources/site/demos/redux.html" target="_blank">Redux</a> demo.</p>
+<p>..wait, were we <strong>already done</strong>? Yep, <strong>that was it</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-11-5">
+<span class="pos">6-11-5</span>
+<div class="slidecontent"><p>Note how already this simple example app <strong>demonstrate</strong> the <strong>unidirectional data flow</strong>:</p>
+<p><img src="resources/graphviz/redux-flow.svg" alt="flow"></p>
+</div></section>
+</section>
+<!--ENDSECTION11--><!--STARTSECTION12--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 12/12</div>
+      <h3>Exercise 4</h3>
+      <p>It&#39;s getting hot in here</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="6-12-1">
+<span class="pos">6-12-1</span>
+<div class="slidecontent"><p>You probably saw this coming - you now get to <strong>create your own Redux application</strong>!</p>
+</div></section>
+<section class="slide" data-pos="6-12-2">
+<span class="pos">6-12-2</span>
+<div class="slidecontent"><p>Look for the <a href="resources/site/exercises/04_generator/" target="_blank">Generator</a> exercise in the course resources!</p>
+</div></section>
+</section>
+<!--ENDSECTION12--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(6-1);
+        } else if (code >= 49 && code <= 12+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (6 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(6+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

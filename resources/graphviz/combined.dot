@@ -1,0 +1,29 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	subgraph cluster_previous {
+		label="Current state"
+		part1old, part2old
+		part1old [label="part1"]
+		part2old [label="part2"]
+	}
+
+	subgraph cluster_reducer {
+		label="Combined reducer"
+		part1Reducer [shape=box]
+		part2Reducer [shape=box]
+	}
+
+	subgraph cluster_updated {
+		label="New state"
+		part1new, part2new
+		part1new [label="part1"]
+		part2new [label="part2"]
+	}
+
+	part1old -> part1Reducer -> part1new
+	part2old -> part2Reducer -> part2new
+
+	action -> part1Reducer [constraint=false]
+	action -> part2Reducer [constraint=false]
+}

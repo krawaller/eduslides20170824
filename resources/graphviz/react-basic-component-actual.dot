@@ -1,0 +1,15 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	component [shape=box]
+	React [shape=box, label="React\ndiffing\nengine"]
+	previousDOM [label="previous\nvirtual DOM"]
+	DOM [label="virtual DOM"]
+	changes [label="set of\nDOM update\ninstructions"]
+	props -> component
+	component -> DOM
+	previousDOM -> React
+	DOM -> React
+	React -> changes
+}

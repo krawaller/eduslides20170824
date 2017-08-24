@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: firebase2</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>firebase2</span></div></div>
+<div class="wrapper">
+<div id="container"></div>
+
+<script type="text/babel">
+
+firebase.initializeApp({
+	apiKey: "AIzaSyCMxaH4vKLmnq963uCyL6B2j6JH19ZZKA0",
+	databaseURL: "https://ed-firebase-demo.firebaseio.com"
+});
+
+let DB = firebase.database().ref("rooms");
+
+class App extends React.Component {
+	constructor(){
+		super();
+		this.state = { name: '', room: '', data: {} };
+		this.set = this.set.bind(this);
+		this.addMsg = this.addMsg.bind(this);
+	}
+	componentDidMount() {
+		DB.on('value',(snapshot)=> {
+			this.setState({data: snapshot.val() || {}})
+		});
+	}
+	set(room,name) {
+		this.setState({room:room,name:name});
+	}
+	addMsg(msg) {
+		DB.child(this.state.room).push({name:this.state.name,msg:msg});
+	}
+	render() {
+		let s = this.state, Where = s.room ? Chat : Lobby;
+		return <div>
+			<h2>Our amazing chat app</h2>
+			<Where set={this.set} msgs={s.data[s.room]} addMsg={this.addMsg} />
+		</div>;
+	}
+}
+
+class Lobby extends React.Component {
+	constructor(){
+		super();
+		this.enter = this.enter.bind(this);
+	}
+	enter(e) {
+		let name = this.name.value,
+			room = this.room.value;
+		if (name && room){
+			this.props.set(room,name);
+		} else {
+			alert("You must enter a name and a room!");
+		}
+		e.preventDefault();
+	}
+	render() {
+		return <form onSubmit={this.enter}>
+			Name: <input ref={el=>this.name = el}></input><br/>
+			Room: <input ref={el=>this.room = el}></input><br/>
+			<button type="submit">Enter</button>
+		</form>
+	}
+}
+
+class Chat extends React.Component {
+	constructor(){
+		super();
+		this.addMsg = this.addMsg.bind(this);
+		this.leave = this.leave.bind(this);
+	}
+	addMsg(e) {
+		this.props.addMsg(this.chat.value);
+		this.chat.value = '';
+		e.preventDefault();
+	}
+	leave() {
+		this.props.set('','');
+	}
+	render() {
+		let msgs = _.map(this.props.msgs,(msg,id)=> {
+			return <li key={id}><span>{msg.name}: </span>{msg.msg}</li>;
+		}).reverse();
+		return <div>
+			<button onClick={this.leave}>Leave</button>
+			<form onSubmit={this.addMsg}>
+				<input ref={el=>this.chat = el}></input>
+				<button type="submit">Chat</button>
+			</form>
+			<ul>{msgs}</ul>
+		</div>;
+	}
+}
+
+ReactDOM.render(<App/>,document.getElementById("container"))
+
+</script>
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

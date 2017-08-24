@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Redux Thunk</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 8 of 12 </div>
+            <h1>Redux Thunk</h1>
+            <span>slow motion actions</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p><a href="https://github.com/gaearon/redux-thunk" class="link" target="_blank">Redux-Thunk</a> has the following <strong>lineage</strong>:</p>
+<p><img src="resources/graphviz/redux-thunk-lineage.svg" alt="lineage"></p>
+<p>So to understand what Redux-thunk is, we will now travel this chain backwards!</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">Store&nbsp;enhancers</a></li><li><a href="#/4">Middlewares</a></li><li><a href="#/5">The&nbsp;thunk&nbsp;problem</a></li><li><a href="#/6">The&nbsp;thunk&nbsp;solution</a></li><li><a href="#/7">Trying&nbsp;it&nbsp;out</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/5</div>
+      <h3>Store enhancers</h3>
+      <p>Can&#39;t leave well enough alone</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="8-1-1">
+<span class="pos">8-1-1</span>
+<div class="slidecontent"><p>Store enhancers are a function that we can <strong>optionally</strong> send to <code>createStore</code> in order to <strong>change the store&#39;s behaviour</strong>:</p>
+<pre><code class="lang-javascript">Redux.createStore(reducer, initialState, enhancer);
+</code></pre>
+</div></section>
+<section class="slide question" data-pos="8-1-2">
+<span class="pos">8-1-2</span>
+<div class="slidecontent">
+<p>Wait up - wasn&#39;t <strong>initialState also optional</strong>? How then would <code>Redux</code> know the difference here?</p>
+<pre><code class="lang-javascript">Redux.createStore(reducer, initialState);
+Redux.createStore(reducer, enhancer);
+</code></pre>
+</div></section>
+<section class="slide answer" data-pos="8-1-3">
+<span class="pos">8-1-3</span>
+<div class="slidecontent">
+<p>Easy - the <strong>initialState is an object</strong> while the <strong>enhancer is a function</strong>. Redux can figure out which signature was used through <strong>duck typing</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createStore</span>(<span class="hljs-params">reducer,initial,enhancer</span>)</span>{
+  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">arguments</span>.length === <span class="hljs-number">2</span> &amp;amp;&amp;amp; <span class="hljs-keyword">typeof</span> initial === <span class="hljs-string">"function"</span>){
+    enhancer = initial;
+    initial = <span class="hljs-literal">undefined</span>;
+  }
+  <span class="hljs-comment">// now initial and reducer are guaranteed to be correct</span>
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-1-4">
+<span class="pos">8-1-4</span>
+<div class="slidecontent"><p>Back to what <strong>enhancers actually do</strong>: they are the way in which <strong>third party developers can change the behaviour of Redux</strong>.</p>
+<p>Think of enhancers as a <strong>plugin API</strong>!</p>
+</div></section>
+<section class="slide" data-pos="8-1-5">
+<span class="pos">8-1-5</span>
+<div class="slidecontent"><p>If you want to send in <strong>multiple enhancers</strong> you must first <strong>combine</strong> them:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> enhancer = Redux.combine(devTools,middleWare);
+<span class="hljs-keyword">let</span> store = Redux.createStore(reducer,enhancer);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-1-6">
+<span class="pos">8-1-6</span>
+<div class="slidecontent"><p>Now you may have also noticed the <strong>two most common enhancers</strong>:</p>
+<ul>
+<li><a href="https://github.com/gaearon/redux-devtools/" class="link" target="_blank">Redux Dev Tools</a>, which allows us to <strong>undo actions</strong> and <strong>redo them again</strong>, <strong>hot reloading</strong> and other things. More on that later!</li>
+<li><strong>middlewares</strong>, which is what we actually want to know more about right now!</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/5</div>
+      <h3>Middlewares</h3>
+      <p>The meddling man in the middle</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="8-2-1">
+<span class="pos">8-2-1</span>
+<div class="slidecontent"><p>They really should be called <strong>action middlewares</strong>, because that&#39;s what they do; they <strong>process actions before they reach the store</strong>.</p>
+</div></section>
+<section class="slide" data-pos="8-2-2">
+<span class="pos">8-2-2</span>
+<div class="slidecontent"><p>Without a middleware, the action from the action creator is passed straight to <code>store.dispatch</code>:</p>
+<p><img src="resources/graphviz/redux-middleware-without.svg" alt="no middleware"></p>
+</div></section>
+<section class="slide" data-pos="8-2-3">
+<span class="pos">8-2-3</span>
+<div class="slidecontent"><p>The <strong>middleware sits in-between</strong>, <strong>processing the action</strong> before (maybe) <strong>passing it along</strong> to <code>store.dispatch</code></p>
+<p><img src="resources/graphviz/redux-middleware-with.svg" alt="with middleware"></p>
+</div></section>
+<section class="slide" data-pos="8-2-4">
+<span class="pos">8-2-4</span>
+<div class="slidecontent"><p>We can have <strong>multiple middlewares</strong>, in which case they&#39;ll act as a chain in the order they were applied:</p>
+<p><img src="resources/graphviz/redux-middleware-with-many.svg" alt="many middlewares"></p>
+</div></section>
+<section class="slide" data-pos="8-2-5">
+<span class="pos">8-2-5</span>
+<div class="slidecontent"><p>From the outside we <strong>can&#39;t tell any difference</strong> - we&#39;re just dispatching an action to the store as we always do:</p>
+<pre><code class="lang-javascript">store.dispatch(action);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-2-6">
+<span class="pos">8-2-6</span>
+<div class="slidecontent"><p>To get further familiarised with the <strong>structure of middlewares</strong>, let&#39;s now see what they look like!</p>
+</div></section>
+<section class="slide" data-pos="8-2-7">
+<span class="pos">8-2-7</span>
+<div class="slidecontent"><p>Here&#39;s a middleware that <strong>does nothing</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">noopMiddleware</span>(<span class="hljs-params">API</span>)</span>{ <span class="hljs-comment">// has `.dispatch` and `.getState`</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">next</span>)</span>{      <span class="hljs-comment">// `next` is the following middleware</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">action</span>)</span>{  <span class="hljs-comment">// here we receive the `action`</span>
+      <span class="hljs-keyword">return</span> next(action);    <span class="hljs-comment">// passing the action along!</span>
+    }
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-2-8">
+<span class="pos">8-2-8</span>
+<div class="slidecontent"><p>If we <strong>convert it to ES6</strong>, here is what we get:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> noopMiddleware = <span class="hljs-function"><span class="hljs-params">API</span> =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  next(action);
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-2-9">
+<span class="pos">8-2-9</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>logger</strong> middleware which logs actions and the resulting state to the console.</p>
+<pre><code><span class="hljs-keyword">let</span> logger = <span class="hljs-function"><span class="hljs-params">middlewareAPI</span> =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Dispatching action:"</span>,action);
+  <span class="hljs-keyword">let</span> result = next(action);
+  <span class="hljs-keyword">let</span> newstate = middlewareAPI.getState();
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"State after dispatch:"</span>,newstate);
+  <span class="hljs-keyword">return</span> result;
+};
+</code></pre><p>We&#39;ll be using this middleware in the upcoming experiments!</p>
+</div></section>
+<section class="slide" data-pos="8-2-10">
+<span class="pos">8-2-10</span>
+<div class="slidecontent"><p>Here&#39;s a <a href="resources/site/demos/deaf.html" target="_blank">Deaf</a> middleware that only <strong>passes the action along a third of the time</strong>:</p>
+<pre><code><span class="hljs-keyword">let</span> deaf = <span class="hljs-function"><span class="hljs-params">middlewareAPI</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">next</span> =&gt;</span> action =&gt; {
+    <span class="hljs-keyword">if</span> (!(i++%<span class="hljs-number">3</span>)) {
+      next(action);
+    }
+  };
+};
+</code></pre></div></section>
+<section class="slide" data-pos="8-2-11">
+<span class="pos">8-2-11</span>
+<div class="slidecontent"><p>Here&#39;s a <a href="resources/site/demos/nervous.html" target="_blank">Nervous</a> middleware that <strong>executes actions twice</strong> just to be sure:</p>
+<pre><code><span class="hljs-keyword">let</span> nervous = <span class="hljs-function"><span class="hljs-params">middlewareAPI</span> =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  next(action);
+  next(action);
+};
+</code></pre></div></section>
+<section class="slide" data-pos="8-2-12">
+<span class="pos">8-2-12</span>
+<div class="slidecontent"><p>Here&#39;s an <a href="resources/site/demos/impatient.html" target="_blank">Impatient</a> middleware that <strong>multiplies amount by 5</strong>:</p>
+<pre><code><span class="hljs-keyword">let</span> impatient = <span class="hljs-function"><span class="hljs-params">middlewareAPI</span> =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  action = <span class="hljs-built_in">Object</span>.assign({},action); <span class="hljs-comment">// copy</span>
+  action.by *= <span class="hljs-number">5</span>;
+  next(action);
+};
+</code></pre></div></section>
+<section class="slide" data-pos="8-2-13">
+<span class="pos">8-2-13</span>
+<div class="slidecontent"><p>What would happen if we applied <strong>deaf</strong>, <strong>nervous</strong> and <strong>impatient</strong> all <strong>at the same time</strong>?</p>
+<pre><code><span class="hljs-attribute">let middlewares</span> = Redux.applyMiddleware(deaf,nervous,impatient);
+<span class="hljs-attribute">let store</span> = Redux.createStore(reducer,initialstate,middlewares);
+</code></pre><p>We&#39;d get a store that only acts <strong>a third of the time</strong>, but when it does act it&#39;ll <strong>increase the amount by 2*5</strong>. Try this in the <a href="resources/site/demos/chaos.html" target="_blank">Chaos</a> demo!</p>
+</div></section>
+<section class="slide" data-pos="8-2-14">
+<span class="pos">8-2-14</span>
+<div class="slidecontent"><p>As you&#39;ve seen, middlewares have <strong>many potential uses</strong>. We can do <strong>flow control</strong> for actions, <strong>manipulate them</strong> and provide <strong>developer utilities</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/5</div>
+      <h3>The thunk problem</h3>
+      <p>Eyes on the prize</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="8-3-1">
+<span class="pos">8-3-1</span>
+<div class="slidecontent"><p>So now we know what middlewares are, and that Redux Thunk is a middleware, but <strong>what problem is it meant to solve</strong>?</p>
+</div></section>
+<section class="slide" data-pos="8-3-2">
+<span class="pos">8-3-2</span>
+<div class="slidecontent"><p>Take a look at this flow again:</p>
+<p><img src="resources/graphviz/redux-middleware-without.svg" alt="no middleware"></p>
+<p>We want to be able to <strong>take what action creators return</strong> and <strong>dispatch it to the store</strong>.</p>
+</div></section>
+<section class="slide" data-pos="8-3-3">
+<span class="pos">8-3-3</span>
+<div class="slidecontent"><p>This has the benefit that the <strong>action creator doesn&#39;t require a store reference</strong>. We can have some outer infrastructure that ties this together for us, which <strong>separates concerns</strong> in a nice way.</p>
+</div></section>
+<section class="slide" data-pos="8-3-4">
+<span class="pos">8-3-4</span>
+<div class="slidecontent"><p>But what if we for example need to do some <strong>asynchronous</strong> stuff in our action creators?</p>
+<p>Let&#39;s say we <strong>make a network request</strong>, and we want stuff to happen both 
+when the <strong>request is made</strong> and when the <strong>data comes back</strong>.</p>
+</div></section>
+<section class="slide" data-pos="8-3-5">
+<span class="pos">8-3-5</span>
+<div class="slidecontent"><p>This is <strong>easy to accomplish</strong> if we have <strong>access to the store</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> loadUrl = <span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> {
+  store.dispatch({<span class="hljs-attr">type</span>:<span class="hljs-string">'LOADING'</span>});
+  myBackEnd.request(url, data =&gt; {
+    store.dispatch({
+      <span class="hljs-attr">type</span>: <span class="hljs-string">'RECEIVEDATA'</span>,
+      <span class="hljs-attr">data</span>: data
+    });
+  });
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-3-6">
+<span class="pos">8-3-6</span>
+<div class="slidecontent"><p>But, again, giving the action creators access to the store <strong>ties things together</strong> more tightly than is necessary.</p>
+<p>Still, we <strong>must be able</strong> to do async stuff like we just saw!</p>
+</div></section>
+<section class="slide" data-pos="8-3-7">
+<span class="pos">8-3-7</span>
+<div class="slidecontent"><p>And this is exactly what Redux Thunk gives us: a <strong>way to have complex action creators</strong> but <strong>without having to pass the store around</strong>!</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/5</div>
+      <h3>The thunk solution</h3>
+      <p>42</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="8-4-1">
+<span class="pos">8-4-1</span>
+<div class="slidecontent"><p>Again, we want to...</p>
+<ul>
+<li>always <strong>pass what&#39;s returned from the action creators to <code>store.dispatch</code></strong></li>
+<li>be able to <strong>do advanced stuff in the action creators</strong></li>
+<li><strong>not having to pass around the store</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="8-4-2">
+<span class="pos">8-4-2</span>
+<div class="slidecontent"><p>Redux Thunk&#39;s answer to this is as simple as it is elegant: it allows us to optionally <strong>return functions</strong> (&quot;thunks&quot;!) from the action creators <strong>instead of plain action objects</strong>!</p>
+</div></section>
+<section class="slide" data-pos="8-4-3">
+<span class="pos">8-4-3</span>
+<div class="slidecontent"><p>Here&#39;s what Redux Thunk does:</p>
+<ul>
+<li>Sit at the <strong>beginning</strong> of the middleware chain</li>
+<li><strong>Examine</strong> all incoming actions</li>
+<li>If they&#39;re a function, <strong>invoke</strong> them with <code>dispatch</code> and <code>getState</code></li>
+<li>Otherwise <strong>pass them along</strong> to <code>next</code> as usual</li>
+</ul>
+<p>Sounds simple, right?</p>
+</div></section>
+<section class="slide" data-pos="8-4-4">
+<span class="pos">8-4-4</span>
+<div class="slidecontent"><p>It <strong>is simple</strong>. Here&#39;s the <strong>full source code</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> thunk = <span class="hljs-function"><span class="hljs-params">API</span> =&gt;</span> next =&gt; <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span> {
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> action === <span class="hljs-string">'function'</span>){
+    <span class="hljs-keyword">return</span> action(API.dispatch,API.getState);
+  }
+  <span class="hljs-keyword">return</span> next(action);
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-4-5">
+<span class="pos">8-4-5</span>
+<div class="slidecontent"><p>Find out more on the <a href="https://github.com/gaearon/redux-thunk" class="link" target="_blank">Redux-Thunk</a> homepage.</p>
+<p>(including the fact that I lied on the last slide, since a <a href="https://twitter.com/dan_abramov/status/730053481919303685?lang=en">new API</a> was added last year)</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/5</div>
+      <h3>Trying it out</h3>
+      <p>Put the pedal to the metal</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="8-5-1">
+<span class="pos">8-5-1</span>
+<div class="slidecontent"><p>We&#39;ll again use our venerable counter app. The action creator for increment looked like this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> increment = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">amount</span>)</span>{
+  <span class="hljs-keyword">return</span> {<span class="hljs-attr">type</span>: <span class="hljs-string">'INCREMENT'</span>, <span class="hljs-attr">by</span>: amount};
+};
+</code></pre>
+<p>The action creator <strong>returns an action object</strong> containing the <strong>amount</strong>.</p>
+</div></section>
+<section class="slide" data-pos="8-5-2">
+<span class="pos">8-5-2</span>
+<div class="slidecontent"><p>And here&#39;s the <strong>event listener code</strong> again, showing that what is returned from <code>increment</code> is immediately dispatched to the store.</p>
+<pre><code class="lang-javascript">button.addEventListener(<span class="hljs-string">"click"</span>,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+  <span class="hljs-keyword">let</span> input = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"amount"</span>),
+    increase = <span class="hljs-built_in">parseInt</span>(input.value),
+    action = actionCreators.increment(increase);
+  store.dispatch(action);
+});
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-5-3">
+<span class="pos">8-5-3</span>
+<div class="slidecontent"><p>Let&#39;s now use Redux Thunk and <strong>remodel the action creator</strong> to make this happen when the button is clicked:</p>
+<ul>
+<li>We <strong>immediately dispatch</strong> a <code>WARNING</code> action, letting the user know that the counter is about to be incremented.</li>
+<li>Then <strong>3 seconds later</strong> we&#39;ll dispatch the actual <code>INCREMENT</code> action.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="8-5-4">
+<span class="pos">8-5-4</span>
+<div class="slidecontent"><p>Here&#39;s the updated action creator to accomplish this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> increment = <span class="hljs-function"><span class="hljs-params">amount</span> =&gt;</span> (dispatch,getState) =&gt; {
+    dispatch({
+      <span class="hljs-attr">type</span>: <span class="hljs-string">'WARNING'</span>,
+      <span class="hljs-attr">msg</span>: <span class="hljs-string">'Now '</span>+getState()+<span class="hljs-string">', will add '</span>+amount+<span class="hljs-string">'!'</span>
+    });
+    setTimeout(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+      dispatch({
+        <span class="hljs-attr">type</span>: <span class="hljs-string">'INCREMENT'</span>,
+        <span class="hljs-attr">by</span>: amount
+      });
+    },<span class="hljs-number">3000</span>);
+  };
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="8-5-5">
+<span class="pos">8-5-5</span>
+<div class="slidecontent"><p>Provided that <strong>Redux Thunk sits at the beginning</strong> of the chain, it will <strong>notice that the action is a function</strong>, and so it will <strong>invoke</strong> it with <code>dispatch</code> and <code>getState</code>.</p>
+</div></section>
+<section class="slide" data-pos="8-5-6">
+<span class="pos">8-5-6</span>
+<div class="slidecontent"><p><strong>Try this out</strong>, together with a <strong>logger</strong> so you can see the &#39;WARNING&#39; message, in the
+<a href="resources/site/demos/thunk.html" target="_blank">Thunk</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="8-5-7">
+<span class="pos">8-5-7</span>
+<div class="slidecontent"><p>Should you feel the urge, a more <strong>in-depth version</strong> of this walkthrough can be found here:
+<a href="http://blog.krawaller.se/posts/exploring-redux-middleware" class="link" target="_blank">Middlewares</a></p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(8-1);
+        } else if (code >= 49 && code <= 5+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (8 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(8+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

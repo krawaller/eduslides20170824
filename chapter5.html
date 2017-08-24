@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Introducing Redux</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 5 of 12 </div>
+            <h1>Introducing Redux</h1>
+            <span>rewho?</p>
+</span>
+          </div>
+        </section>
+        
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/2">What&nbsp;Redux&nbsp;is</a></li><li><a href="#/3">State&nbsp;and&nbsp;actions</a></li><li><a href="#/4">The&nbsp;reducer</a></li><li><a href="#/5">The&nbsp;store</a></li><li><a href="#/6">Action&nbsp;creators</a></li><li><a href="#/7">Redux&nbsp;resources</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/6</div>
+      <h3>What Redux is</h3>
+      <p>Exploring beyond the borders of React</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-1-1">
+<span class="pos">5-1-1</span>
+<div class="slidecontent"><p>As we said before, <strong>React has a component focus</strong>. It has <strong>no opinions</strong> on how you deal with data beyond component state.</p>
+<p>But surely they must give us <strong>some pointers</strong> on how to do it?</p>
+</div></section>
+<section class="slide" data-pos="5-1-2">
+<span class="pos">5-1-2</span>
+<div class="slidecontent"><p>Facebook provided a &quot;pattern&quot; to follow which they call <a href="https://facebook.github.io/flux/" class="link" target="_blank">Flux</a>. This isn&#39;t a library, but an idea on how to implement <strong>uni-directional data flow</strong>.</p>
+</div></section>
+<section class="slide" data-pos="5-1-3">
+<span class="pos">5-1-3</span>
+<div class="slidecontent"><p><strong>Uni-directional data flow</strong> is the idea that data flows <strong>one way</strong> through the app:</p>
+<p><img src="resources/graphviz/flux-flow.svg" alt="flux flow"></p>
+</div></section>
+<section class="slide" data-pos="5-1-4">
+<span class="pos">5-1-4</span>
+<div class="slidecontent"><p>Since Facebook preached Flux there has been a <strong>gazillion flux libraries</strong>, and the internet is littered with articles like &quot;comparing the top 10 flux libraries&quot;.</p>
+</div></section>
+<section class="slide" data-pos="5-1-5">
+<span class="pos">5-1-5</span>
+<div class="slidecontent"><p>Fortunately for you, now <a href="http://redux.js.org/" class="link" target="_blank">Redux</a> has come along and <strong>ended the war</strong> by virtue of being the <strong>simplest</strong> and <strong>most powerful</strong> solution!</p>
+</div></section>
+<section class="slide" data-pos="5-1-6">
+<span class="pos">5-1-6</span>
+<div class="slidecontent"><p>In spite of being a <strong>tiny</strong> library (less than 100 lines if we remove some warnings and dev fluff), Redux holds some <strong>big ideas</strong> that simply blew the competition out of the water.</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/6</div>
+      <h3>State and actions</h3>
+      <p>How Redux handles data and events</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-2-1">
+<span class="pos">5-2-1</span>
+<div class="slidecontent"><p>In Redux your <strong>entire app state</strong> is stored in <strong>one single object</strong>.</p>
+<pre><code class="lang-javascript">{
+  <span class="hljs-attr">users</span>: {
+    <span class="hljs-attr">id1</span>: { <span class="hljs-attr">name</span>: <span class="hljs-string">"David"</span>, ... }
+  },
+  <span class="hljs-attr">posts</span>: {
+    <span class="hljs-attr">id1</span>: { <span class="hljs-attr">title</span>: <span class="hljs-string">"My opinion on NEXO Knights"</span>, ... }
+  },
+  ...
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-2-2">
+<span class="pos">5-2-2</span>
+<div class="slidecontent"><p>This is in direct <strong>contrast to most other Flux libraries</strong>, who often advocate &quot;thematic stores&quot;; a <code>userStore</code>, a <code>postStore</code>, a <code>commentStore</code>, etc.</p>
+</div></section>
+<section class="slide" data-pos="5-2-3">
+<span class="pos">5-2-3</span>
+<div class="slidecontent"><p>Redux&#39; seemingly simple one-store idea holds a surprising amount of power:</p>
+<ul>
+<li>It makes <strong>hydration</strong> easy</li>
+<li>It <strong>lowers complexity</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="5-2-4">
+<span class="pos">5-2-4</span>
+<div class="slidecontent"><p>The twin to that idea is that <strong>every event</strong> that affects that data should be <strong>represented by an action object</strong>:</p>
+<pre><code class="lang-javascript">{<span class="hljs-attr">type</span>: <span class="hljs-string">'ADDPOST'</span>, <span class="hljs-attr">authorid</span>: <span class="hljs-string">'user1'</span>, <span class="hljs-attr">content</span>: <span class="hljs-string">'...'</span>  }
+{<span class="hljs-attr">type</span>: <span class="hljs-string">'RECEIVEDATA'</span>, <span class="hljs-attr">data</span>: <span class="hljs-string">'...'</span>}
+{<span class="hljs-attr">type</span>: <span class="hljs-string">'DELETEPOST'</span>, <span class="hljs-attr">postid</span>: <span class="hljs-string">'post47'</span>}
+</code></pre>
+<p> This object has a <strong><code>type</code></strong> property and an <strong>optional data</strong> payload.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/6</div>
+      <h3>The reducer</h3>
+      <p>Deriving updated state</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-3-1">
+<span class="pos">5-3-1</span>
+<div class="slidecontent"><p>The reducer is so simple it is hard to explain: it is a <strong>pure function</strong> that <strong>takes the state and an action</strong>, and <strong>returns a new state</strong>:</p>
+<p><img src="resources/graphviz/redux-reducer.svg" alt="reducer"></p>
+</div></section>
+<section class="slide" data-pos="5-3-2">
+<span class="pos">5-3-2</span>
+<div class="slidecontent"><p>Traditionally the reducer is coded as a <strong>switch</strong> statement with <strong>one case per action type</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> reducer = <span class="hljs-function">(<span class="hljs-params">currentstate,action</span>)=&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-keyword">case</span> C.RECEIVE_QUOTES_DATA:        <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">case</span> C.AWAIT_NEW_QUOTE_RESPONSE:   <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">case</span> C.RECEIVE_NEW_QUOTE_RESPONSE: <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">case</span> C.START_QUOTE_EDIT:           <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">case</span> C.FINISH_QUOTE_EDIT:          <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">case</span> C.SUBMIT_QUOTE_EDIT:          <span class="hljs-comment">// ..</span>
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> currentstate;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-3-3">
+<span class="pos">5-3-3</span>
+<div class="slidecontent"><p><strong>In each case</strong> we do some computation depending on the action contents, and then we <strong>return a new state</strong>.</p>
+<p>Note that we must <strong>not mutate the current state</strong> - it is important that the reducer stays pure and has <strong>no side effects</strong>.</p>
+</div></section>
+<section class="slide" data-pos="5-3-4">
+<span class="pos">5-3-4</span>
+<div class="slidecontent"><p>To prevent this from becoming unwieldy we can make <strong>separate reducers</strong> for different parts of the app state,
+and then <em>combine</em> them into one big reducer. We&#39;ll take a look at that later.</p>
+</div></section>
+<section class="slide" data-pos="5-3-5">
+<span class="pos">5-3-5</span>
+<div class="slidecontent"><p>Perhaps you noticed the <strong>default</strong> path that just passes the current state on?</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> reducer = <span class="hljs-function">(<span class="hljs-params">currentstate,action</span>)=&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-comment">// ..lots of cases..</span>
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> currentstate;
+  }
+}
+</code></pre>
+<p>This is important as Redux will fire &quot;native&quot; actions that your reducer doesn&#39;t know about.</p>
+</div></section>
+<section class="slide" data-pos="5-3-6">
+<span class="pos">5-3-6</span>
+<div class="slidecontent"><p>Up until this point you still haven&#39;t seen <strong>any Redux code</strong>. All we have talked about are <strong>ideas</strong>, which again goes to show the potency of the Redux model.</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/6</div>
+      <h3>The store</h3>
+      <p>A house for our data</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-4-1">
+<span class="pos">5-4-1</span>
+<div class="slidecontent"><p>A <strong>Redux store</strong> consists of three things:</p>
+<p><img src="resources/graphviz/redux-store.svg" alt="Redux store"></p>
+<ul>
+<li>A <strong>reducer</strong> to calculate new state</li>
+<li>An in-memory <strong>data state</strong> which is updated using the reducer when we pass in an action to the store</li>
+<li>A <strong>subscription service</strong> which notifies interested parties when the in-memory data is updated</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="5-4-2">
+<span class="pos">5-4-2</span>
+<div class="slidecontent"><p>We <strong>initialize a store</strong> using a <strong>reducer</strong> and an (optional) <strong>initial state</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> store = Redux.createStore(reducer,initialstate);
+</code></pre>
+<p>Look, our first line of Redux code!</p>
+</div></section>
+<section class="slide" data-pos="5-4-3">
+<span class="pos">5-4-3</span>
+<div class="slidecontent"><p>We can then <strong>query the state</strong> from the store...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> currentstate = store.getState();
+</code></pre>
+<p>...and also <strong>update the state</strong> by giving it an action:</p>
+<pre><code class="lang-javascript">store.dispatch(action);
+<span class="hljs-keyword">let</span> updatedstate = store.getState();
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-4-4">
+<span class="pos">5-4-4</span>
+<div class="slidecontent"><p>From what we&#39;ve seen so far, the <strong>store</strong> could be <strong>implemented</strong> like this:</p>
+<pre><code class="lang-javascript">Redux.createStore: <span class="hljs-function">(<span class="hljs-params">reducer,initialstate</span>)=&gt;</span> {
+  <span class="hljs-keyword">let</span> _state = initialstate;
+  <span class="hljs-keyword">return</span> {
+    dispatch(action) {
+      _state = reducer(_state,action);
+    },
+    getState() {
+      <span class="hljs-keyword">return</span> _state;
+    }
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-4-5">
+<span class="pos">5-4-5</span>
+<div class="slidecontent"><p>In reality <strong>components don&#39;t often use <code>getState</code></strong> to query the store, instead the <strong>store notifies the components</strong> whenever there is a change. Remember the <strong>flux flow</strong>:</p>
+<p><img src="resources/graphviz/flux-flow.svg" alt="flux flow"></p>
+<p>This is accomplished through a <strong>subscription service</strong>.</p>
+</div></section>
+<section class="slide" data-pos="5-4-6">
+<span class="pos">5-4-6</span>
+<div class="slidecontent"><p>The store has a <strong><code>subscribe</code></strong> method...</p>
+<pre><code>store.subscribe(myCallback)<span class="hljs-comment">;</span>
+</code></pre><p>...which will store all listeners in an array.</p>
+<pre><code class="lang-javascript">subscribe(cb) {
+  _subscribers.push(cb);
+},
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-4-7">
+<span class="pos">5-4-7</span>
+<div class="slidecontent"><p>These will then be <strong>triggered on every dispatch</strong>:</p>
+<pre><code class="lang-javascript">dispatch(action) {
+  _state = reducer(_state,action);
+  _subscribers.forEach(<span class="hljs-function"><span class="hljs-params">cb</span> =&gt;</span> cb());
+},
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-4-8">
+<span class="pos">5-4-8</span>
+<div class="slidecontent"><p>Here&#39;s our <strong>full conceptual code</strong> again:</p>
+<pre><code class="lang-javascript">Redux.createStore = <span class="hljs-function">(<span class="hljs-params">reducer,initialstate</span>)=&gt;</span> {
+  <span class="hljs-keyword">let</span> _state = initialstate, _subscribers = [];
+  <span class="hljs-keyword">return</span> {
+    subscribe(cb) { _subscribers.push(cb); },
+    dispatch(action) {
+      _state = reducer(_state,action);
+      _subscribers.forEach(<span class="hljs-function"><span class="hljs-params">cb</span> =&gt;</span> cb());
+    },
+    getState() { <span class="hljs-keyword">return</span> _state; }
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-4-9">
+<span class="pos">5-4-9</span>
+<div class="slidecontent"><p>In reality the store is <strong>somewhat more complex</strong> since it allows cancellation of subscriptions, checks for faulty API usage and some other stuff. </p>
+<p>But <strong>all of the important stuff</strong> fit onto the previous slide, which yet again shows the succinctness of Redux&#39; approach.</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/6</div>
+      <h3>Action creators</h3>
+      <p>Where do actions come from?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-5-1">
+<span class="pos">5-5-1</span>
+<div class="slidecontent"><p><strong>Action creators</strong> aren&#39;t part of the Redux API, but a useful idea that <strong>views shouldn&#39;t create actions</strong> themselves.</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// a bad idea</span>
+myViewClickEventHandler(e) {
+  <span class="hljs-keyword">let</span> newText = <span class="hljs-keyword">this</span>.field.value;
+  <span class="hljs-keyword">let</span> action = {
+    <span class="hljs-attr">type</span>: <span class="hljs-string">'ADDQUOTE'</span>,
+    <span class="hljs-attr">text</span>: newText
+  };
+  store.dispatch(action);
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-2">
+<span class="pos">5-5-2</span>
+<div class="slidecontent"><p>Instead we make action creators that <strong>convert input to actions</strong>...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> actionCreators = {
+  addQuote(newText) {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">type</span>: <span class="hljs-string">'ADDQUOTE'</span>,
+      <span class="hljs-attr">text</span>: newText
+    }
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-3">
+<span class="pos">5-5-3</span>
+<div class="slidecontent"><p>...and use these in our views:</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// a better idea, but still not optimal</span>
+myViewClickEventHandler(e) {
+  <span class="hljs-keyword">let</span> newText = <span class="hljs-keyword">this</span>.field.value;
+  action = actionCreators.addQuote(newText);
+  store.dispatch(action);
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-4">
+<span class="pos">5-5-4</span>
+<div class="slidecontent"><p>Slightly cleaner, but it is still <strong>irksome</strong> to have to <strong>reference the store</strong> in our view. Let&#39;s make <strong>bound variants</strong> which automatically dispatches!</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> boundActionCreators = {};
+<span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> action <span class="hljs-keyword">in</span> actionCreators){
+  boundActionCreators[action] = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">let</span> action = actionCreators[action].apply(<span class="hljs-literal">null</span>,<span class="hljs-built_in">arguments</span>);
+    store.dispatch(action);
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-5">
+<span class="pos">5-5-5</span>
+<div class="slidecontent"><p>Now our views can consume the bound action creators instead, which means they can be <strong>completely unaware of Redux</strong>!</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// the best idea</span>
+myViewClickEventHandler(e) {
+  <span class="hljs-keyword">let</span> newText = <span class="hljs-keyword">this</span>.field.value;
+  boundActionCreators.addQuote(newText);
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-6">
+<span class="pos">5-5-6</span>
+<div class="slidecontent"><p>That was nice, but <strong>creating the bound variants</strong> was a bit of an <strong>effort</strong>! Redux therefore <strong>provides a util to do it more easily</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> boundActionCreators = Redux.bindActionCreators(
+  actionCreators,
+  store.dispatch
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="5-5-7">
+<span class="pos">5-5-7</span>
+<div class="slidecontent"><p>Having action creators isn&#39;t just about <strong>avoiding store references in our views</strong>. Another advantage of action creators is that we now have <strong>every data-affecting event</strong> defined in <strong>one single place</strong>.</p>
+</div></section>
+<section class="slide" data-pos="5-5-8">
+<span class="pos">5-5-8</span>
+<div class="slidecontent"><p>Later we&#39;ll...</p>
+<ul>
+<li>find out how to do <strong>asynchronous action creators</strong> (by using <strong><code>Redux-Thunk</code></strong>)</li>
+<li>look at convenient ways to <strong>marry Redux to React</strong> (by using <strong><code>React-Redux</code></strong>).</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="5-5-9">
+<span class="pos">5-5-9</span>
+<div class="slidecontent"><p>Zooming out, we can now <strong>translate</strong> the <strong>flux flow</strong>...</p>
+<p><img src="resources/graphviz/flux-flow.svg" alt="flux"></p>
+<p>...to use <strong>Redux terms</strong>:</p>
+<p><img src="resources/graphviz/redux-flow.svg" alt="redux flow"></p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/6</div>
+      <h3>Redux resources</h3>
+      <p>I want moar!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="5-6-1">
+<span class="pos">5-6-1</span>
+<div class="slidecontent"><p>The contents of this chapter will be solidified in the upcoming Redux example chapter, but before we go there we&#39;ll give you some <strong>pointers on where to go</strong> for <strong>more Redux content</strong> after this course.</p>
+</div></section>
+<section class="slide" data-pos="5-6-2">
+<span class="pos">5-6-2</span>
+<div class="slidecontent"><p>The already linked-to <a href="http://redux.js.org/" class="link" target="_blank">Redux</a> official homepage should be your first stop.</p>
+<p>It doesn&#39;t just contain the <strong>API docs</strong>, but also a <strong>thorough explanation</strong> of the rationale behind the library.</p>
+</div></section>
+<section class="slide" data-pos="5-6-3">
+<span class="pos">5-6-3</span>
+<div class="slidecontent"><p>After that you&#39;d do well to devour the free <a href="https://egghead.io/series/getting-started-with-redux" class="link" target="_blank">Egghead Redux course</a> made by Redux&#39; creator Dan Abramov. The bite-sized and to-the-point episodes make the course <strong>very accessible</strong>. </p>
+<p>The course does <strong>not involve React</strong> at all, opting to focus on the <strong>essentials of Redux</strong>.</p>
+</div></section>
+<section class="slide" data-pos="5-6-4">
+<span class="pos">5-6-4</span>
+<div class="slidecontent"><p>For a meatier but just-as-free video course, check out <a href="https://learnredux.com/" class="link" target="_blank">Learn Redux</a> by prolific developer and teacher Wes Bos.</p>
+<p>This is a <strong>more practical course</strong> throughout which you will be building an application with React and Redux.</p>
+<p>...and React Router, which you have yet to meet! The main focus of the course, however, is on Redux.</p>
+</div></section>
+<section class="slide" data-pos="5-6-5">
+<span class="pos">5-6-5</span>
+<div class="slidecontent"><p>Beyond these resources a good starting point is <a href="https://github.com/xgrommx/awesome-redux" class="link" target="_blank">Awesome Redux</a>, a <strong>curated collection of links</strong> to various Redux-related content around the internetz.</p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(5-1);
+        } else if (code >= 49 && code <= 6+48) {
+          window.location.hash = "#/" + (code-48+1+0);
+        }
+        if (5 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(5+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

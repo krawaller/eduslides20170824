@@ -1,0 +1,72 @@
+/** my course-specific styles **/
+
+.reveal section img[src^="resources/graphviz/"] {
+    background-color: #EEE;
+    border-radius: 13px;
+    padding: 7px;
+    border: none;
+    box-shadow: none;
+}
+
+.reveal section img[src^="resources/images/confirm"] {
+    border: none;
+    background: none;
+    box-shadow: none;
+}
+
+.needsblocklists ul {
+  display: block;
+}
+
+
+
+/*
+The Equality boxes are also prevalent throughout
+*/
+.equality {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reveal section .equality img {
+  border: 0;
+  height: 140px;
+  display: inline-block;
+  background: none;
+  box-shadow: none;
+}
+
+.equality span {
+  display: inline-block;
+  padding: 0 15px;
+  font-size: 70px;
+}
+
+.reveal a[href^="resources/site/demos/"], .reveal a.link, .reveal a[href^="resources/site/exercises/"] {
+  border-radius: 15px;
+  padding: 1px;
+  background-color: white;
+  text-decoration: none;
+  padding-left: 27px;
+  padding-right: 5px;  
+  background-position: 3px center;
+  background-repeat: no-repeat;
+  font-family: monospace;
+  font-size: 0.8em;
+}
+
+.reveal a.link {
+  color: #a06d77;
+  background-image: url(../resources/images/link24.png);
+}
+
+.reveal a[href^="resources/site/demos/"] {
+  color: #a06d77;
+  background-image: url(../resources/images/monitor24.png);
+}
+
+.reveal a[href^="resources/site/exercises/"] {
+  color: #a06d77;
+  background-image: url(../resources/images/crash_test_dummy.png);
+}

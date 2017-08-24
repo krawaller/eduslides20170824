@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: nestedcomponents</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>nestedcomponents</span></div></div>
+<div class="wrapper">
+<style>
+
+.comp {
+	display: block;
+	border-radius: 3px;
+	border: 1px dashed black;
+	padding: 7px;
+	margin: 7px;
+	text-align: center;
+}
+
+.site {
+	display: flex;
+	flex-direction: column;
+	background-color: #D8EDD1;
+}
+
+.top, .footer, .main {
+	background-color: #D1E6ED;
+}
+
+.main {
+	display: flex;
+	flex-direction: row;
+}
+
+.center, .nav, .side {
+	background-color: #EDD8D1;
+}
+
+.articleitem, .link, .advert {
+	background-color: #F2DF91;
+}
+
+</style>
+
+
+<div id="container"></div>
+
+<script type="text/babel">
+
+let Topbar = (props)=> (
+	<div className="comp top">The Superhero Tattler</div>
+);
+
+let Navigation = (props)=> (
+	<div className="comp nav">
+		Tattler sections:
+		<Link text="Latest news"/>
+		<Link text="Exposé"/>
+		<Link text="Interviews"/>
+		<Link text="About the Tattler"/>
+	</div>
+);
+
+let Center = (props)=> (
+	<div className="comp center">
+		The latest news:
+		<Article text="Superman spotted again!"/>
+		<Article text="Inside Batman's brain"/>
+		<Article text="'All lies', claims Spiderman"/>
+	</div>
+);
+
+
+let Article = (props)=> (
+	<div className="comp articleitem">{props.text}</div>
+);
+
+let Link = (props)=> (
+	<div className="comp link">{props.text}</div>
+);
+
+let Sidebar = (props)=> (
+	<div className="comp side">
+		Support the Tattler, check out these ads!
+		<Advert text="Get an evening with Captain America"/>
+		<Advert text="Trouble sleeping? Never again!"/>
+		<Advert text="Wanna get ribbed like Batman?"/>
+	</div>
+);
+
+let Advert = (props)=> (
+	<div className="comp advert">{props.text}</div>
+);
+
+let Footer = (props)=> (
+	<div className="comp footer">© The Tattler 2016</div>
+);
+
+let Main = (props)=> (
+	<div className="comp main">
+		<Navigation/>
+		<Center/>
+		<Sidebar/>
+	</div>
+);
+
+let Site = (props)=> (
+	<div className="comp site">
+		<Topbar/>
+		<Main/>
+		<Footer/>
+	</div>
+);
+
+ReactDOM.render(
+	<Site />,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

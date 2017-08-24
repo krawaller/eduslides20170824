@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: routerhook</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>routerhook</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+
+<style>
+
+a.active {
+	font-weight: bold;
+	background-color: #BBB;
+}
+
+a, a:visited {
+	color: #00f;
+}
+
+</style>
+
+
+<script type="text/babel">
+
+
+
+
+/****************** Globals ******************/
+
+let Router = ReactRouter.Router,
+	Route = ReactRouter.Route,
+	IndexRoute = ReactRouter.IndexRoute,
+	IndexLink = ReactRouter.IndexLink,
+	Link = ReactRouter.Link,
+	hashHistory = ReactRouter.hashHistory;
+
+let globalVIPflag = false;
+
+/****************** My components ******************/
+
+let Wrapper = props => (
+	<div>
+		<h4>A Router demo</h4>
+		<ul className="nav">
+			<li><IndexLink to="/" activeClassName="active">Home</IndexLink></li>
+			<li><Link to="/products" activeClassName="active">Products</Link></li>
+		</ul>
+		<hr/>
+		<div className="content">
+			{props.children}
+		</div>
+	</div>
+);
+
+let Home = React.createClass({
+	getInitialState() {
+		return {isVIP: globalVIPflag};
+	},
+	toggle() {
+		this.setState({isVIP: !this.state.isVIP});
+		globalVIPflag = !globalVIPflag; // hackily copy state to global variable
+	},
+	render() {
+		return <div>
+			<p>Hello! This is a tiny demo of React Router.</p>
+			<div>
+				<input onChange={this.toggle} type="checkbox" checked={this.state.isVIP} id="vip" />
+				<label htmlFor="vip">I am a VIP</label>
+			</div>
+		</div>;
+	}
+});
+
+let ProductList = ()=> (
+	<div>
+		<p>Here's what we currently have in stock:</p>
+		<ul>
+			<li><Link to="/products/lawnmower">Lawnmower</Link></li>
+			<li><Link to="/products/lampshade">Lampshade</Link></li>
+		</ul>
+	</div>
+);
+
+let Product = (props)=> (
+	<div>
+		<p>So, interested in buying a {props.params.productid}, are you?</p>
+	</div>
+);
+
+let Sorry = (props)=> (
+	<div>Only VIP:s are allowed to shop here!</div>
+);
+
+/****************** Route map ******************/
+
+const routes = (
+	<Route component={Wrapper}>
+		<Route path="/">
+			<IndexRoute component={Home} />
+			<Route path="/sorry" component={Sorry} />
+		</Route>
+		<Route path="/products" onEnter={VIP}>
+			<IndexRoute component={ProductList} />
+			<Route path="/products/:productid" component={Product} />
+		</Route>
+	</Route>
+);
+
+function VIP(nextState,replace) {
+	if (!globalVIPflag){
+		replace("/sorry");
+	}
+}
+
+
+
+/****************** Kicking it off ******************/
+
+ReactDOM.render(
+	<Router routes={routes} history={hashHistory} />,
+	document.getElementById("container")
+);
+
+	</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

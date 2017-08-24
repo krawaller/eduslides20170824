@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: proptypes</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>proptypes</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+
+<script type="text/babel">
+
+let pt = React.PropTypes;
+
+class Post extends React.Component {
+	/* static propTypes = { //probable future syntax
+		title: pt.string.isRequired,
+		content: pt.string.isRequired
+	} */
+	static get propTypes(){
+		return {
+			title: pt.string.isRequired,
+			content: pt.string.isRequired
+		}
+	}
+	render() {
+		return <div>
+			<h4>{this.props.title}</h4>
+			<div>{this.props.content}</div>
+		</div>;
+	}
+}
+
+let User = props => (
+	<div className="user">
+		<p>Name: {props.name}</p>
+		<p>Role: {props.role}</p>
+		{props.age && <p>Age: {props.age}</p> }
+	</div>
+);
+
+User.propTypes = {
+	name: pt.string.isRequired,
+	age: pt.number,
+	role: pt.oneOf(["teacher","participant","other"]).isRequired
+};
+
+User.defaultProps = {
+	name: "John Doe",
+	role: "other"
+};
+
+// Mess with the props below and note the error(s) in the console!
+ReactDOM.render(
+	<div>
+		<User name="David" age={36} role="teacher" />
+		<hr/>
+		<User />
+		<hr/>
+		<Post title="Words of wisdom" content="Turn the other cheek"/>
+	</div>,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

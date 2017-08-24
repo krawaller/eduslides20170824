@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: communication2</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>communication2</span></div></div>
+<div class="wrapper">
+
+<div id="container"></div>
+
+<style>
+.poll {
+	width: 300px;
+	float: left;
+	margin-right: 1em;
+	background-color: #DDD;
+	padding: 1em;
+	cursor: pointer;
+}
+
+.chosen {
+	background-color: green;
+	color: white;
+}
+
+.survey:after {
+	content: " ";
+	display: block;
+	clear: both;
+}
+</style>
+
+<script type="text/babel">
+
+let Poll = (props)=> {
+	let options = props.options.map((o,n)=> {
+		let chosen = props.current === n+1,
+			choose = ()=> props.callback(chosen ? 0 : n+1),
+			cls = chosen ? 'chosen' : '';
+		return <li key={n} className={cls} onClick={choose}>{o}</li>;
+	});
+	return (
+		<div className="poll">
+			<h4>{props.title}</h4>
+			<ul>{options}</ul>
+		</div>
+	);
+}
+
+class Survey extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {};
+	}
+	select(title,optionnumber) {
+		// note the dynamic key!
+		this.setState({[title]:optionnumber});
+	}
+	render() {
+		let polls = [];
+		let choices = [];
+		for(let title in this.props.pollData){
+			let options = this.props.pollData[title];
+			let current = this.state[title] || 0;
+			choices.push(current)
+			// currying with title, so callback only needs optionnumber
+			let callback = this.select.bind(this,title);
+			polls.push(<Poll
+				callback={callback}
+				title={title}
+				options={options}
+				current={current}
+				key={title}
+			/>);
+		}
+		return <div className="survey">
+			<h1>Your opinion matters</h1>
+			<p>
+				Let us know your thoughts by clicking your preferred options!
+				({choices.join(",")})
+			</p>
+			{polls}
+		</div>;
+	}
+}
+
+let pollData = {
+	"Favourite drink": ["Milk","Beer","Water"],
+	"Preferred ToD": ["Morning","Noon","Evening","Night"],
+	"Pastime": ["Football","Dungeons & Dragons","Playing house"],
+	"Who's the king?": ["Elvis Presley","Bruce Springsteen","James Hetfield"]
+};
+
+ReactDOM.render(
+	<Survey pollData={pollData}/>,
+	document.getElementById("container")
+);
+
+
+
+</script>
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

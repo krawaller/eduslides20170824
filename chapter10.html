@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Redux level 2</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 10 of 12 </div>
+            <h1>Redux level 2</h1>
+            <span>Redux redux</p>
+</span>
+          </div>
+        </section>
+        
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/2">Redux&nbsp;devtools</a></li><li><a href="#/3">Combined&nbsp;reducers</a></li><li><a href="#/4">Caching&nbsp;with&nbsp;Reselect</a></li><li><a href="#/5">Where&nbsp;to&nbsp;put&nbsp;logic</a></li><li><a href="#/6">Flavours&nbsp;of&nbsp;state</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/5</div>
+      <h3>Redux devtools</h3>
+      <p>Activating the flux capacitator</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="10-1-1">
+<span class="pos">10-1-1</span>
+<div class="slidecontent"><p>We hinted earlier that <strong>the Redux model allows time travel</strong>, which can be a <strong>powerful debug tool</strong>.</p>
+<p>This is implemented in the <a href="https://github.com/gaearon/redux-devtools/" class="link" target="_blank">Redux Dev Tools</a>, which are available as a <strong>library</strong> or a <strong>chrome plugin</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-1-2">
+<span class="pos">10-1-2</span>
+<div class="slidecontent"><p><strong>Hot module replacement</strong> means that you can <strong>make changes to your code and reload the app <em>without</em> losing state</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-1-3">
+<span class="pos">10-1-3</span>
+<div class="slidecontent"><p><strong>Time travel</strong> is very powerful for <strong>tracking down erroneous behaviour</strong>. It also <strong>looks really cool</strong>!</p>
+<p>If you <strong>install the devtools as a Chrome extension</strong>, you can see for yourself in the <a href="resources/site/demos/reduxdevtools.html" target="_blank">ReduxDevtools</a> demo. There we&#39;ve simply <strong>added the dev tools to the Quotes app</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/5</div>
+      <h3>Combined reducers</h3>
+      <p>The more the merrier</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="10-2-1">
+<span class="pos">10-2-1</span>
+<div class="slidecontent"><p>In an <strong>app with lots going on</strong>, the <code>switch</code> in our reducer can quickly <strong>grow out of control</strong>.</p>
+<p>The remedy is to have <strong>one reducer per key in our state</strong>, and then <strong>combine these</strong> into a single, app-wide reducer!</p>
+</div></section>
+<section class="slide" data-pos="10-2-2">
+<span class="pos">10-2-2</span>
+<div class="slidecontent"><p>That means we&#39;ll get a <strong>structure</strong> like this:</p>
+<p><img src="resources/graphviz/combined.svg" alt="combination"></p>
+</div></section>
+<section class="slide" data-pos="10-2-3">
+<span class="pos">10-2-3</span>
+<div class="slidecontent"><p>We will explore that by <strong>adding more state</strong> to our previous <strong>Quotes app example</strong>, which has now received a footer with <strong>passed time</strong>:</p>
+<p><img src="resources/images/quotesapp-footer.png" alt="withfooter"></p>
+</div></section>
+<section class="slide" data-pos="10-2-4">
+<span class="pos">10-2-4</span>
+<div class="slidecontent"><p>The <strong>updated app state</strong> looks like this: </p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> initialstate = {
+  <span class="hljs-attr">quotes</span>: [<span class="hljs-string">'Carpe diem'</span>],
+  <span class="hljs-attr">time</span>: <span class="hljs-number">0</span>
+};
+</code></pre>
+<p>The quotes-related data lives in <code>state.quotes</code>, and the time-related data lives in <code>state.time</code>. We&#39;ll now make <strong>one reducer for each of these keys</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-2-5">
+<span class="pos">10-2-5</span>
+<div class="slidecontent"><p>Each of these reducers will <strong>act only on their part of the state</strong>, which means that we can reuse the previous reducer as a <code>quotesReducer</code>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> quotesReducer = <span class="hljs-function">(<span class="hljs-params">state,action</span>) =&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'ADD'</span>: <span class="hljs-keyword">return</span> state.concat(action.text);
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> state || initialstate.quotes;
+  }
+};
+</code></pre>
+<p>The only change is the <strong>default <code>initialstate</code> return</strong>, which is <strong>customary in combined reducers</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-2-6">
+<span class="pos">10-2-6</span>
+<div class="slidecontent"><p>Now we must add a <strong><code>timeReducer</code></strong>, which will be very simple:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> timeReducer = <span class="hljs-function">(<span class="hljs-params">state,action</span>) =&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'TICK'</span>: <span class="hljs-keyword">return</span> state + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> state || initialstate.time;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="10-2-7">
+<span class="pos">10-2-7</span>
+<div class="slidecontent"><p>Finally these reducers are <strong>combined</strong> and passed to the store:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> reducer = Redux.combineReducers({
+  <span class="hljs-attr">quotes</span>: quotesReducer,
+  <span class="hljs-attr">time</span>: timeReducer
+});
+
+<span class="hljs-keyword">let</span> store = Redux.createStore(reducer);
+</code></pre>
+<p>Note that we <strong>no longer need to pass <code>initialstate</code> to <code>createStore</code></strong>, since we dealt with that in the separate reducers.</p>
+</div></section>
+<section class="slide" data-pos="10-2-8">
+<span class="pos">10-2-8</span>
+<div class="slidecontent"><p>You can try the augmented Quotes app in the <a href="resources/site/demos/combinedreducers.html" target="_blank">CombinedReducers</a> demo.</p>
+<p>Of course, for this simple app, it would have been perfectly fine to have one reducer work on the entire state object. But as things grow more complex, <strong>having separate reducers will really increase code readability</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/5</div>
+      <h3>Caching with Reselect</h3>
+      <p>Memoizing the bindings</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="10-3-1">
+<span class="pos">10-3-1</span>
+<div class="slidecontent"><p>A popular <strong>companion library</strong> to Redux is <a href="https://github.com/reactjs/reselect" class="link" target="_blank">Reselect</a>, which helps with:</p>
+<ul>
+<li>computing <strong>derived data</strong> so that you don&#39;t need to store it in Redux</li>
+<li><strong>memoizing</strong> expensive lookups to make Redux more efficient</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="10-3-2">
+<span class="pos">10-3-2</span>
+<div class="slidecontent"><p>We will <strong>explore using Reselect for derived data</strong> by adding the <strong>average seconds per quote</strong> to the footer of our Quotes app:</p>
+<p><img src="resources/images/quotesapp-reselect.png" alt="average"></p>
+</div></section>
+<section class="slide" data-pos="10-3-3">
+<span class="pos">10-3-3</span>
+<div class="slidecontent"><p>Here are the <strong>main ideas</strong> of Reselect:</p>
+<ul>
+<li>We work with the concept of <strong>selectors</strong>.</li>
+<li>You make a selector for <strong>each piece of data you need from the state</strong>.</li>
+<li>The selectors can then be <strong>combined</strong>, and these combinations will be memoised.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="10-3-4">
+<span class="pos">10-3-4</span>
+<div class="slidecontent"><p>In our case we need to select <strong>the number of quotes</strong> and <strong>seconds passed</strong>, from which we can then select <strong>average time per quote</strong> which we show in the app.</p>
+<p><img src="resources/graphviz/reselect-map.svg" alt="flow"></p>
+</div></section>
+<section class="slide" data-pos="10-3-5">
+<span class="pos">10-3-5</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>code for <code>numQuotesSelector</code></strong>. It is a <strong>plain function</strong> that is <strong>called with the app state</strong>, and then <strong>returns the length of <code>state.quotes</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> numQuotesSelector = <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> state.quotes.length;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="10-3-6">
+<span class="pos">10-3-6</span>
+<div class="slidecontent"><p>And <strong><code>timeSelector</code></strong> is similarly simple:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> timeSelector = <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> state.time;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="10-3-7">
+<span class="pos">10-3-7</span>
+<div class="slidecontent"><p>The interesting part comes now when we create <strong><code>averageSelector</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> averageSelector = Reselect.createSelector(
+  [numQuotesSelector,timeSelector],
+  (numquotes,secs) =&gt; secs / numquotes
+);
+</code></pre>
+<p><strong><code>Reselect.createSelector</code></strong> takes an <strong>array of selectors</strong> and a <strong>constructor function</strong> which is <strong>invoked with the results from the passed selectors</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-3-8">
+<span class="pos">10-3-8</span>
+<div class="slidecontent"><p>We can now <strong>use <code>averageSelector</code> inside <code>mapStateToProps</code></strong> when we create a container for the footer:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> mapStateToFooterProps = <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({
+  <span class="hljs-attr">time</span>: state.time,
+  <span class="hljs-attr">avg</span>: averageSelector(state)  
+});
+</code></pre>
+<p>See the whole thing running in the <a href="resources/site/demos/reselect.html" target="_blank">Reselect</a> demo!</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/5</div>
+      <h3>Where to put logic</h3>
+      <p>app or action creators or reducer?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="10-4-1">
+<span class="pos">10-4-1</span>
+<div class="slidecontent"><p>Events pass through a Redux app like this:</p>
+<p><img src="resources/graphviz/redux-steps.svg" alt=""></p>
+</div></section>
+<section class="slide list" data-pos="10-4-2">
+<span class="pos">10-4-2</span>
+<div class="slidecontent">
+<p>...which means that we often have to ask us <strong>where to put a piece of logic</strong> -</p>
+<ul>
+<li><span>a</span>in our <strong>components</strong>?</li>
+<li><span>b</span>in our <strong>action creators</strong>?</li>
+<li><span>c</span>in our <strong>reducers</strong>?</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="10-4-3">
+<span class="pos">10-4-3</span>
+<div class="slidecontent">
+<p>The <strong>components</strong> are <strong>rarely a good answer</strong>, unless the logic is <strong>only relevant to this particular component</strong>.</p>
+</div></section>
+<section class="slide num numB" data-pos="10-4-4">
+<span class="pos">10-4-4</span>
+<div class="slidecontent">
+<p>The <strong>action creators</strong> are <strong>often a good answer</strong>. They can be <strong>full of side effects</strong>, and give rise to different actions depending on the circumstances.</p>
+</div></section>
+<section class="slide num numC" data-pos="10-4-5">
+<span class="pos">10-4-5</span>
+<div class="slidecontent">
+<p>The <strong>reducers must be pure</strong>, but even apart from that, it is often advantageous to have <strong>complex logic in the action creator instead</strong>.</p>
+</div></section>
+<section class="slide" data-pos="10-4-6">
+<span class="pos">10-4-6</span>
+<div class="slidecontent"><p>Especially <strong>beware of <code>if-else</code> constructs</strong> in reducers - it is often more flexible to <strong>move the branching to the action creators</strong> and letting that fire different actions for each branch.</p>
+<p>So <strong>don&#39;t be afraid of fat action creators</strong>, even if it means skinny reducers!</p>
+</div></section>
+<section class="slide num numD" data-pos="10-4-7">
+<span class="pos">10-4-7</span>
+<div class="slidecontent">
+<p>There is also a secret fourth option, namely <strong>somewhere else</strong> entirely.</p>
+<p><img src="resources/graphviz/redux-steps-four.svg" alt=""></p>
+<p>Imagine a board game app; instead of having an action for attacking with each unit type, have a single attacking action and let a helper library do the heavy computing.</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/5</div>
+      <h3>Flavours of state</h3>
+      <p>Lime and chocolate don&#39;t mix</p>
+</p>
+    </div>
+  </section>
+  <section class="slide list" data-pos="10-5-1">
+<span class="pos">10-5-1</span>
+<div class="slidecontent">
+<p>It&#39;s not immediately obvious, but when we introduce Redux to an app, we <strong>need to make choices on where to store what</strong>. There are three approaches:</p>
+<ul>
+<li><span>a</span>Everything in Redux</li>
+<li><span>b</span>Some in React</li>
+<li><span>c</span>Some also in a router</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="10-5-2">
+<span class="pos">10-5-2</span>
+<div class="slidecontent">
+<p>The easiest to define is to store <strong>everything in Redux</strong>. We <strong>don&#39;t use <code>setState</code> anywhere in our app</strong>, except for subscribing to Redux state.</p>
+<p><img src="resources/graphviz/redux-state-pos.svg" alt=""></p>
+<p><strong>Even trivial UI state</strong>, such as a flag for whether a table cell is being edited or not, goes into Redux.</p>
+</div></section>
+<section class="slide" data-pos="10-5-3">
+<span class="pos">10-5-3</span>
+<div class="slidecontent"><p>An advantage of this is that it <strong>allows full time travel</strong> and logging.</p>
+<p>A disadvantage is that it now means you must be very careful not to <strong>mix UI and app state</strong>. They must be clearly separated within the state object.</p>
+</div></section>
+<section class="slide num numB" data-pos="10-5-4">
+<span class="pos">10-5-4</span>
+<div class="slidecontent">
+<p>If we do allow for <strong>some state inside components</strong>, the previous truths are flipped - we <strong>can no longer do (full) time travel</strong>, but app and UI state separation is free.</p>
+<p><img src="resources/graphviz/redux-state-pos-withcomp.svg" alt=""></p>
+</div></section>
+<section class="slide num numC" data-pos="10-5-5">
+<span class="pos">10-5-5</span>
+<div class="slidecontent">
+<p>Finally, if you have a router with URL parameters, you must be wary of the fact that those <strong>URL parameters are state</strong>.</p>
+<p><img src="resources/graphviz/redux-state-pos-all.svg" alt=""></p>
+</div></section>
+<section class="slide" data-pos="10-5-6">
+<span class="pos">10-5-6</span>
+<div class="slidecontent"><p>There are libraries to <strong>mirror parameters into Redux</strong>. The best option today is probably <a href="https://github.com/reactjs/react-router-redux">React-Router-Redux</a>, which has been semi-adopted by React-Router and will support the new v4 router.</p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(10-1);
+        } else if (code >= 49 && code <= 5+48) {
+          window.location.hash = "#/" + (code-48+1+0);
+        }
+        if (10 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(10+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

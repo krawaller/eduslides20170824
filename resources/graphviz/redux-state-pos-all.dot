@@ -1,0 +1,16 @@
+digraph {
+	rankdir = TD
+	bgcolor = transparent
+	subgraph cluster_store {
+		label = "Redux"
+		Data1 [label="some data"]
+	}
+  subgraph cluster_comp {
+    label = "Component"
+    Data2 [label="some data"]
+  }
+  subgraph cluster_router {
+    label = "URL"
+    Data3 [label="some data"]
+  }
+}

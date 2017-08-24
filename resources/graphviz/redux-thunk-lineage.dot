@@ -1,0 +1,11 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	thunk [label="Redux thunk"]
+	middleware [label="Middleware"]
+	enhancer [label="Enhancer"]
+
+	thunk -> middleware [label="is a"]
+	middleware -> enhancer [label="is an"]
+}

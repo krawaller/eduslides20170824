@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: mixinfactory2</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>mixinfactory2</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+let MakeLogMixin = (opts)=> {
+	let ret = {};
+	for(let fn in opts.withReturns){
+		((fn)=> {
+			ret[fn] = ()=> {
+				console.log(opts.name,fn,"returning",opts.withReturns[fn]);
+				return opts.withReturns[fn];
+			};
+		})(fn)
+	}
+	opts.functions.forEach((fn)=> {
+		ret[fn] = ()=> console.log(opts.name,fn);
+	});
+	return ret;
+};
+
+let Parent = React.createClass({
+	mixins: [MakeLogMixin({
+		name: "Parent",
+		withReturns: {
+			getInitialState: {child: "hello!"},
+			getDefaultProps: {},
+			shouldComponentUpdate: true
+		},
+		functions: ["componentWillMount","componentDidMount","componentWillReceiveProps","componentDidReceiveProps","componentWillUpdate","componentDidUpdate"]
+	})],
+	componentDidMount() {
+		setTimeout(this.goodbye,1000);
+	},
+	goodbye() {
+		console.log("******** Parent's state change, causing child update **********");
+		this.setState({child: "goodbye!"});
+		setTimeout(this.nochild,1000);
+	},
+	nochild() {
+		console.log("******** Parent changed again, removing child **********");
+		this.setState({child:undefined});
+	},
+	render() {
+		console.log("Parent render");
+		let child = this.state.child;
+		return child ? <Child text={child}/> : <p>No child!</p>;
+	}
+});
+
+let Child = React.createClass({
+	mixins: [MakeLogMixin({
+		name: "Child",
+		withReturns: {
+			getInitialState: {},
+			getDefaultProps: {},
+			shouldComponentUpdate: true
+		},
+		functions: ["componentWillMount","componentDidMount","componentWillReceiveProps","componentDidReceiveProps","componentWillUpdate","componentDidUpdate","componentWillUnmount"]
+	})],
+	render() {
+		console.log("Child render");
+		return <div>Child says: {this.props.text}</div>;
+	}
+});
+
+console.log("******** First render **********");
+
+ReactDOM.render(
+	<div>
+		<p>Redid the lifecycle demo with a mixin</p>
+		<Parent/>
+	</div>,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

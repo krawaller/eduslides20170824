@@ -1,0 +1,8 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	tempfunc [label="template\nfunction", shape=box]
+
+	data -> tempfunc -> DOM
+}

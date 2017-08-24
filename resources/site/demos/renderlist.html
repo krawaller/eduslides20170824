@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: renderlist</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>renderlist</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+let Chores = (props)=> {
+	let renderedChores = props.chores.map((chore,n)=> {
+		return <li>{chore}</li>; // this version will give a warning
+		// return <li key={n}>{chore}</li>; // this version is fine!
+	});
+	return (
+		<div>
+			<h4>My chores:</h4>
+			<ul>{renderedChores}</ul>
+		</div>
+	);
+}
+
+let chores = ["do dishes", "take out trash", "water plants"];
+
+ReactDOM.render(
+	<Chores chores={chores} />,
+	document.getElementById("container")
+);
+
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

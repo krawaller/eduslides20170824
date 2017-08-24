@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: select</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>select</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+class Form extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {norn: 'V'};
+		this.selectNorn = this.selectNorn.bind(this);
+	}
+	selectNorn(e) {
+		// instead of ref we could also have used the event object
+		this.setState({norn: this.refs.norns.value });
+	}
+	render() {
+		// some JS ninjitsu on the line below! :)
+		let norn = {U:"Urd",V:"Verdandi",S:"Skuld"}[this.state.norn];
+		return <div>
+			<fieldset>
+				<legend>Select your favourite Norn:</legend>
+				<select ref="norns" defaultValue="V" onChange={this.selectNorn}>
+					<option value="U">Urd; that what was</option>
+					<option value="V">Verdandi; that which is</option>
+					<option value="S">Skuld; That which will be</option>
+				</select>
+			</fieldset>
+			Ah, you prefer {norn}! Good choice!
+		</div>;
+	}
+}
+
+ReactDOM.render(
+	<Form/>,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

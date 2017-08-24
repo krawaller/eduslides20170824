@@ -1,0 +1,6 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	Quoteform [shape=box]
+	callback -> Quoteform -> UI
+}

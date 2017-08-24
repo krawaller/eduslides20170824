@@ -1,0 +1,8 @@
+digraph {
+	rankdir = TD
+	bgcolor = transparent
+	subgraph cluster_store {
+		label = "Redux"
+		Data1 [label="all data"]
+	}
+}

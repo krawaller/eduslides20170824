@@ -1,0 +1,8 @@
+digraph {
+  rankdir = LR
+  bgcolor = transparent
+  
+  ReactFauxDOM, DOMlib, toReact [shape=rectangle]
+
+  ReactFauxDOM -> faux -> DOMlib -> mutatedfaux -> toReact -> VirtualDOM
+}

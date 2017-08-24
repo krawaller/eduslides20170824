@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: createclass</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>createclass</span></div></div>
+<div class="wrapper">
+
+  <div id="container"></div>
+
+
+<script type="text/babel">
+
+let Clicker = React.createClass({
+  getInitialState() {
+    return {count: 3};
+  },
+  more() {
+    this.setState({count: this.state.count + 1})
+  },
+  render() {
+    return <div>
+      <p>{this.state.count} bottles of beer on the wall</p>
+      <button onClick={this.more}>Buy more</button>
+    </div>;
+  }
+});
+
+ReactDOM.render(
+  <Clicker />,
+  document.getElementById("container")
+);
+
+	</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

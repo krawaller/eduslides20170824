@@ -1,0 +1,958 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>React level 2</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 4 of 12 </div>
+            <h1>React level 2</h1>
+            <span>Things&#39;re getting serious</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p>Armed with the <strong>basics</strong> of <strong>components</strong> and <strong>JSX</strong>, we&#39;re now ready to explore <strong>more powerful API:s</strong>!</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">Class&nbsp;syntax</a></li><li><a href="#/4">Declaring&nbsp;props</a></li><li><a href="#/5">Stateful&nbsp;components</a></li><li><a href="#/6">Event&nbsp;handling</a></li><li><a href="#/7">Lifecycle&nbsp;methods</a></li><li><a href="#/8">Refs</a></li><li><a href="#/9">Forms</a></li><li><a href="#/10">Communication</a></li><li><a href="#/11">createClass&nbsp;syntax</a></li><li><a href="#/12">Styling</a></li><li><a href="#/13">Exercise&nbsp;3</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/11</div>
+      <h3>Class syntax</h3>
+      <p>When plain clothes just won&#39;t cut it</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-1-1">
+<span class="pos">4-1-1</span>
+<div class="slidecontent"><p>So far we have <strong>defined components</strong> as <strong>plain functions</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> User = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> &lt;div&gt;Name: {props.name}&lt;<span class="hljs-regexp">/div&gt;;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-1-2">
+<span class="pos">4-1-2</span>
+<div class="slidecontent"><p>But there are actually <strong>two ways to define a component</strong>. The plain function components (or PFC:s) are a <strong>shorthand</strong> for this <strong>full definition</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-1-3">
+<span class="pos">4-1-3</span>
+<div class="slidecontent"><p>Our <strong>initial plain function</strong> ended up as a <strong><code>render</code> method</strong> in the class definition.</p>
+<p>...with <strong>one key difference</strong> however. Did you notice it?</p>
+</div></section>
+<section class="slide" data-pos="4-1-4">
+<span class="pos">4-1-4</span>
+<div class="slidecontent"><p>The <strong>props</strong> are <strong>not passed in</strong> to the render method. Instead we <strong>access them using <code>this.props</code></strong>.</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide question" data-pos="4-1-5">
+<span class="pos">4-1-5</span>
+<div class="slidecontent">
+<p>This syntax seems <strong>clunkier in every way</strong>. Why would we ever want to use it?</p>
+</div></section>
+<section class="slide answer" data-pos="4-1-6">
+<span class="pos">4-1-6</span>
+<div class="slidecontent">
+<p>The reason is that for more advanced components, there is <strong>more to the story than the render method</strong>.</p>
+<p>If we need to <strong>say more than one thing</strong>, we must have a <strong>definition object</strong> - or a <strong>class</strong> - to encapsulate those things.</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/11</div>
+      <h3>Declaring props</h3>
+      <p>Dear santa, I want...</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-2-1">
+<span class="pos">4-2-1</span>
+<div class="slidecontent"><p>React provides components with a way to <strong>declare what props they expect</strong>. This serves two purposes:</p>
+<ul>
+<li>To <strong>safeguard</strong> against faulty use (in dev mode) by <strong>throwing an error</strong> (or give a warning depending on settings) if something is missing or of the wrong type</li>
+<li>To <strong>document</strong> how the component is supposed to be used</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="4-2-2">
+<span class="pos">4-2-2</span>
+<div class="slidecontent"><p>This declaration, called <strong><code>propTypes</code></strong>, is an <strong>object</strong> with constants describing the needed props:</p>
+<pre><code class="lang-javascript">{
+  <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired,
+  <span class="hljs-attr">role</span>: React.PropTypes.oneOf([<span class="hljs-string">'admin'</span>,<span class="hljs-string">'contributor'</span>,<span class="hljs-string">'user'</span>])
+}
+</code></pre>
+<p>See the <strong>full documentation</strong> of this powerful API here: <a href="https://facebook.github.io/react/docs/reusable-components.html#prop-validation" class="link" target="_blank">Proptypes</a></p>
+</div></section>
+<section class="slide list" data-pos="4-2-3">
+<span class="pos">4-2-3</span>
+<div class="slidecontent">
+<p>These declarations are then added as a <strong>static property</strong> to the class. There are <strong>three different syntaxes</strong> for doing that:</p>
+<ul>
+<li><span>a</span>as a prop on the class itself</li>
+<li><span>b</span>as a static getter</li>
+<li><span>c</span>as a static prop (experimental syntax)</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="4-2-4">
+<span class="pos">4-2-4</span>
+<div class="slidecontent">
+<p>We can <strong>add the declaration directly onto the class</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+}
+User.propTypes = {
+  <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired
+}
+</code></pre>
+<p>This <strong>also works for PFC:s</strong> (pure function components).</p>
+</div></section>
+<section class="slide num numB" data-pos="4-2-5">
+<span class="pos">4-2-5</span>
+<div class="slidecontent">
+<p>Alternatively we can return it from a <strong>class method</strong> if we use <strong><code>static</code> and <code>get</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+  <span class="hljs-keyword">static</span> get propTypes(){
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired
+    }
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide num numC" data-pos="4-2-6">
+<span class="pos">4-2-6</span>
+<div class="slidecontent">
+<p>There is also a <a href="https://github.com/tc39/proposal-class-public-fields" class="link" target="_blank">proposal</a> to allow declaring <strong>static props</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+  <span class="hljs-keyword">static</span> propTypes = {
+    <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired
+  }
+}
+</code></pre>
+<p>To use this we need a <a href="https://www.npmjs.com/package/babel-plugin-transform-class-properties" class="link" target="_blank">babel plugin</a> (or Typescript).</p>
+</div></section>
+<section class="slide" data-pos="4-2-7">
+<span class="pos">4-2-7</span>
+<div class="slidecontent"><p>We can also provide a <strong><code>defaultProps</code></strong> object where the <strong>keys are prop names</strong> and the <strong>values are defaults</strong>:</p>
+<pre><code class="lang-javascript">{
+  <span class="hljs-attr">name</span>: <span class="hljs-string">'Anonymous'</span>,
+  <span class="hljs-attr">age</span>: <span class="hljs-string">'Unknown'</span>
+}
+</code></pre>
+<p>The <code>defaultProps</code> is <strong>attached as a static prop</strong> exactly like <code>propTypes</code>.</p>
+</div></section>
+<section class="slide" data-pos="4-2-8">
+<span class="pos">4-2-8</span>
+<div class="slidecontent"><p><strong>Try this all out</strong> in the <a href="resources/site/demos/proptypes.html" target="_blank">Proptypes</a> demo.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/11</div>
+      <h3>Stateful components</h3>
+      <p>I have my secrets</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-3-1">
+<span class="pos">4-3-1</span>
+<div class="slidecontent"><p>Remember when we said that <strong>a component UI</strong> is the <strong>result of its props</strong>?</p>
+<p><img src="resources/graphviz/react-basic-component-virtual.svg" alt="component"></p>
+</div></section>
+<section class="slide" data-pos="4-3-2">
+<span class="pos">4-3-2</span>
+<div class="slidecontent"><p>That was a <strong>lie</strong>. The UI is a result of props <strong>and state</strong>.</p>
+<p><img src="resources/graphviz/react-basic-component-state.svg" alt="component"></p>
+</div></section>
+<section class="slide" data-pos="4-3-3">
+<span class="pos">4-3-3</span>
+<div class="slidecontent"><p>So <strong>what is the difference</strong> between these two?</p>
+<ul>
+<li><strong>Props</strong> are <strong>passed down from the parent</strong>. They are <strong>immutable</strong>, from the perspective of the receiving component.</li>
+<li><strong>State</strong> is <strong>data</strong> that is <strong>only of internal interest</strong>. It lives only inside the component, and the <strong>component is in control</strong> of it.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="4-3-4">
+<span class="pos">4-3-4</span>
+<div class="slidecontent"><p>The <strong>similarity</strong> however is that when <strong>either of them change</strong>, we <strong>rerun the render</strong> method.</p>
+</div></section>
+<section class="slide" data-pos="4-3-5">
+<span class="pos">4-3-5</span>
+<div class="slidecontent"><p>Also, much like props, <strong>state is always an object</strong>.</p>
+<pre><code>{
+  <span class="hljs-attribute">editing</span>: false,
+  currentValue: <span class="hljs-string">'Batman'</span>
+}
+</code></pre><p>We can think of the <strong>individual keys</strong> in that object as <strong>state variables</strong>.</p>
+</div></section>
+<section class="slide list" data-pos="4-3-6">
+<span class="pos">4-3-6</span>
+<div class="slidecontent">
+<p>There are <strong>three parts</strong> to component state:</p>
+<ul>
+<li><span>a</span>setting initial state</li>
+<li><span>b</span>reading current state</li>
+<li><span>c</span>updating state</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="4-3-7">
+<span class="pos">4-3-7</span>
+<div class="slidecontent">
+<p>The <strong>initial state</strong> is set inside the <strong><code>constructor</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">StateExample</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(props) {
+    <span class="hljs-keyword">super</span>();
+    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">data1</span>: <span class="hljs-string">'foo'</span>, <span class="hljs-attr">data2</span>: <span class="hljs-string">'bar'</span>};
+  }
+  <span class="hljs-comment">// ... more code here ...</span>
+}
+</code></pre>
+<p>This means that <strong>PFC:s cannot have state</strong>, as they are just a rendering function.</p>
+</div></section>
+<section class="slide num numB" data-pos="4-3-8">
+<span class="pos">4-3-8</span>
+<div class="slidecontent">
+<p>We <strong>read from state</strong> simply by <strong>accessing <code>this.state</code></strong>:</p>
+<pre><code><span class="hljs-function"><span class="hljs-title">render</span><span class="hljs-params">()</span></span>{
+  <span class="hljs-keyword">if</span> (this<span class="hljs-selector-class">.state</span><span class="hljs-selector-class">.editing</span>){
+    <span class="hljs-comment">// return editing version</span>
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-comment">// return view version</span>
+  }
+}
+</code></pre></div></section>
+<section class="slide num numC" data-pos="4-3-9">
+<span class="pos">4-3-9</span>
+<div class="slidecontent">
+<p>To <strong>update state</strong> we must call <strong><code>this.setState</code></strong>. That method expects an object with all parts we want to update:</p>
+<pre><code class="lang-javascript">cancel() {
+  <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">editing</span>: <span class="hljs-literal">false</span>});
+}
+</code></pre>
+<p>Note that any <strong>existing state keys not mentioned</strong> here will be <strong>unchanged</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-3-10">
+<span class="pos">4-3-10</span>
+<div class="slidecontent"><p>Also - we might need to do some gymnastics to <strong>make sure <code>this</code> is correct inside the method</strong>:</p>
+<pre><code class="lang-javascript">cancel() {
+  <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">editing</span>: <span class="hljs-literal">false</span>});
+}
+</code></pre>
+<p>But we&#39;ll address that in the <strong>upcoming section</strong>!</p>
+</div></section>
+<section class="slide" data-pos="4-3-11">
+<span class="pos">4-3-11</span>
+<div class="slidecontent"><p>Remember to <strong>never mutate <code>this.state</code> directly</strong>!</p>
+<pre><code class="lang-javascript">cancel() {
+  <span class="hljs-keyword">this</span>.state.editing = <span class="hljs-literal">false</span>; <span class="hljs-comment">// this should use setState instead!</span>
+}
+</code></pre>
+<p>The state will be updated, but the <strong>component will not rerender</strong> since React doesn&#39;t know something just happened!</p>
+</div></section>
+<section class="slide" data-pos="4-3-12">
+<span class="pos">4-3-12</span>
+<div class="slidecontent"><p>Let&#39;s internalise the <strong>concepts of state</strong> in a demo: <a href="resources/site/demos/state.html" target="_blank">State</a></p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/11</div>
+      <h3>Event handling</h3>
+      <p>Waiter, there are inline event handlers in my HTML!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-4-1">
+<span class="pos">4-4-1</span>
+<div class="slidecontent"><p>Something we haven&#39;t seen yet - how do we <strong>attach event handlers</strong> in React?</p>
+<p>We can already realise that it is <strong>not done through regular means</strong>, since we <strong>don&#39;t have access to the real DOM</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-4-2">
+<span class="pos">4-4-2</span>
+<div class="slidecontent"><p>The answer will feel like <strong>going back in time</strong>: we simply declare <strong>inline event handlers</strong> as props!</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> ClickableWord = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> clickHandler = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> alert(<span class="hljs-string">"You clicked me!"</span>);
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{clickHandler}</span>&gt;</span>Click me!<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-4-3">
+<span class="pos">4-4-3</span>
+<div class="slidecontent"><p>When rendering, React will <strong>notice the prop</strong> named onClick, and <strong>attach an event handler</strong> accordingly.</p>
+<p>This works for <strong>all DOM events</strong>; <code>onSubmit</code>, <code>onFocus</code>, etc.</p>
+</div></section>
+<section class="slide" data-pos="4-4-4">
+<span class="pos">4-4-4</span>
+<div class="slidecontent"><p>Much like jQuery it will pass in a <strong>normalised event object</strong> to the callback.</p>
+<p>For the full <strong>list of supported events</strong> and <strong>contents of the event object</strong>, see the <strong>API docs</strong> here: <a href="https://facebook.github.io/react/docs/events.html" class="link" target="_blank">Events</a></p>
+</div></section>
+<section class="slide question" data-pos="4-4-5">
+<span class="pos">4-4-5</span>
+<div class="slidecontent">
+<p>Aren&#39;t we <strong>mixing behaviour and visuals</strong> when we declare event handlers in the render function?</p>
+</div></section>
+<section class="slide answer" data-pos="4-4-6">
+<span class="pos">4-4-6</span>
+<div class="slidecontent">
+<p>We are mixing technologies, but <strong>not concerns</strong>. Our component definition encapsulates everything about the component.</p>
+</div></section>
+<section class="slide" data-pos="4-4-7">
+<span class="pos">4-4-7</span>
+<div class="slidecontent"><p>When using <strong>Class components</strong> it is customary (but not technically necessary) to <strong>use component methods as event handlers</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClickableWord</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  clickHandler(e) {
+    alert(<span class="hljs-string">"You clicked me!"</span>);
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.clickHandler}</span>&gt;</span>Click me!<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-4-8">
+<span class="pos">4-4-8</span>
+<div class="slidecontent"><p>There&#39;s a trap here - the methods are <strong>not autobound to the instance</strong>, so we must be careful when we need to access <code>this</code>. This <strong>won&#39;t work</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClickableWord</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  showExplanation(e) {
+    alert(<span class="hljs-keyword">this</span>.props.explanation); <span class="hljs-comment">// BOOM! `this.props` doesnt exist</span>
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.showExplanation}</span>&gt;</span>{this.props.word}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide list" data-pos="4-4-9">
+<span class="pos">4-4-9</span>
+<div class="slidecontent">
+<p>There are <strong>many ways</strong> to solve this. Here are a few common ones:</p>
+<ul>
+<li><span>a</span>anonymous handler calling the method</li>
+<li><span>b</span>bind the handler in the constructor</li>
+<li><span>c</span>define the handler in the constructor</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="4-4-10">
+<span class="pos">4-4-10</span>
+<div class="slidecontent">
+<p>By <strong>calling the handler as a method</strong> in an arrow function, <code>this</code> will be correct:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClickableWord</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  showExplanation(e) {
+    alert(<span class="hljs-keyword">this</span>.props.explanation);
+  }
+  render() {
+    <span class="hljs-keyword">let</span> handler = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> <span class="hljs-keyword">this</span>.showExplanation()
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handler}</span>&gt;</span>{this.props.word}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide num numB" data-pos="4-4-11">
+<span class="pos">4-4-11</span>
+<div class="slidecontent">
+<p>...or we can <strong>bind it in the constructor</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClickableWord</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(){
+    <span class="hljs-keyword">super</span>();
+    <span class="hljs-keyword">this</span>.showExplanation = <span class="hljs-keyword">this</span>.showExplanation.bind(<span class="hljs-keyword">this</span>);
+  }
+  showExplanation(e) {
+    alert(<span class="hljs-keyword">this</span>.props.explanation);
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.showExplanation}</span>&gt;</span>{this.props.word}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide num numC" data-pos="4-4-12">
+<span class="pos">4-4-12</span>
+<div class="slidecontent">
+<p>...or we simply define it as an <strong>arrow function in the constructor</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ClickableWord</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(){
+    <span class="hljs-keyword">super</span>();
+    <span class="hljs-keyword">this</span>.showExplanation = <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> alert(<span class="hljs-keyword">this</span>.props.explanation);
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.showExplanation}</span>&gt;</span>{this.props.word}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-4-13">
+<span class="pos">4-4-13</span>
+<div class="slidecontent"><p>You can <strong>explore the examples</strong> in the <a href="resources/site/demos/events.html" target="_blank">Events</a> demo.</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/11</div>
+      <h3>Lifecycle methods</h3>
+      <p>The circle of life</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-5-1">
+<span class="pos">4-5-1</span>
+<div class="slidecontent"><p>There are several <strong>lifecycle methods</strong> that you can define to hook into certain moments in the life of a component.</p>
+</div></section>
+<section class="slide" data-pos="4-5-2">
+<span class="pos">4-5-2</span>
+<div class="slidecontent"><p>When the component is <strong>created</strong>, the following methods are called:</p>
+<p><img src="resources/graphviz/react-lifecycle-start.svg" alt="on creation"></p>
+</div></section>
+<section class="slide" data-pos="4-5-3">
+<span class="pos">4-5-3</span>
+<div class="slidecontent"><p>Then, when a component will update (because <strong>state</strong> or <strong>props</strong> <strong>changed</strong>), the following are called with the new props and state:</p>
+<p><img src="resources/graphviz/react-lifecycle-update.svg" alt="on creation"></p>
+</div></section>
+<section class="slide" data-pos="4-5-4">
+<span class="pos">4-5-4</span>
+<div class="slidecontent"><p>Finally, <strong>before</strong> a component is <strong>destroyed</strong>, <strong><code>componentWillUnmount</code></strong> is called. This is a good place to do listener and interval <strong>cleanup</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-5-5">
+<span class="pos">4-5-5</span>
+<div class="slidecontent"><p>Explore these methods in the <a href="resources/site/demos/lifecycle.html" class="demo" target="_blank">Lifecycle</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="4-5-6">
+<span class="pos">4-5-6</span>
+<div class="slidecontent">
+<p>What are the <strong>common use cases</strong> for these methods?</p>
+</div></section>
+<section class="slide answer" data-pos="4-5-7">
+<span class="pos">4-5-7</span>
+<div class="slidecontent">
+<p>Sometimes we might <strong>kick off something</strong> in <strong><code>componentDidMount</code></strong>, and there are times when implementing <strong><code>shouldComponentUpdate</code></strong> can <strong>help performance</strong>, but normally you <strong>don&#39;t need to bother</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-5-8">
+<span class="pos">4-5-8</span>
+<div class="slidecontent"><p>In React v16 a <strong>new hook</strong>, <code>componentDidCatch(error, info)</code>, is introduced.</p>
+<p>Here we can <strong>catch errors thrown by children</strong> and grandchildren (but not by the current component).</p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/11</div>
+      <h3>Refs</h3>
+      <p>There&#39;s a string attached</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-6-1">
+<span class="pos">4-6-1</span>
+<div class="slidecontent"><p>Sometimes you want to <strong>keep a line open to something you have rendered</strong>. This is accomplished through <strong>the <code>ref</code> syntax</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-6-2">
+<span class="pos">4-6-2</span>
+<div class="slidecontent"><p>It works by <strong>attaching a function to the <code>ref</code> prop</strong> of the output part you are interested in:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">Comp</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{refFunc}</span> /&gt;</span>
+</code></pre><p>Now, when the above is rendered, <strong><code>refFunc</code> will be called with <code>Comp</code></strong> as a parameter. See this in action in the <a href="resources/site/demos/refcomponent.html" target="_blank">Refcomponent</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="4-6-3">
+<span class="pos">4-6-3</span>
+<div class="slidecontent">
+<p>But, why would I want to reference a child component like that? Doesn&#39;t it <strong>break uni-directional flow</strong> to do that instead of passing properties?</p>
+</div></section>
+<section class="slide answer" data-pos="4-6-4">
+<span class="pos">4-6-4</span>
+<div class="slidecontent">
+<p>Absolutely correct! This is a tool for <strong>very special cases</strong>, for example if you are gradually converting a codebase to React.</p>
+</div></section>
+<section class="slide" data-pos="4-6-5">
+<span class="pos">4-6-5</span>
+<div class="slidecontent"><p><code>Refs</code> are much more often used on <strong>regular DOM elements</strong>, when we want to do something with a DOM node.</p>
+<p>For example, in the <a href="resources/site/demos/refjquery.html" target="_blank">RefjQuery</a> demo we take a rendered node and execute a (silly) jQuery plugin on it.</p>
+</div></section>
+<section class="slide" data-pos="4-6-6">
+<span class="pos">4-6-6</span>
+<div class="slidecontent"><p>A common use case is to <strong>interact with inputs</strong>. If we render this:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{</span> (<span class="hljs-attr">el</span>)=&gt;</span> this._input = el }/&gt;
+</code></pre>
+<p>...then in <code>componentDidMount</code> we could do this...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">this</span>._input.focus();
+</code></pre>
+<p>...and elsewhere we can get the input content like this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">this</span>._input.value
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-6-7">
+<span class="pos">4-6-7</span>
+<div class="slidecontent"><p>There&#39;ll be more on form shenanigans in the upcoming Forms section, but for now you can try this example in the <a href="resources/site/demos/refinput.html" target="_blank">RefInput</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="4-6-8">
+<span class="pos">4-6-8</span>
+<div class="slidecontent"><p>There is also a <strong>legacy syntax</strong> where you <strong>give <code>ref</code> a string</strong>. The previous example would become:</p>
+<pre><code class="lang-jsx"><span class="hljs-comment">// render</span>
+&lt;input ref=<span class="hljs-string">"_input"</span>/&gt;
+
+
+<span class="hljs-comment">// interacting with the node</span>
+<span class="hljs-keyword">this</span>.refs._input
+</code></pre>
+<p>This is demonstrated in the <a href="resources/site/demos/refbystring.html" target="_blank">RefByString</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="4-6-9">
+<span class="pos">4-6-9</span>
+<div class="slidecontent"><p>At first glance the <strong>string syntax looks easier</strong>, it has been deemed <strong>unidiomatic</strong> and <strong>will eventually be deprecated</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/11</div>
+      <h3>Forms</h3>
+      <p>Sign here and here and here and</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-7-1">
+<span class="pos">4-7-1</span>
+<div class="slidecontent"><p>It might not be immediately apparent, but <strong>React isn&#39;t a good fit for forms</strong>. </p>
+<p>The reason is that the <strong>HTML model</strong> for forms is built on <strong>node mutation</strong>, which doesn&#39;t (or at least shouldn&#39;t) exist in React!</p>
+</div></section>
+<section class="slide" data-pos="4-7-2">
+<span class="pos">4-7-2</span>
+<div class="slidecontent"><p>Consider this vanilla <strong>HTML input element</strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"name"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"John Doe"</span>/&gt;</span>
+</code></pre>
+<p>The provided <strong><code>value</code> prop</strong> will set the <strong>initial value</strong>. When the <strong>user types</strong> in the field, the <code>value</code> prop of the node will be <strong>updated</strong>. So we can <strong>query the current value</strong> like this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> val = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"name"</span>).value;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-7-3">
+<span class="pos">4-7-3</span>
+<div class="slidecontent"><p>This <strong>doesn&#39;t make sense</strong> in a React setting. The <strong>props are set at render</strong>, and will <strong>never mutate</strong>. If <strong>state or props for the component change</strong>, we simply <strong>rerender</strong> it, but in-between renders nothing should happen!</p>
+</div></section>
+<section class="slide" data-pos="4-7-4">
+<span class="pos">4-7-4</span>
+<div class="slidecontent"><p>For example, this means that if we <strong>give an input a <code>value</code></strong>, that value cannot be changed! See the <a href="resources/site/demos/petrifiedinput.html" target="_blank">PetrifiedInput</a> demo.</p>
+</div></section>
+<section class="slide list" data-pos="4-7-5">
+<span class="pos">4-7-5</span>
+<div class="slidecontent">
+<p>So <strong>how do we do it</strong> in React? Well, there are <strong>two different patterns</strong>!</p>
+<ul>
+<li><span>a</span>Uncontrolled</li>
+<li><span>b</span>Controlled</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="4-7-6">
+<span class="pos">4-7-6</span>
+<div class="slidecontent">
+<p>The first is the one you&#39;ve already seen in the <a href="resources/site/demos/refinput.html" target="_blank">RefInput</a> demo, which is called having <strong>uncontrolled inputs</strong>.</p>
+<p>This pattern closely resembles what happens in a <strong>regular DOM form</strong>, where we let the DOM node keep its own state.</p>
+</div></section>
+<section class="slide" data-pos="4-7-7">
+<span class="pos">4-7-7</span>
+<div class="slidecontent"><p>Having an <strong>uncontrolled input</strong> involves the following:</p>
+<ul>
+<li>We set <strong>initial value</strong> using the <strong><code>defaultValue</code></strong> prop</li>
+<li>The form control will <strong>mutate its <code>value</code> prop</strong> when the user makes changes</li>
+<li>We can <strong>read the value</strong> using the <strong>event object</strong> in the <strong>change event</strong>.</li>
+<li>Or we <strong>fetch the value</strong> later by using a <strong><code>ref</code></strong>!</li>
+</ul>
+<p>Check out the dedicated <a href="resources/site/demos/uncontrolled.html" target="_blank">Uncontrolled</a> demo.</p>
+</div></section>
+<section class="slide num numB" data-pos="4-7-8">
+<span class="pos">4-7-8</span>
+<div class="slidecontent">
+<p>In contrast, the more idiomatic pattern is called having <strong>controlled inputs</strong>. It works like this:</p>
+<ul>
+<li>We set <strong>initial value</strong> using the <strong><code>value</code> prop</strong> as usual</li>
+<li>That value is <strong>provided by component prop or state</strong></li>
+<li>We update that value in the <strong>change event</strong></li>
+<li>This <strong>causes a rerender</strong> which will <strong>update the component</strong>!</li>
+</ul>
+<p>Check it out in the <a href="resources/site/demos/controlled.html" target="_blank">Controlled</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="4-7-9">
+<span class="pos">4-7-9</span>
+<div class="slidecontent">
+<p>So, <strong>comparing uncontrolled and controlled</strong> inputs - is it fair to say that...</p>
+<ul>
+<li>with an <strong>uncontrolled input</strong> we store the <strong>state</strong> in the <strong>DOM</strong>?</li>
+<li>with a <strong>controlled input</strong> we store the <strong>state</strong> in the <strong>component state</strong></li>
+</ul>
+</div></section>
+<section class="slide answer" data-pos="4-7-10">
+<span class="pos">4-7-10</span>
+<div class="slidecontent">
+<p>Yes, exactly! :)</p>
+<p>Also note that it <strong>never makes sense</strong> to have a <strong><code>ref</code> on a controlled input</strong> to access its value, since their values are in the state or props of the component. There&#39;s no need to read the value from the DOM node.</p>
+</div></section>
+<section class="slide" data-pos="4-7-11">
+<span class="pos">4-7-11</span>
+<div class="slidecontent"><p>You can read <strong>all the detail about forms</strong> on the <a href="https://facebook.github.io/react/docs/forms.html" class="link" target="_blank">Forms</a> documentation, but we&#39;ll mention <strong>two more things</strong> that are different about using forms in React:</p>
+</div></section>
+<section class="slide" data-pos="4-7-12">
+<span class="pos">4-7-12</span>
+<div class="slidecontent"><p>First off: In <strong>regular HTML</strong> you give <strong>default options</strong> a <strong><code>selected</code> attribute</strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">select</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"U"</span>&gt;</span>Urd; that what was<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"V"</span> <span class="hljs-attr">selected</span>&gt;</span>Verdandi; that which is<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"S"</span>&gt;</span>Skuld; That which will be<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-7-13">
+<span class="pos">4-7-13</span>
+<div class="slidecontent"><p>In <strong>React</strong> we instead set <code>value</code> or <code>defaultValue</code> on the <strong><code>select</code></strong> tag itself (which makes more semantic sense anyway):</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">defaultValue</span>=<span class="hljs-string">"V"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"U"</span>&gt;</span>Urd; that what was<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"V"</span>&gt;</span>Verdandi; that which is<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"S"</span>&gt;</span>Skuld; That which will be<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span>
+</code></pre>
+<p><strong>Try this out</strong> in the <a href="resources/site/demos/select.html" target="_blank">Select</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="4-7-14">
+<span class="pos">4-7-14</span>
+<div class="slidecontent"><p>Finally <strong>the second difference</strong> we wanted to highlight: in <strong>regular HTML</strong> we provide <strong>initial value</strong> to a <strong>textarea</strong> by passing it as a <strong>child</strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">textarea</span>&gt;</span>Enter your comments here<span class="hljs-tag">&lt;/<span class="hljs-name">textarea</span>&gt;</span>
+</code></pre>
+<p>In React you should instead pass it as a <strong><code>value</code> or <code>defaultValue</code> prop</strong>.</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">textarea</span> <span class="hljs-attr">defaultValue</span>=<span class="hljs-string">"Enter your comments here"</span>/&gt;</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/11</div>
+      <h3>Communication</h3>
+      <p>Parent-child interaction</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-8-1">
+<span class="pos">4-8-1</span>
+<div class="slidecontent"><p>A <strong>parent</strong> can <strong>give data to a child</strong> easy enough by <strong>passing props</strong>.</p>
+<p>But how does a <strong>child give data to a parent</strong>?</p>
+</div></section>
+<section class="slide" data-pos="4-8-2">
+<span class="pos">4-8-2</span>
+<div class="slidecontent"><p>An easy and decoupling pattern is for the <strong>parent</strong> to <strong>pass a callback as a prop</strong>.</p>
+<p>When the child wants to <strong>give data back to the parent</strong>, it can simply <strong>invoke the callback</strong> with the data.</p>
+</div></section>
+<section class="slide" data-pos="4-8-3">
+<span class="pos">4-8-3</span>
+<div class="slidecontent"><p>Thus the <strong>communication cycle</strong> can be described like this:</p>
+<p><img src="resources/graphviz/react-communication.svg" alt="communication cycle"></p>
+</div></section>
+<section class="slide" data-pos="4-8-4">
+<span class="pos">4-8-4</span>
+<div class="slidecontent"><p>Look at this <strong>parent</strong> teaching his child to count:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Parent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+    <span class="hljs-keyword">constructor</span>(props){
+        <span class="hljs-keyword">super</span>(props);
+        <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">count</span>:<span class="hljs-number">1</span>, <span class="hljs-attr">feedback</span>: <span class="hljs-string">"Let's begin!"</span>};
+        <span class="hljs-keyword">this</span>.receiveAnswer = <span class="hljs-keyword">this</span>.receiveAnswer.bind(<span class="hljs-keyword">this</span>);
+    }
+    receiveAnswer(answer) { <span class="hljs-comment">/* next slide */</span>}
+    render() {
+        <span class="hljs-keyword">return</span> (
+            <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>Parent:<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+        {this.state.feedback} What comes after {this.state.count}?
+                <span class="hljs-tag">&lt;<span class="hljs-name">hr</span>/&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">Child</span> <span class="hljs-attr">reply</span>=<span class="hljs-string">{this.receiveAnswer}</span> <span class="hljs-attr">number</span>=<span class="hljs-string">{this.state.count}/</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+        );
+    }
+};</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-8-5">
+<span class="pos">4-8-5</span>
+<div class="slidecontent"><p>The parent <strong>passes <code>this.receiveAnswer</code> as a callback to <code>Child</code></strong>, along with <code>this.state.count</code>. Here&#39;s the code for <code>receiveAnswer</code>:</p>
+<pre><code>receiveAnswer(answer) {
+  <span class="hljs-keyword">if</span> (answer === <span class="hljs-keyword">this</span>.state.count + <span class="hljs-number">1</span>){
+    <span class="hljs-keyword">this</span>.setState({
+      count: <span class="hljs-keyword">this</span>.state.count+<span class="hljs-number">1</span>,
+      feedback: <span class="hljs-string">'Good! Lets try the next one:'</span>
+    });
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">this</span>.setState({
+      feedback: <span class="hljs-string">'No, try again!'</span>
+    });
+  }
+}
+</code></pre></div></section>
+<section class="slide" data-pos="4-8-6">
+<span class="pos">4-8-6</span>
+<div class="slidecontent"><p>And here&#39;s the corresponding <strong>child</strong>, who will <strong>call the callback</strong> as appropriate.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Child = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+    <span class="hljs-keyword">let</span> correctAnswer = props.number + <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">let</span> cb = props.reply;
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>Child: <span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{e</span>=&gt;</span> cb(correctAnswer)}&gt;{correctAnswer}!<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{e</span>=&gt;</span> cb(correctAnswer+1)}&gt;{correctAnswer+1}!<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+}
+</code></pre>
+<p><strong>Try this example</strong> in the <a href="resources/site/demos/communication.html" target="_blank">Communication</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="4-8-7">
+<span class="pos">4-8-7</span>
+<div class="slidecontent"><p>There is also a <strong>more complex</strong> (and <strong>less silly</strong>) example of the same pattern in the <a href="resources/site/demos/communication2.html" target="_blank">Communication2</a> demo.</p>
+<p>And finally, <a href="resources/site/demos/communication3.html" target="_blank">Communication3</a> is a communication version of the button race in the <a href="resources/site/demos/state.html" target="_blank">State</a> demo.</p>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--STARTSECTION9--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 9/11</div>
+      <h3>createClass syntax</h3>
+      <p>Pass-down garments</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-9-1">
+<span class="pos">4-9-1</span>
+<div class="slidecontent"><p>Remember how we first showed you the <strong>plain function</strong> syntax for defining components...</p>
+<pre><code class="lang-javascript">let User = props =&gt; &lt;div&gt;Name: {props.name}&lt;/div&gt;;
+
+User.propTypes = {
+  name: React.PropTypes.string.isRequired
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-9-2">
+<span class="pos">4-9-2</span>
+<div class="slidecontent"><p>...and then admitted that there are in fact <strong>two definition syntaxes</strong>?</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+  <span class="hljs-keyword">static</span> get propTypes(){
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired
+    }
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-9-3">
+<span class="pos">4-9-3</span>
+<div class="slidecontent"><p>We lied again - there are <strong>three syntaxes</strong>. We can also use the <code>createClass</code> constructor:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> User = React.createClass({
+  <span class="hljs-attr">propTypes</span>: { <span class="hljs-attr">name</span>: React.PropTypes.string.isRequired },
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Name: {this.props.name}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+});
+</code></pre>
+<p>This <strong>was used for non-PFC:s before ES6 introduced classes</strong> and made the class syntax possible.</p>
+</div></section>
+<section class="slide" data-pos="4-9-4">
+<span class="pos">4-9-4</span>
+<div class="slidecontent"><p>It is <strong>pretty similar</strong> to real classes, with <strong>a few differences</strong>:</p>
+<ul>
+<li>There&#39;s no constructor, so we <strong>provide starting state from a <code>getInitialState</code> method</strong></li>
+<li>Methods are <strong>autobound to the instance</strong>. Convenient but can have performance impact</li>
+<li>Some <strong>inconsistencies with static stuff</strong></li>
+</ul>
+<p>See them in the <a href="resources/site/demos/createclass.html" target="_blank">createClass</a> demo</p>
+</div></section>
+<section class="slide" data-pos="4-9-5">
+<span class="pos">4-9-5</span>
+<div class="slidecontent"><p>As alluded to earlier; this syntax was <strong>used before classes were available</strong>.</p>
+<p>For a long time <strong>both approaches existed side by side</strong>, but <code>React.createClass</code> <a href="https://github.com/facebook/react/pull/9232" class="link" target="_blank">will be removed from React</a> and put into a separate module.</p>
+</div></section>
+</section>
+<!--ENDSECTION9--><!--STARTSECTION10--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 10/11</div>
+      <h3>Styling</h3>
+      <p>Waiter, there&#39;s CSS in my HTML in my JS!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-10-1">
+<span class="pos">4-10-1</span>
+<div class="slidecontent"><p>Not only does React make you mix <strong>JS</strong> and <strong>HTML</strong>, it also gives you an opportunity to throw <strong>CSS</strong> into the same messy mix!</p>
+</div></section>
+<section class="slide" data-pos="4-10-2">
+<span class="pos">4-10-2</span>
+<div class="slidecontent"><p>The motivation is the same as before - <strong>separating technologies</strong> is <strong>not the same</strong> as <strong>separating concerns</strong>.</p>
+<p>If some <strong>styles</strong> are <strong>only of concern to the component</strong>, then they <strong>belong inside the component definition</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-10-3">
+<span class="pos">4-10-3</span>
+<div class="slidecontent"><p>The styles are applied through giving a <strong>style object</strong> to the <strong><code>style</code></strong> prop of a tag:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> myStyles = {
+  <span class="hljs-attr">backgroundColor</span>: <span class="hljs-string">'blue'</span>,
+  <span class="hljs-attr">borderRadius</span>: <span class="hljs-string">'5px'</span>
+};
+
+<span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{myStyles}</span>&gt;</span>{somecontent}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="4-10-4">
+<span class="pos">4-10-4</span>
+<div class="slidecontent"><p>Note how, much like with the prop names, we must use <strong>camelCasing</strong> instead of <strong>hyphen-connection</strong>.</p>
+<p>See it all in action in the <a href="resources/site/demos/style.html" target="_blank">Style</a> demo!</p>
+</div></section>
+<section class="slide" data-pos="4-10-5">
+<span class="pos">4-10-5</span>
+<div class="slidecontent"><p><strong>Style objects</strong> are a powerful way to really <strong>encapsulate a component</strong>. And since we&#39;re just dealing with objects, you can pass in <strong>global style objects</strong> and mix and match as you want, <strong>without</strong> worrying about <strong>specificity clashes</strong>.</p>
+</div></section>
+<section class="slide" data-pos="4-10-6">
+<span class="pos">4-10-6</span>
+<div class="slidecontent"><p>But you need to <strong>be mindful</strong> about mixing inline styles like this with regular CSS file, and maintain a good discipline on what to put where.</p>
+</div></section>
+<section class="slide" data-pos="4-10-7">
+<span class="pos">4-10-7</span>
+<div class="slidecontent"><p>There are also libraries like <a href="https://github.com/pluralsight/react-styleable" class="link" target="_blank">React-Styleable</a> which allows you to <strong>declare your styles in CSS files</strong> but then still <strong>scope to a specific component</strong>.</p>
+<p>See the <a href="resources/site/demos/styleable.html" target="_blank">Styleable</a> demo for an example!</p>
+</div></section>
+<section class="slide" data-pos="4-10-8">
+<span class="pos">4-10-8</span>
+<div class="slidecontent"><p>Also, the community is currently exploring <strong>handling CSS from JavaScript space</strong>. This has <strong>immense potential</strong> as there&#39;s <strong>no global scope</strong> (unless we want there to be), but the idea is very young and <strong>best practices has yet to settle</strong>.</p>
+<p>If you&#39;re curious, check out <a href="https://github.com/Khan/aphrodite">Aphrodite</a>.</p>
+</div></section>
+</section>
+<!--ENDSECTION10--><!--STARTSECTION11--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 11/11</div>
+      <h3>Exercise 3</h3>
+      <p>It&#39;s getting hotter still</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="4-11-1">
+<span class="pos">4-11-1</span>
+<div class="slidecontent"><p>The next exercise, named <a href="resources/site/exercises/03_roster/" target="_blank">Roster</a>, will task you with creating components involving the concepts from this chapter!</p>
+</div></section>
+</section>
+<!--ENDSECTION11--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(4-1);
+        } else if (code >= 49 && code <= 11+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (4 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(4+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

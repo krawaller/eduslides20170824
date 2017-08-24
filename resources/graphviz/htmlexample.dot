@@ -1,0 +1,15 @@
+digraph {
+  rankdir = LR;
+  bgcolor = transparent;
+
+  div [label="<div>\n{foo: 'bar'}"]
+  hello [label="textNode\n'Hello'"]
+  strong [label="<strong>"]
+  world [label="textNode\n'WORLD'"]
+  exc [label="textNode\n'!'"]
+
+  div -> hello
+  div -> strong -> world
+  div -> exc
+
+}

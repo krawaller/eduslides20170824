@@ -1,0 +1,11 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	componentWillReceiveProps -> shouldComponentUpdate
+	shouldComponentUpdate -> componentWillUpdate [label="if true"]
+	componentDidUpdate-> render -> componentWillUpdate [dir="back"]
+
+	{rank=same; shouldComponentUpdate, componentWillUpdate}
+	{rank=same; componentDidUpdate,componentWillReceiveProps}
+}

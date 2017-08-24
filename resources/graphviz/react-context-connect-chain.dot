@@ -1,0 +1,19 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	connect [shape=box]
+	wrapper [shape=box,label="wrapper\nfunction"]
+	container [label="container"]
+
+	mapState -> connect
+	mapDispatch -> connect
+	bake -> connect
+
+	component -> wrapper
+
+	props -> container
+
+	connect -> wrapper [style=dashed]
+	wrapper -> container [style=dashed]
+}

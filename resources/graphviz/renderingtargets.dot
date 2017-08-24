@@ -1,0 +1,12 @@
+digraph {
+  rankdir = LR
+  bgcolor = transparent
+
+  component, ReactDOM [shape=rectangle]
+
+  state -> component
+  props -> component
+  component -> virtualDOM
+  virtualDOM -> ReactDOM -> DOM
+
+}

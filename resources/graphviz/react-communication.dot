@@ -1,0 +1,8 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	Parent -> Child [label="passes props"]
+	Parent -> Child [color="transparent"]
+	Child -> Parent [label="calls callback"]
+}

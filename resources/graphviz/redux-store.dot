@@ -1,0 +1,10 @@
+digraph {
+	rankdir = TD
+	bgcolor = transparent
+	subgraph cluster_store {
+		label = "Store"
+		Subs [label="Subscription\nservice"]
+		Data [label="In-memory\ndata"]
+		Reducer
+	}
+}

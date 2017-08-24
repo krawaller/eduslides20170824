@@ -1,0 +1,12 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	Store
+	Components
+	Actions [label="Action\ncreators"]
+
+	Store -> Components [label="notifies"]
+	Components -> Actions [label="calls"]
+	Actions -> Store [label="updates"]
+}

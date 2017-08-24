@@ -1,0 +1,6 @@
+digraph {
+  rankdir = LR;
+  bgcolor = transparent;
+  creator [label="action creator"]
+  component -> creator -> reducer;
+}

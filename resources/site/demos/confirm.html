@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: confirm</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>confirm</span></div></div>
+<div class="wrapper">
+
+<div id="container"></div>
+
+<script type="text/babel">
+
+class Confirm extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {idle: true};
+    this.maybe = this.maybe.bind(this);
+    this.changedmymind = this.changedmymind.bind(this);
+    this.yesimsure = this.yesimsure.bind(this);
+  }
+  maybe() { this.setState({idle: false}); }
+  changedmymind() { this.setState({idle: true}); }
+  yesimsure() { this.props.confirm(); this.setState({idle: true}); }
+  render() {
+    return this.props.disabled || this.state.idle ? (
+      <span>
+        <button onClick={this.maybe} disabled={this.props.disabled}>Submit</button>
+      </span>
+    ) : (
+      <span>
+        <button onClick={this.changedmymind}>Cancel</button>
+        <button onClick={this.yesimsure}>Confirm</button>
+      </span>
+    )
+  }
+}
+
+class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {submitted:'',field:''};
+    this.onConfirm = this.onConfirm.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+  onConfirm() {
+    this.setState({submitted:this.state.field,field:''})
+  }
+  onChange(e) {
+    this.setState({field:e.target.value})
+  }
+  render() {
+    return (
+      <div>
+        <input value={this.state.field} onChange={this.onChange}/>
+        <Confirm disabled={!this.state.field} confirm={this.onConfirm}/>
+        <p>Submitted value: {this.state.submitted}</p>
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <App/>,
+  document.getElementById("container")
+);
+
+
+
+</script>
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

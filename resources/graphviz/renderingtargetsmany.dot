@@ -1,0 +1,14 @@
+digraph {
+  rankdir = LR
+  bgcolor = transparent
+
+  component, ReactDOM, ReactDOMServer, ReactSVG, ReactNative [shape=rectangle]
+
+  state -> component
+  props -> component
+  component -> virtualDOM
+  virtualDOM -> ReactDOM -> DOM
+  virtualDOM -> ReactDOMServer -> string
+  virtualDOM -> ReactSVG -> SVG
+  virtualDOM -> ReactNative -> NativeUI
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: recompose</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>recompose</span></div></div>
+<div class="wrapper">
+<div id="container"></div>
+
+<script type="text/babel">
+
+let enhancer = Recompose.withState('count', 'more', 3)
+let Clicker = enhancer((props)=> (
+	<div>
+    <p>{props.count} bottles of beer on the wall</p>
+    <button onClick={() => props.more(n => n + 1)}>Buy more</button>
+  </div>
+));
+
+ReactDOM.render(<Clicker/>,document.getElementById("container"));
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

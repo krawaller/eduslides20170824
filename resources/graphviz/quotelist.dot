@@ -1,0 +1,6 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	Quotelist [shape=box]
+	list -> Quotelist -> UI
+}

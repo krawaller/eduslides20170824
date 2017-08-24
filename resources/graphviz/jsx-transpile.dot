@@ -1,0 +1,9 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	Transpiler [shape="box"]
+
+	JSX -> Transpiler
+	Transpiler -> JS
+}

@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>React Router</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 9 of 12 </div>
+            <h1>React Router</h1>
+            <span>completing the trinity</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p>So we introduced <strong>Redux</strong> to deal with the <strong>data</strong> in our <strong>React</strong> app. But, what about <strong>navigation</strong>?</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">The&nbsp;need&nbsp;for&nbsp;navigation</a></li><li><a href="#/4">Exploring&nbsp;an&nbsp;example</a></li><li><a href="#/5">The&nbsp;route&nbsp;map</a></li><li><a href="#/6">The&nbsp;Wrapper&nbsp;component</a></li><li><a href="#/7">Index&nbsp;routes</a></li><li><a href="#/8">Links</a></li><li><a href="#/9">Parameters</a></li><li><a href="#/10">Route&nbsp;configuration</a></li><li><a href="#/11">Acting&nbsp;on&nbsp;route&nbsp;change</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/9</div>
+      <h3>The need for navigation</h3>
+      <p>Where are we going?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-1-1">
+<span class="pos">9-1-1</span>
+<div class="slidecontent"><p><strong>SPA</strong> stands for <strong>S</strong>ingle <strong>P</strong>age <strong>A</strong>pplication. This describes the fact that the page <strong>never reloads</strong> in the traditional sense.</p>
+<p>We&#39;re dealing with <strong>one single front-end webapp</strong> throughout the session lifetime.</p>
+</div></section>
+<section class="slide" data-pos="9-1-2">
+<span class="pos">9-1-2</span>
+<div class="slidecontent"><p>But unless we&#39;re building something very simple, we still <strong>need to provide navigation</strong>.</p>
+<p>In a SPA we have <strong>two options</strong> for doing so.</p>
+</div></section>
+<section class="slide" data-pos="9-1-3">
+<span class="pos">9-1-3</span>
+<div class="slidecontent"><p><strong>Option 1</strong> is to <strong>handle our own navigation</strong>. Whenever the user clicks something to go to a different view, we catch that event and <strong>repopulate the screen</strong> with whatever the user asked for.</p>
+</div></section>
+<section class="slide" data-pos="9-1-4">
+<span class="pos">9-1-4</span>
+<div class="slidecontent"><p>The advantage of this approach is that it is <strong>easy</strong>. We&#39;re in <strong>total control</strong>, and navigation added <strong>no external dependencies</strong>.</p>
+</div></section>
+<section class="slide" data-pos="9-1-5">
+<span class="pos">9-1-5</span>
+<div class="slidecontent"><p>There&#39;s a <strong>huge downside</strong>, however: <strong>browser navigation won&#39;t work</strong> in our app, meaning:</p>
+<ul>
+<li>The user <strong>cannot bookmark</strong> a position in the app</li>
+<li>Hitting the <strong>back button means leaving the app</strong> alltogether</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-1-6">
+<span class="pos">9-1-6</span>
+<div class="slidecontent"><p>For a serious webapp, these are <strong>dealbreakers</strong>.</p>
+<p>Which is why <strong>all frameworks</strong> go with <strong>option 2</strong>, namely to <strong>hook into the browser navigation</strong>. Angular, Ember, Meteor, Aurora - they all have their own <strong>built-in routing</strong> solution.</p>
+</div></section>
+<section class="slide" data-pos="9-1-7">
+<span class="pos">9-1-7</span>
+<div class="slidecontent"><p>But <strong>React is not a full framework</strong>. It deals mostly with the view, and doesn&#39;t care how you solve the navigation problem.</p>
+<p>If you want to hook into the browser navigation, you have to <strong>do it yourself</strong>.</p>
+</div></section>
+<section class="slide" data-pos="9-1-8">
+<span class="pos">9-1-8</span>
+<div class="slidecontent"><p>...or, you can include a <strong>companion library</strong> where someone else has already solved the problem! Which is exactly what <a href="https://github.com/reactjs/react-router" class="link" target="_blank">React Router</a> is.</p>
+</div></section>
+<section class="slide" data-pos="9-1-9">
+<span class="pos">9-1-9</span>
+<div class="slidecontent"><p>Note that we&#39;ll be talking about <strong>version 2</strong> of React Router, which is still the most common in the wild. However, there is a <strong>version 4 released</strong> which is <strong>very different</strong>! </p>
+<p>Version 3? Never really happened. :)</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/9</div>
+      <h3>Exploring an example</h3>
+      <p>Routing in the real world</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-2-1">
+<span class="pos">9-2-1</span>
+<div class="slidecontent"><p>Before we peek under the hood, we&#39;ll explore a simple example app that uses React Router.</p>
+<p>Here&#39;s what the <strong>home screen</strong> looks like:</p>
+<p><img src="resources/images/router-demo-home.png" alt="home"></p>
+<p>Note how the <strong>home</strong> link in the navbar is active.</p>
+</div></section>
+<section class="slide" data-pos="9-2-2">
+<span class="pos">9-2-2</span>
+<div class="slidecontent"><p>Clicking on <strong>products</strong> takes us to this list:</p>
+<p><img src="resources/images/router-demo-list.png" alt="home"></p>
+<p>Now the <strong>Products</strong> link in the nav menu is active.</p>
+</div></section>
+<section class="slide" data-pos="9-2-3">
+<span class="pos">9-2-3</span>
+<div class="slidecontent"><p>Finally here&#39;s the screen for a <strong>specific product</strong>:</p>
+<p><img src="resources/images/router-demo-product.png" alt="home"></p>
+<p>Note how the <strong>Products</strong> link is still active, since we&#39;re still considered to be in the same section.</p>
+</div></section>
+<section class="slide" data-pos="9-2-4">
+<span class="pos">9-2-4</span>
+<div class="slidecontent"><p>As stated a very simple app, yet still enough to catch the most common routing needs.</p>
+<p>We&#39;ll be walking through it together, but you can try the demo here: <a href="resources/site/demos/router.html" target="_blank">Router</a></p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/9</div>
+      <h3>The route map</h3>
+      <p>Where to go</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-3-1">
+<span class="pos">9-3-1</span>
+<div class="slidecontent"><p>At the heart of an app using React Router is the <strong>routes definition</strong>. Inspired by Ember, it is a <strong>nested declaration of all routes</strong> in your app.</p>
+</div></section>
+<section class="slide" data-pos="9-3-2">
+<span class="pos">9-3-2</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>conceptual sitemap</strong> of our example:</p>
+<pre><code class="lang-yaml"><span class="hljs-string">routes</span>
+  <span class="hljs-string">home</span>
+  <span class="hljs-string">products</span>
+    <span class="hljs-string">list</span>
+    <span class="hljs-string">productitem</span>
+</code></pre>
+<p><strong>Home</strong> is just a single page. <strong>Products</strong> is a section with two pages; a <strong>list</strong> and a <strong>product item</strong>.</p>
+</div></section>
+<section class="slide" data-pos="9-3-3">
+<span class="pos">9-3-3</span>
+<div class="slidecontent"><p>Thinking about it, this is a <strong>nested structure</strong> much like the DOM. We&#39;ve already seen how convenient it is to describe the DOM with the <strong>JSX syntax</strong>, so why not use that for the routes too?</p>
+<p>That&#39;s exactly the approach React Router takes.</p>
+</div></section>
+<section class="slide" data-pos="9-3-4">
+<span class="pos">9-3-4</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>routes definition</strong> for our <strong>example app</strong>:</p>
+<pre><code>const routes = (
+  <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Wrapper}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">IndexRoute</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Home}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/products"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">IndexRoute</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{ProductList}</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/products/:productid"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Product}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span>
+);
+</code></pre></div></section>
+<section class="slide" data-pos="9-3-5">
+<span class="pos">9-3-5</span>
+<div class="slidecontent"><p>Even without fully understanding every detail, we can see that the routes definition serves <strong>three powerful purposes</strong> at the same time:</p>
+<ul>
+<li><strong>Connecting paths to components</strong></li>
+<li><strong>Providing a templating solution</strong></li>
+<li><strong>Showing an overview of your entire app</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-3-6">
+<span class="pos">9-3-6</span>
+<div class="slidecontent"><p>The rest of the details will hopefully clear when we take a closer look at <strong>the Wrapper</strong>, <strong>index routes</strong>, <strong>links</strong> and <strong>parameters</strong> respectively.</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/9</div>
+      <h3>The Wrapper component</h3>
+      <p>Router templating</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-4-1">
+<span class="pos">9-4-1</span>
+<div class="slidecontent"><p>Now we&#39;ll take a closer look at the <strong>Wrapper</strong> component, which functions as a <strong>master template</strong> in our app:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> routes = (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Wrapper}</span>&gt;</span>
+    // ...lots of sub routes...
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span>
+);
+</code></pre>
+<p>This definition means that <code>Wrapper</code> will be rendered for the path <code>/</code> and <strong>all child paths</strong> too. If a child path is matched, then the component tied to that route will be <strong>passed as a child to Wrapper</strong>.</p>
+</div></section>
+<section class="slide" data-pos="9-4-2">
+<span class="pos">9-4-2</span>
+<div class="slidecontent"><p>Here&#39;s the code for <strong>Wrapper</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// Abbreviations: ILink is IndexLink and acn is activeClassName</span>
+<span class="hljs-keyword">let</span> Wrapper = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">h4</span>&gt;</span>A Router demo<span class="hljs-tag">&lt;/<span class="hljs-name">h4</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"nav"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">ILink</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">acn</span>=<span class="hljs-string">"now"</span>&gt;</span>Home<span class="hljs-tag">&lt;/<span class="hljs-name">ILink</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/products"</span> <span class="hljs-attr">acn</span>=<span class="hljs-string">"now"</span>&gt;</span>Products<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">hr</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"content"</span>&gt;</span>{props.children}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+);
+</code></pre>
+<p>Note how we <strong>render matched child routes</strong> into <code>content</code>.</p>
+</div></section>
+<section class="slide" data-pos="9-4-3">
+<span class="pos">9-4-3</span>
+<div class="slidecontent"><p>In the example app we only have one wrapper, but if we wanted to we could <strong>nest wrappers</strong>.</p>
+<p>Let&#39;s for example say that we want all pages in the <strong>products</strong> section to have a distinct look.</p>
+</div></section>
+<section class="slide" data-pos="9-4-4">
+<span class="pos">9-4-4</span>
+<div class="slidecontent"><p>That&#39;s as easy as adding a component, let&#39;s call it <code>ProductSection</code>, to the <code>/products</code> route:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> routes = (
+  &lt;Route path="/" component={Wrapper}&gt;
+    &lt;IndexRoute component={Home} /&gt;
+    &lt;Route path="/products" component={ProductSection}&gt;
+      &lt;IndexRoute component={ProductList} /&gt;
+      &lt;Route path="/products/:productid" component={Product} /&gt;
+    &lt;/Route&gt;
+  &lt;/Route&gt;
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="9-4-5">
+<span class="pos">9-4-5</span>
+<div class="slidecontent"><p>And <code>ProductSection</code> wouldn&#39;t need to be more complicated than this:</p>
+<pre><code><span class="hljs-keyword">let</span> ProductSection = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"productsection"</span>&gt;</span>
+    {props.children}
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+</code></pre></div></section>
+<section class="slide" data-pos="9-4-6">
+<span class="pos">9-4-6</span>
+<div class="slidecontent"><p>In other words, <strong>wrapping routes</strong> and <strong>wrapping components</strong> are just <strong>two sides of the same coin</strong>!</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/9</div>
+      <h3>Index routes</h3>
+      <p>You say potato</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-5-1">
+<span class="pos">9-5-1</span>
+<div class="slidecontent"><p>Let&#39;s wrap our brains around the difference between a <code>Route</code> and an <code>IndexRoute</code>.</p>
+</div></section>
+<section class="slide" data-pos="9-5-2">
+<span class="pos">9-5-2</span>
+<div class="slidecontent"><p>Take a look at our routes again:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Wrapper}</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">IndexRoute</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Home}</span> /&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/products"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{ProductSection}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">IndexRoute</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{ProductList}</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/products/:productid"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Product}</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span>
+</code></pre><p>Can you guess what the functions of <code>IndexRoute</code>s are?</p>
+</div></section>
+<section class="slide" data-pos="9-5-3">
+<span class="pos">9-5-3</span>
+<div class="slidecontent"><p>An <code>IndexRoute</code> is like a <strong>default route</strong> - it is rendered if no sibling route is matched. This means that an <code>IndexRoute</code>...</p>
+<ul>
+<li><strong>must be the child of a <code>Route</code> with a <code>path</code></strong></li>
+<li><strong>cannot have a <code>path</code> of its own</strong></li>
+<li><strong>can never have another <code>IndexRoute</code> as a sibling</strong></li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/9</div>
+      <h3>Links</h3>
+      <p>Getting a highway pass</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-6-1">
+<span class="pos">9-6-1</span>
+<div class="slidecontent"><p>We&#39;ll now take a look at how to implement <strong>links</strong> in an app using React Router.</p>
+</div></section>
+<section class="slide" data-pos="9-6-2">
+<span class="pos">9-6-2</span>
+<div class="slidecontent"><p>As you perhaps noticed in the <code>Wrapper</code> source, we can use the <strong><code>Link</code> component</strong> from React Router:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Link = ReactRouter.Link;
+
+<span class="hljs-keyword">let</span> l = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">"/about"</span>&gt;</span>About<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span>;
+</code></pre>
+<p>When clicked, the link <code>l</code> will navigate to the route <code>/about</code>.</p>
+</div></section>
+<section class="slide" data-pos="9-6-3">
+<span class="pos">9-6-3</span>
+<div class="slidecontent"><p>Remember how the navbar links in our example app were <strong>highlighted if the route they linked to was currently active</strong>?</p>
+<p><img src="resources/images/router-demo-home.png" alt="home"></p>
+</div></section>
+<section class="slide" data-pos="9-6-4">
+<span class="pos">9-6-4</span>
+<div class="slidecontent"><p>We accomplish that through the <code>activeClassName</code> property:</p>
+<pre><code class="lang-javascript">&lt;Link to=<span class="hljs-string">"/about"</span> activeClassName=<span class="hljs-string">"active"</span>&gt;About&lt;<span class="hljs-regexp">/Link&gt;</span>
+</code></pre>
+<p>This link will be rendered with the CSS class <strong>active</strong> if our current route matches <code>/about</code>.</p>
+</div></section>
+<section class="slide" data-pos="9-6-5">
+<span class="pos">9-6-5</span>
+<div class="slidecontent"><p>However, this clashes when we link to an <code>IndexRoute</code> since <strong>that route will always match</strong>.</p>
+<p>That&#39;s why we use an <code>IndexLink</code> when linking to such a route, to only have it active if we are literally at that route and no other.</p>
+</div></section>
+<section class="slide" data-pos="9-6-6">
+<span class="pos">9-6-6</span>
+<div class="slidecontent"><p>Here are the navbar links from the example app demonstrating this:</p>
+<pre><code class="lang-javascript">&lt;IndexLink to="/" activeClassName="active"&gt;Home&lt;/IndexLink&gt;
+&lt;Link to="/products" activeClassName="active"&gt;Products&lt;/Link&gt;
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/9</div>
+      <h3>Parameters</h3>
+      <p>There&#39;s no party without them!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-7-1">
+<span class="pos">9-7-1</span>
+<div class="slidecontent"><p>You saw them flash by in our example app for the <strong>product item page</strong>. Here&#39;s that route definition again:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/products/:productid"</span> <span class="hljs-attr">component</span>=<span class="hljs-string">{Product}</span> /&gt;</span>
+</code></pre><p>The <strong>colon</strong> makes the last part of the <code>path</code> into a <strong>parameter</strong>.</p>
+</div></section>
+<section class="slide" data-pos="9-7-2">
+<span class="pos">9-7-2</span>
+<div class="slidecontent"><p>Which means that if we...</p>
+<ul>
+<li><strong>navigate</strong> to <strong><code>/products/dishwasher</code></strong></li>
+<li>then the route <strong><code>/products/:productid</code></strong> will <strong>match</strong></li>
+<li>and the parameter <strong><code>productid</code></strong> will equal <strong><code>dishwasher</code></strong>.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-7-3">
+<span class="pos">9-7-3</span>
+<div class="slidecontent"><p>Observe that the <strong>colon</strong> is only used in the <strong>routes definition</strong>.</p>
+<p>We do <strong>not</strong> use it <strong>in our URL:s</strong> when we navigate or link.</p>
+</div></section>
+<section class="slide" data-pos="9-7-4">
+<span class="pos">9-7-4</span>
+<div class="slidecontent"><p>We can see this in action in the <strong>source code for the <code>Product</code> component</strong>:</p>
+<pre><code><span class="hljs-keyword">let</span> Product = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Interested in buying a {props.params.productid}?<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+</code></pre><p>Note how the <strong>parameters are available</strong> on <code>props.params</code>. This is React Router&#39;s doing.</p>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/9</div>
+      <h3>Route configuration</h3>
+      <p>Drawing the map</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-8-1">
+<span class="pos">9-8-1</span>
+<div class="slidecontent"><p>Now the time has come to zoom out and see how to <strong>configure</strong> and <strong>initialize</strong> all this!</p>
+</div></section>
+<section class="slide" data-pos="9-8-2">
+<span class="pos">9-8-2</span>
+<div class="slidecontent"><p>Here&#39;s the relevant code from the example app:</p>
+<pre><code><span class="hljs-keyword">let</span> <span class="hljs-attr">Router</span> = ReactRouter.Router,
+  <span class="hljs-attr">hashHistory</span> = ReactRouter.hashHistory;
+
+ReactDOM.render(
+  &lt;Router <span class="hljs-attr">routes={routes}</span> <span class="hljs-attr">history={hashHistory}</span> /&gt;,
+  document.getElementById(<span class="hljs-string">"container"</span>)
+);
+</code></pre><p>As you can see we use a <code>Router</code> component as a <strong>root component</strong>, feeding it our <strong>routes</strong> and a <strong>history</strong> engine.</p>
+</div></section>
+<section class="slide" data-pos="9-8-3">
+<span class="pos">9-8-3</span>
+<div class="slidecontent"><p><strong>Note the difference</strong> between <code>Router</code> and <code>Route</code>!</p>
+<ul>
+<li>A <code>Route</code> represents a <strong>single route</strong>, so we have many of those.</li>
+<li><code>Router</code> is the <strong>root component</strong>, which receives all <code>Route</code>s as children.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-8-4">
+<span class="pos">9-8-4</span>
+<div class="slidecontent"><p>Finally, what about the <strong>history</strong> parameter? That dictates <strong>how</strong> React Router should <strong>hook up paths to the browser</strong>. </p>
+<p>There are 3 different implementations built in;</p>
+<ul>
+<li><strong>hashHistory</strong></li>
+<li><strong>browserHistory</strong></li>
+<li><strong>createMemoryHistory</strong></li>
+</ul>
+<p>We&#39;ll now take a quick look at each of them.</p>
+</div></section>
+<section class="slide" data-pos="9-8-5">
+<span class="pos">9-8-5</span>
+<div class="slidecontent"><p>In the example app we used <strong>hashHistory</strong>. This means that the app <strong>path lives in the hash of the URL</strong>:</p>
+<p><img src="resources/images/router-hash-url.png" alt="hash"></p>
+<p>The meaningless stuff at the end, <code>?_k=hl9mxa</code>, is an unfortunate artifact necessary to reliably track unique state.</p>
+</div></section>
+<section class="slide" data-pos="9-8-6">
+<span class="pos">9-8-6</span>
+<div class="slidecontent"><p>If we instead used <strong>browserHistory</strong> then we&#39;d get a clean, &quot;regular&quot; URL with no hashes or artifacts.</p>
+<p>But this <strong>requires server-side configuration</strong> to handle the case when the user starts somewhere else other than the root, which is why the example app doesn&#39;t use it.</p>
+</div></section>
+<section class="slide" data-pos="9-8-7">
+<span class="pos">9-8-7</span>
+<div class="slidecontent"><p>Finally <strong>createMemoryHistory</strong> doesn&#39;t connect to the browser at all, but instead <strong>handles the navigation state in memory</strong>. Much like <strong>Option 1</strong> for SPA:s that we mentioned initially as an example of what not to do.</p>
+</div></section>
+<section class="slide" data-pos="9-8-8">
+<span class="pos">9-8-8</span>
+<div class="slidecontent"><p>So why would we want to use memoryHistory? Three main reasons:</p>
+<ul>
+<li>For <strong>small apps that are living inside a larger app</strong>, for example a JSBin demo</li>
+<li>For rendering our apps <strong>server side</strong> where there is no browser</li>
+<li>For <strong>testing</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-8-9">
+<span class="pos">9-8-9</span>
+<div class="slidecontent"><p>You can read more about the histories, and especially how to configure your server for browser histories, here:
+<a href="https://github.com/reactjs/react-router/blob/master/docs/guides/Histories.md" class="link" target="_blank">Histories</a></p>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--STARTSECTION9--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 9/9</div>
+      <h3>Acting on route change</h3>
+      <p>Employing a bouncer</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="9-9-1">
+<span class="pos">9-9-1</span>
+<div class="slidecontent"><p>As a final piece to the puzzle, React Router <strong>exposes hooks to act on transitions</strong>. There are three different events:</p>
+<ul>
+<li><strong>onEnter</strong>: Hmm, you&#39;re not on the guest list!</li>
+<li><strong>onLeave</strong>: Are you SURE you want to leave?</li>
+<li><strong>onChange</strong>: fired also for query or child route changes</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="9-9-2">
+<span class="pos">9-9-2</span>
+<div class="slidecontent"><p>The events are placed as <strong>event listeners on the <code>Route</code> elements</strong> in the config, making us feel right at home!</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">"/dashboard"</span> <span class="hljs-attr">onEnter</span>=<span class="hljs-string">{checkAuth}/</span>&gt;</span>
+</code></pre></div></section>
+<section class="slide" data-pos="9-9-3">
+<span class="pos">9-9-3</span>
+<div class="slidecontent"><p>In the function supplied to the hook you can</p>
+<ul>
+<li>do <strong>async</strong> stuff</li>
+<li><strong>inspect</strong> current / upcoming route data</li>
+<li><strong>redirect</strong></li>
+</ul>
+<p>As an example, check out the <a href="resources/site/demos/routerhook.html" target="_blank">RouterHook</a> demo where we&#39;ve added a VIP gatekeeper to our product section!</p>
+</div></section>
+</section>
+<!--ENDSECTION9--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(9-1);
+        } else if (code >= 49 && code <= 9+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (9 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(9+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

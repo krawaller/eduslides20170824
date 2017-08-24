@@ -1,0 +1,12 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	data
+	view
+	events
+
+	events -> data [label="updates"]
+	data -> view [label="pushed to"]
+	view -> events [label="invites"]
+}

@@ -1,0 +1,15 @@
+digraph {
+	rankdir = TB
+	bgcolor = transparent
+	
+	React [style=bold]
+	Redux [style=bold]
+
+	React -> Recompose
+	React -> ReactRouter
+	Redux -> ReactRedux
+	React -> ReactRedux
+	React -> ReactDOM
+	Redux -> ReduxThunk
+	Redux -> Reselect
+}

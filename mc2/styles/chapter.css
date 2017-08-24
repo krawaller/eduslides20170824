@@ -1,0 +1,252 @@
+/*** built-in emcee chapter styles ***/
+
+
+
+
+/*** NEW KLAS STYLES ***/
+
+body {
+  transition: background-color 0.3s ease;
+}
+
+body.atchaptertitle {
+  background-color: #5898AE;
+}
+
+.reveal .slide .slidecontent .chapternumber,
+.reveal .slide .slidecontent .sectioncount {
+  font-family: 'Libre Baskerville' !important;
+  font-weight: 700 !important;
+  display: inline-block;
+  border-radius: 100px;
+  font-size: 24px;
+  padding: 12px 34px;
+  margin-bottom: 26px;
+}
+
+.reveal .slide .slidecontent .chapternumber {
+  background-color: black;
+}
+
+.reveal .slide .slidecontent .sectioncount {
+  background-color: #5898AE;
+}
+
+.reveal .chaptertitle h1 {
+  font-family: "Roboto"; /* Roboto medium */
+  font-weight: 500;
+  text-transform: none;
+  font-size: 90px;
+}
+
+.reveal .chaptertitle h1+span {
+  font-family: "Roboto"; /* Roboto light */
+  font-weight: 300;
+  text-transform: none;
+  font-size: 40px;
+  font-style: italic;
+}
+
+.reveal .sectiontitle h3, .reveal .sectionlist h3 {
+  font-family: Roboto; /* Roboto regular */
+  font-weight: 400;
+  text-transform: none;
+  font-size: 60px;
+}
+
+.reveal .sectiontitle h3+p {
+  font-family: Roboto;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 40px;
+}
+
+.reveal .sectionlist .slidecontent ol {
+  font-family: "Roboto"; /* Roboto light */
+  font-weight: 300;
+  font-size: 34px;
+}
+
+.reveal .sectionlist .slidecontent ol a {
+  color: white;
+  text-decoration: none;
+}
+
+.reveal .slidecontent {
+  font-family: "Roboto";
+  font-weight: 300;
+}
+
+.reveal .slidecontent strong, .reveal .slidecontent em {
+  font-family: "Roboto";
+  font-weight: 400;
+  color: #5898AE;
+}
+
+.reveal .chaptertitle h1+span strong, .reveal .chaptertitle h1+span em, .reveal .chaptertitle h1+span a {
+  color: white;
+}
+
+
+.reveal .slidecontent a {
+  color: #5898AE;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#pos {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  color: white;
+  font-size: 26px;
+  line-height: 45px;
+  z-index: 15;
+  font-family: "Libre Baskerville";
+  font-weight: 400;
+}
+
+body .reveal .progress {
+  background-color: #2E3A3E;
+  height: 50px;
+  bottom: initial;
+  top: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body:not(.atchaptertitle) .reveal .progress {
+  opacity: 1;
+}
+
+body .reveal .progress span {
+  background-color: #5898AE;
+  margin-top: 43px;
+  height: 7px;
+}
+
+body .reveal .controls .navigate-down,
+body .reveal .controls .navigate-down.enabled,
+body .reveal .controls .navigate-down.enabled:hover {
+  border-top-color: #5898AE;
+}
+
+body .reveal .controls .navigate-left,
+body .reveal .controls .navigate-left.enabled,
+body .reveal .controls .navigate-left.enabled:hover {
+  border-right-color: #5898AE;
+}
+
+body .reveal .controls .navigate-up,
+body .reveal .controls .navigate-up.enabled,
+body .reveal .controls .navigate-up.enabled:hover {
+  border-bottom-color: #5898AE;
+}
+
+body .reveal .controls .navigate-right,
+body .reveal .controls .navigate-right.enabled,
+body .reveal .controls .navigate-right.enabled:hover {
+  border-left-color: #5898AE;
+}
+
+
+/*** THEME TWEAKS ******/
+
+
+div.reveal pre {
+  width: 94%;
+  font-size: 0.51em;
+}
+
+div.reveal {
+  font-size: 38px;
+}
+
+
+/*** OLDER STUFF ******/
+
+pre.withhighlight code span {
+  background-color: #ffd;
+  color: black;
+}
+
+.reveal span.pos {
+  display: none;
+}
+
+body .reveal section .sectioncount {
+    font-size: 0.7em;
+}
+
+.reveal strong, .reveal dt, .reveal em, .reveal strong em, .reveal table.deflist td:first-child {
+    color: #8799db;
+    font-weight: normal;
+}
+
+.slides .list ul {
+    list-style-type: none;
+    margin-left: 0;
+}
+
+.slides .list ul li > span:first-child, .slides .question:before, .slides .answer:before, .slides .challenge:before, .slides .num:before {
+    display: inline-block;
+    font-size: 70px;
+    line-height: 70px;
+    color: white;
+    background-color: #5898AE;
+    border-radius: 100px;
+    width: 70px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.slides .list ul li > span:first-child {
+  font-size: 26px;
+  line-height: 40px;
+  width: 40px;
+  top: -4px;
+  position: relative;
+}
+
+.slides .question:before {
+  content: "Q";
+}
+
+.slides .answer:before {
+  content: "A";
+}
+
+.slides .challenge:before {
+  content: "\2020";
+}
+
+
+table.deflist td {
+  border: none;
+}
+
+
+table.deflist td:first-child {
+  text-align: right;
+}
+
+.slides .num1:before {content: "1"}
+.slides .num2:before {content: "2"}
+.slides .num3:before {content: "3"}
+.slides .num4:before {content: "4"}
+.slides .num5:before {content: "5"}
+.slides .num6:before {content: "6"}
+.slides .num7:before {content: "7"}
+.slides .num8:before {content: "8"}
+.slides .num9:before {content: "9"}
+
+.slides .numA:before {content: "a";}
+.slides .numB:before {content: "b";}
+.slides .numC:before {content: "c";}
+.slides .numD:before {content: "d";}
+.slides .numE:before {content: "e";}
+.slides .numF:before {content: "f";}
+.slides .numG:before {content: "g";}
+.slides .numH:before {content: "h";}
+.slides .numI:before {content: "i";}
+.slides .numJ:before {content: "j";}

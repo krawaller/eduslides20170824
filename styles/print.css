@@ -1,0 +1,51 @@
+.equality {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.equality img {
+  border: 0;
+  height: 140px;
+  display: inline-block;
+  background: none;
+  box-shadow: none;
+}
+
+.equality span {
+  display: inline-block;
+  padding: 0 15px;
+  font-size: 70px;
+}
+
+.demolist .lookuplist > div {
+  display: flex;
+  flex-direction: row;
+  width: 500px;
+  margin: 0 auto;
+}
+
+.demolist .lookuplist > div > :nth-child(1) {
+  font-size: 12px;
+}
+
+.demolist .lookuplist > div > :nth-child(2) {
+  display: inline-block;
+  flex: 1;
+  border-bottom: 1px solid #CDCDCD;
+  margin: 0 3px;
+  position: relative;
+  top: -3px;
+}
+
+.demolist .lookuplist > div > .demoref {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.demorefspace {
+  display: inline-block;
+  font-size: 0.8em;
+  width: 8px;
+  font-style: italic;
+}

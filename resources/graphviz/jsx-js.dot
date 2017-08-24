@@ -1,0 +1,14 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	JS -> JSX [label="<tag>"]
+	JS -> JSX [color=transparent]
+	JSX -> JS [label="</tag>"]
+
+	third [label="JS"]
+
+	JSX -> third [label="{"]
+	JSX -> third [color=transparent]
+	third -> JSX [label="}"]
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: impatient</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>impatient</span></div></div>
+<div class="wrapper">
+<p>Value is <span id="num"></span></p>
+<button id="incbtn">Increase</button>
+<span> by </span>
+<input type="number" id="amount" value=1 />
+<p>Observe logs in console!</p>
+
+<script type="text/babel">
+
+// Middleware code
+
+let impatient = middlewareAPI => next => action => {
+  action = Object.assign({},action); // copy
+  action.by *= 5;
+  next(action);
+};
+
+let logger = middlewareAPI => next => action => {
+  console.log("Dispatching action:",action);
+  let result = next(action);
+  let newstate = middlewareAPI.getState();
+  console.log("State after dispatch:",newstate);
+  return result;
+};
+
+let middlewares = Redux.applyMiddleware(impatient,logger);
+
+// Hooking the middlewares up to the counter app
+
+let initialstate = 0;
+
+let reducer = (state,action)=> {
+  switch(action.type){
+    case 'INCREMENT': return state + action.by;
+    default: return state;
+  }
+};
+
+let store = Redux.createStore(reducer,initialstate,middlewares);
+
+let actionCreators = {
+  increment: (int)=> ({type: 'INCREMENT', by: int})
+};
+
+let updateUI = (state,arg2)=> {
+  let element = $("#num");
+  element.innerHTML = state;
+};
+
+$("#incbtn").addEventListener("click", ()=> {
+  let input = $("#amount"),
+    increase = parseInt(input.value),
+    action = actionCreators.increment(increase);
+  store.dispatch(action);
+});
+
+store.subscribe(()=> {
+  updateUI(store.getState());
+});
+updateUI(store.getState());
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

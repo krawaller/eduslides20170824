@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: redux</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>redux</span></div></div>
+<div class="wrapper">
+
+	<div id="container">
+		<p>Counter is now at <span id="num"></span>.</p>
+		<p>
+			<button id="incbtn">Increase</button>
+			<span> by </span>
+			<input type="number" id="amount" value=1 />
+		</p>
+	</div>
+
+<script type="text/babel">
+/*
+This the demo that we walk through in the "Redux example" chapter!
+*/
+
+let initialstate = {count: 0};
+
+let reducer = (state,action)=> {
+	switch(action.type){
+		case 'INCREMENT': return {count: state.count + action.by};
+		default: return state;
+	}
+};
+
+let store = Redux.createStore(reducer,initialstate);
+
+let actionCreators = {
+	increment: (int)=> ({type: 'INCREMENT', by: int})
+};
+
+let boundActionCreators = Redux.bindActionCreators(
+	actionCreators,
+	store.dispatch
+);
+
+let updateUI = (state)=> {
+	let element = document.getElementById("num");
+	element.innerHTML = state.count;
+};
+
+let button = document.getElementById("incbtn");
+button.addEventListener("click",()=> {
+	let input = document.getElementById("amount"),
+		increase = parseInt(input.value);
+	boundActionCreators.increment(increase);
+});
+
+store.subscribe(()=> {
+	updateUI(store.getState());
+});
+updateUI(store.getState());
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

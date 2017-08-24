@@ -1,0 +1,9 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	compiler [shape=box]
+	definition -> compiler
+	compiler -> tempfunc
+	tempfunc [label="template\nfunction"]
+}

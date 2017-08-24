@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Advanced React</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 11 of 12 </div>
+            <h1>Advanced React</h1>
+            <span>The final final boss</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p>As a <strong>final challenge</strong>, let&#39;s look at <strong>levelling up our React fu</strong> even further!</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">The&nbsp;React&nbsp;Context&nbsp;API</a></li><li><a href="#/4">Context&nbsp;in&nbsp;React&#8209;Redux</a></li><li><a href="#/5">Firebase</a></li><li><a href="#/6">Recompose</a></li><li><a href="#/7">Isomorphic&nbsp;apps</a></li><li><a href="#/8">Performance</a></li><li><a href="#/9">Working&nbsp;with&nbsp;the&nbsp;DOM</a></li><li><a href="#/10">Mixins</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/8</div>
+      <h3>The React Context API</h3>
+      <p>low-level globality</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-1-1">
+<span class="pos">11-1-1</span>
+<div class="slidecontent"><p>Remember how we first said that a <strong>React component UI</strong> was the <strong>result of its props</strong>...</p>
+<p><img src="resources/graphviz/react-component-recipe-props.svg" alt="props make UI"></p>
+</div></section>
+<section class="slide" data-pos="11-1-2">
+<span class="pos">11-1-2</span>
+<div class="slidecontent"><p>...and then admitted that we lied, and that the UI is in fact derived from props <strong>and state</strong>?</p>
+<p><img src="resources/graphviz/react-component-recipe-state.svg" alt="props make UI"></p>
+</div></section>
+<section class="slide" data-pos="11-1-3">
+<span class="pos">11-1-3</span>
+<div class="slidecontent"><p>That was actually a lie too - the UI is derive from props, state <strong>and context</strong>:</p>
+<p><img src="resources/graphviz/react-component-recipe-context.svg" alt="props make UI"></p>
+</div></section>
+<section class="slide" data-pos="11-1-4">
+<span class="pos">11-1-4</span>
+<div class="slidecontent"><p>So here&#39;s the proper <strong>signatures for the life cycle methods</strong>:</p>
+<pre><code class="lang-javascript">componentWillReceiveProps(nextProps, nextContext)
+
+shouldComponentUpdate(nextProps, nextState, nextContext)
+
+componentWillUpdate(nextProps, nextState, nextContext)
+
+componentDidUpdate(prevProps, prevState, prevContext)
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-1-5">
+<span class="pos">11-1-5</span>
+<div class="slidecontent"><p>There are <strong>very few times</strong> when you actually <strong>need to use context</strong>. It corresponds to <strong>global state</strong>, which is mostly a <strong>bad idea</strong>.</p>
+<p>A hint to that is that up until recently the <strong>API wasn&#39;t documented</strong> at all!</p>
+</div></section>
+<section class="slide" data-pos="11-1-6">
+<span class="pos">11-1-6</span>
+<div class="slidecontent"><p>So, <strong>what then is the point</strong> of context?</p>
+<p>Context is mostly <strong>used in libraries</strong>. Later we&#39;ll peek at how <code>React-Redux</code> uses context to do their magic, but first we should explore the API!</p>
+</div></section>
+<section class="slide" data-pos="11-1-7">
+<span class="pos">11-1-7</span>
+<div class="slidecontent"><p>Ok, enough of the why - on to the how! What does the <strong>API</strong> for Context look like?</p>
+</div></section>
+<section class="slide list" data-pos="11-1-8">
+<span class="pos">11-1-8</span>
+<div class="slidecontent">
+<p>The <strong>concept behind Context</strong> builds on the idea of <strong>providers</strong> and <strong>consumers</strong>:</p>
+<ul>
+<li><span>a</span>A <strong>provider</strong> component can <strong>provide</strong> context...</li>
+<li><span>b</span>which <strong>consumer</strong> components positioned <strong>further up the tree</strong> can <strong>consume</strong>.</li>
+</ul>
+<p>Thus providers are often found at the <strong>root</strong> of the app.</p>
+</div></section>
+<section class="slide num numA" data-pos="11-1-9">
+<span class="pos">11-1-9</span>
+<div class="slidecontent">
+<p>We&#39;ll first look at how to <strong>define a Provider</strong>. To provide context<strong> to downstream components, a Provider must do two things</strong>:</p>
+<ul>
+<li>Define the <strong>shape of the context</strong> in <code>childContextTypes</code>, using the same syntax as for <code>PropTypes</code> definitions.</li>
+<li>Define a <code>getChildContext</code> method which should <strong>return a context matching that shape</strong>.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="11-1-10">
+<span class="pos">11-1-10</span>
+<div class="slidecontent"><p>Here is <strong>an example Provider</strong> which will expose a <code>title</code> to all children as <code>this.context.title</code>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ContextProvider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">static</span> get childContextTypes() {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">title</span>: React.PropTypes.string
+    };
+  }
+  getChildContext() {
+    <span class="hljs-keyword">return</span> {<span class="hljs-attr">title</span>: <span class="hljs-keyword">this</span>.props.headline};
+  }
+  render(){
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.props.children;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-1-11">
+<span class="pos">11-1-11</span>
+<div class="slidecontent"><p>The <strong><code>childContextTypes</code> definition object</strong> is served as a <strong>static property</strong>, exactly like <code>propTypes</code> and <code>defaultProps</code>.</p>
+</div></section>
+<section class="slide num numB" data-pos="11-1-12">
+<span class="pos">11-1-12</span>
+<div class="slidecontent">
+<p>And now the <strong>Consumers</strong>! Since we <strong>don&#39;t want to spam every component</strong> with context provided by upstream providers, Consumers have to <strong>actively opt in</strong> to gain access to the context data.</p>
+<p>This is done through defining <code>contextTypes</code>, again in the same way as we did for <code>propTypes</code>.</p>
+</div></section>
+<section class="slide" data-pos="11-1-13">
+<span class="pos">11-1-13</span>
+<div class="slidecontent"><p>Here is an <strong>example Consumer</strong> to catch the context from our previous Provider:</p>
+<pre><code class="lang-javascript">let ContextConsumer = (props, context) =&gt; &lt;h4&gt;{context.title}&lt;/h4&gt;;
+
+ContextConsumer.contextTypes = {
+  title: React.PropTypes.string
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-1-14">
+<span class="pos">11-1-14</span>
+<div class="slidecontent"><p>Our example components could be rendered something like this:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">title</span>=<span class="hljs-string">"Of global importance"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">Consumer</span>/&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span>,
+</code></pre><p>The important thing is that the <strong>Consumer must be positioned inside the Provider</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-1-15">
+<span class="pos">11-1-15</span>
+<div class="slidecontent"><p>You can <strong>play around</strong> with the above example in the
+<a href="resources/site/demos/context.html" target="_blank">Context</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="11-1-16">
+<span class="pos">11-1-16</span>
+<div class="slidecontent"><p>More details are in the <strong>official documentation</strong> for the Context API:
+<a href="https://facebook.github.io/react/docs/context.html" class="link" target="_blank">Context</a></p>
+</div></section>
+<section class="slide" data-pos="11-1-17">
+<span class="pos">11-1-17</span>
+<div class="slidecontent"><p>As said before, <strong>Context is a bit experimental</strong> (even though it is now officially documented).</p>
+<p>See this <a href="https://medium.com/react-ecosystem/how-to-handle-react-context-a7592dfdcbc" class="link" target="_blank">Context blog post</a> for a closer look as to <strong>why context is dangerous</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-1-18">
+<span class="pos">11-1-18</span>
+<div class="slidecontent"><p>A final note; context is an <strong>excellent place for style objects</strong> if you are using inline styles as in the <a href="resources/site/demos/style.html" target="_blank">Style</a> demo!</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/8</div>
+      <h3>Context in React-Redux</h3>
+      <p>A real-life case study</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-2-1">
+<span class="pos">11-2-1</span>
+<div class="slidecontent"><p>We&#39;ll now walk through implementing a <strong>home-made version of React-Redux</strong>, in order to understand how it works.</p>
+<p>In other words, we&#39;ll make our own <strong><code>Provider</code> component</strong> and <strong><code>connect</code> function</strong>!</p>
+</div></section>
+<section class="slide" data-pos="11-2-2">
+<span class="pos">11-2-2</span>
+<div class="slidecontent"><p>As you might suspect, the top-level <strong>Provider</strong> that we fed the <strong>store</strong> simply <strong>exposes this to the context</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Provider</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">static</span> get childContextTypes(){
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">store</span>: React.PropTypes.object };
+  }
+  getChildContext(){
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">store</span>: <span class="hljs-keyword">this</span>.props.store };
+  }
+  render(){
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.props.children;
+  }
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-2-3">
+<span class="pos">11-2-3</span>
+<div class="slidecontent"><p>That was easy enough - <code>connect</code> will be slightly harder!</p>
+</div></section>
+<section class="slide" data-pos="11-2-4">
+<span class="pos">11-2-4</span>
+<div class="slidecontent"><p>Remember;</p>
+<ol>
+<li>the <strong>connect function</strong> is called with <code>mapState</code>, <code>mapDispatch</code> and <code>bakeProps</code>.</li>
+<li>That <strong>returns</strong> a <strong>wrapper function</strong> which is called with the component we want to wrap...</li>
+<li>...which finally <strong>returns</strong> the generated <strong>container class</strong> which will be called with some props from the parent.</li>
+</ol>
+</div></section>
+<section class="slide" data-pos="11-2-5">
+<span class="pos">11-2-5</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>diagram</strong> of this flow:</p>
+<p><img src="resources/graphviz/react-context-connect-chain.svg" alt="connect chain"></p>
+</div></section>
+<section class="slide" data-pos="11-2-6">
+<span class="pos">11-2-6</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>same chain in code format</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> connect = <span class="hljs-function">(<span class="hljs-params">mapState,mapDispatch,bake</span>) =&gt;</span> Component =&gt; <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Container</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-comment">// container definition here</span>
+}
+</code></pre>
+<p>Now we&#39;ll walk through how we define <code>Container</code>!</p>
+</div></section>
+<section class="slide list" data-pos="11-2-7">
+<span class="pos">11-2-7</span>
+<div class="slidecontent">
+<p>We need to do a <strong>number of things</strong> in there;</p>
+<ul>
+<li><span>a</span>catch <code>store</code> from the context</li>
+<li><span>b</span>subscribe to store data</li>
+<li><span>c</span>render the child</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="11-2-8">
+<span class="pos">11-2-8</span>
+<div class="slidecontent">
+<p>First off, the definition will <strong>use the Context API</strong> to fetch a <strong>reference to the store</strong> passed down from the <strong>Provider</strong>: </p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Container</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">static</span> get contextTypes: { <span class="hljs-attr">store</span>: React.PropTypes.object },
+
+  <span class="hljs-comment">// rest of definition can now access `this.context.store`</span>
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-2-9">
+<span class="pos">11-2-9</span>
+<div class="slidecontent"><p>Side note; you&#39;ve now seen <strong>all Context-related code</strong>. But we&#39;ll follow through anyway since that will help <strong>dispel eventual magic</strong> and <strong>further our understanding of React itself</strong>!</p>
+</div></section>
+<section class="slide num numB" data-pos="11-2-10">
+<span class="pos">11-2-10</span>
+<div class="slidecontent">
+<p>We&#39;ll use the <strong>same approach</strong> as in our <strong>vanilla Redux integration</strong> - we make our wrapper <strong>save the store data in its state</strong> every time the store is updated:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Container</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(){
+    <span class="hljs-keyword">super</span>();
+    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">childprops</span>:{}};
+  }
+  componentDidMount() {
+    <span class="hljs-keyword">let</span> store = <span class="hljs-keyword">this</span>.context.store;
+    <span class="hljs-keyword">let</span> callback = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{ ... }; <span class="hljs-comment">// &lt;-- shown soon</span>
+    store.subscribe(callback);
+    callback();
+  }
+  <span class="hljs-comment">// rest removed</span>
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-2-11">
+<span class="pos">11-2-11</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>callback</strong> we run when the store updates!</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> callback = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> childprops = bake(
+    mapState(store.getState()),
+    mapDispatch(store.dispatch),
+    <span class="hljs-keyword">this</span>.props
+  );
+  <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">childprops</span>:childprops});
+};
+</code></pre>
+<p>It simply <strong>bakes the new child props</strong> and <strong>saves them to state</strong>!</p>
+</div></section>
+<section class="slide num numC" data-pos="11-2-12">
+<span class="pos">11-2-12</span>
+<div class="slidecontent">
+<p>Now we can simply <strong>pass on</strong> <code>this.state.childprops</code> as properties to &#39;Component&#39; in the render method:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Container</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-comment">// ...rest removed ...</span>
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Component</span> {<span class="hljs-attr">...this.state.childprops</span>} /&gt;</span>;
+  }
+}</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-2-13">
+<span class="pos">11-2-13</span>
+<div class="slidecontent"><p>Now we&#39;ve <strong>fully implemented React-Redux</strong>!</p>
+<p>Well, except that we <strong>always</strong> expect <code>connect</code> to be <strong>called like this</strong>:</p>
+<pre><code class="lang-javascript">connect(mapStateFunction,mapDispatchFunction,bakeFunction);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-2-14">
+<span class="pos">11-2-14</span>
+<div class="slidecontent"><p>You can <strong>try out</strong> this homemade React-Redux version applied to our old quotes app in the
+<a href="resources/site/demos/homemade.html" target="_blank">Homemade</a> demo.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/8</div>
+      <h3>Firebase</h3>
+      <p>Live updates from the cloud</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-3-1">
+<span class="pos">11-3-1</span>
+<div class="slidecontent"><p><span class='freeimg'><img src="resources/images/firebase-logo.png" alt="firebase"></span></p>
+<p><a href="https://firebase.google.com/" class="link" target="_blank">Firebase</a> is a <strong>cloud-based database</strong>. It stores data in a <strong>JSON format</strong> and offers <strong>realtime updates</strong>, which makes it an <strong>ideal match with React</strong>!</p>
+</div></section>
+<section class="slide" data-pos="11-3-2">
+<span class="pos">11-3-2</span>
+<div class="slidecontent"><p>The <strong>basic idea is simple</strong>: After having <strong>set up our database</strong> at the Firebase homepage, we use their web lib to <strong>initialize a local connection</strong>:</p>
+<pre><code class="lang-javascript">firebase.initializeApp({
+  <span class="hljs-attr">apiKey</span>: <span class="hljs-string">"&lt;mysecretkey&gt;"</span>,
+  <span class="hljs-attr">databaseURL</span>: <span class="hljs-string">"https://&lt;databasename&gt;.firebaseio.com"</span>
+});
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-3-3">
+<span class="pos">11-3-3</span>
+<div class="slidecontent"><p>We then <strong>create a reference</strong> to a spot in our database. Given data that looks like this:</p>
+<pre><code class="lang-json">{
+  blog: {
+    comments: {
+      // lots of stuff
+    }
+  },
+  // and below lots of other stuffs
+}
+</code></pre>
+<p>...we could connect to <code>blog.comments</code> like this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> ref = firebase.database().ref(<span class="hljs-string">"blog/comments"</span>)
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-3-4">
+<span class="pos">11-3-4</span>
+<div class="slidecontent"><p>With that reference we can <strong>add a change listener</strong>:</p>
+<pre><code class="lang-javascript">DB.on(<span class="hljs-string">'value'</span>, snapshot =&gt; {
+  <span class="hljs-keyword">let</span> data = snapshot.val();
+  <span class="hljs-comment">// now do something with `data`</span>
+});
+</code></pre>
+<p>Now our <strong>callback will be called whenever new data is pushed from the Firebase servers</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-3-5">
+<span class="pos">11-3-5</span>
+<div class="slidecontent"><p>We can also <strong>add new data</strong> at the reference point:</p>
+<pre><code class="lang-javascript">ref.push({
+  <span class="hljs-attr">author</span>: <span class="hljs-string">'John Doe'</span>,
+  <span class="hljs-attr">msg</span>: <span class="hljs-string">'What trickery is this?!'</span>
+});
+</code></pre>
+<p>And of course there are similar functionality for <strong>editing</strong> and <strong>deleting</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-3-6">
+<span class="pos">11-3-6</span>
+<div class="slidecontent"><p>As previously hinted, <strong>Firebase is a very good fit for React</strong>. To highlight this, see how easy it is to build a <strong>chat application</strong> in the <a href="resources/site/demos/firebase.html" target="_blank">Firebase</a> demo.</p>
+<p>There is also a <strong>more advanced version</strong>, <a href="resources/site/demos/firebase2.html" target="_blank">Firebase2</a>, which lets you pick a username and chat in different rooms.</p>
+</div></section>
+<section class="slide" data-pos="11-3-7">
+<span class="pos">11-3-7</span>
+<div class="slidecontent"><p>A final warning: after <strong>Google bought Firebase</strong> in the <strong>spring of 2016</strong> there&#39;s been some <strong>major API updates</strong>, so be aware that material found online <strong>might be out of date</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/8</div>
+      <h3>Recompose</h3>
+      <p>A React utility belt</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-4-1">
+<span class="pos">11-4-1</span>
+<div class="slidecontent"><p><a href="https://facebook.github.io/react-native/" class="link" target="_blank">Recompose</a> is branded as a &quot;lodash but for React&quot;. The primary use case is to <strong>transform components defined as plain functions</strong>.</p>
+<p>The end result is that you get <strong>advanced components</strong> that <strong>would normally require the <code>React.createClass</code></strong> syntax, but without abandoning the convenient plain functions.</p>
+</div></section>
+<section class="slide" data-pos="11-4-2">
+<span class="pos">11-4-2</span>
+<div class="slidecontent"><p>As an example, take a look at this <strong>simple Clicker demo app</strong>:</p>
+<pre><code><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Clicker</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span> () {
+    <span class="hljs-keyword">super</span>()
+    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">count</span>: <span class="hljs-number">3</span>}
+    <span class="hljs-keyword">this</span>.more = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">count</span>: <span class="hljs-keyword">this</span>.state.count + <span class="hljs-number">1</span>})
+  }
+  render () {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{this.state.count} bottles of beer on the wall<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.more}</span>&gt;</span>Buy more<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  }
+}
+</code></pre></div></section>
+<section class="slide" data-pos="11-4-3">
+<span class="pos">11-4-3</span>
+<div class="slidecontent"><p>This can be <strong>expressed in Recompose</strong> like this instead:</p>
+<pre><code><span class="hljs-keyword">let</span> enhance = withState(<span class="hljs-string">'count'</span>, <span class="hljs-string">'more'</span>, <span class="hljs-number">3</span>)
+<span class="hljs-keyword">let</span> Clicker = enhance(<span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{props.count} bottles of beer on the wall<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> props.more(n =&gt; n + 1)}&gt;Buy more<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+));
+</code></pre><p>As another example, let&#39;s say we have a <strong><code>User</code></strong> plain function component with a <strong>very expensive render</strong>:</p>
+<pre><code>let <span class="hljs-keyword">User</span> <span class="hljs-title">= props</span> =&gt; <span class="hljs-tag">&lt;div&gt;</span>User: {props.name}<span class="hljs-tag">&lt;/div&gt;</span>;
+</code></pre></div></section>
+<section class="slide" data-pos="11-4-4">
+<span class="pos">11-4-4</span>
+<div class="slidecontent"><p>Normally, to make sure <code>User</code> doesn&#39;t rerender when non-vital props are changed, we would have to use a class and implement <strong><code>shouldComponentUpdate</code></strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-4-5">
+<span class="pos">11-4-5</span>
+<div class="slidecontent"><p>But using <strong>Recompose</strong> we can <strong>instead do this</strong>:</p>
+<pre><code><span class="hljs-attribute">let PerformantUser</span> = Recompose.onlyUpdateForKeys([<span class="hljs-string">'name'</span>])(User);
+</code></pre><p>Although the &quot;double invocation&quot; can look weird the <strong>functionality is clear</strong>, and we can keep the clean definition of <code>User</code>.</p>
+</div></section>
+<section class="slide" data-pos="11-4-6">
+<span class="pos">11-4-6</span>
+<div class="slidecontent"><p>The usefulness of Recompose can be discussed, but if nothing else, using it will <strong>improve your understanding</strong> for <strong>how components are defined</strong>!</p>
+<p>There are some more examples in the <a href="resources/site/demos/recompose.html" target="_blank">Recompose</a> demo.</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/8</div>
+      <h3>Isomorphic apps</h3>
+      <p>because buzzword</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-5-1">
+<span class="pos">11-5-1</span>
+<div class="slidecontent"><p>First off; by <strong>isomorphic apps</strong>, or <strong>universal apps</strong>, we mean apps that <strong>can be rendered outside the browser</strong>.</p>
+<p>Specifically this often means <strong>rendering on the server</strong>, which means that the <strong>initial rendering is much faster</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-5-2">
+<span class="pos">11-5-2</span>
+<div class="slidecontent"><p>With React this is easy, since <strong>rendering outputs a virtual tree</strong> describing the UI. </p>
+<p>This tree can then be <strong>digested by whatever system</strong>. So far we&#39;ve usually used <strong>ReactDOM</strong>, which takes the virtual tree and created DOM nodes:</p>
+<p><img src="resources/graphviz/renderingtargets.svg" alt=""></p>
+</div></section>
+<section class="slide" data-pos="11-5-3">
+<span class="pos">11-5-3</span>
+<div class="slidecontent"><p>But we can also use <strong>other rendering targets</strong>:</p>
+<p><img src="resources/graphviz/renderingtargetsmany.svg" alt=""></p>
+<p>As you can see, <a href="https://facebook.github.io/react/docs/react-dom-server.html">ReactDOMServer</a> <strong>outputs a string</strong>, which makes it very useful on the server.</p>
+</div></section>
+<section class="slide" data-pos="11-5-4">
+<span class="pos">11-5-4</span>
+<div class="slidecontent"><p>Building on the idea of being able to <strong>render on the server</strong> is <a href="https://zeit.co/blog/next">NextJS</a>, a very interesting mini-framework for <strong>isomorphic apps</strong> built on top of React.</p>
+<p>The creator, Guillermo Rauch, made a <strong><a href="https://www.youtube.com/watch?v=evaMpdSiZKk">good overview of NextJS</a></strong> at ReactConf 2017.</p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/8</div>
+      <h3>Performance</h3>
+      <p>because the fastest app wins</p>
+</p>
+    </div>
+  </section>
+  <section class="slide list" data-pos="11-6-1">
+<span class="pos">11-6-1</span>
+<div class="slidecontent">
+<p>Let&#39;s go over some libraries and concepts that <strong>help improve React performance</strong>!</p>
+<ul>
+<li><span>a</span>the <strong><code>shouldComponentUpdate</code></strong> method</li>
+<li><span>b</span>the <strong><code>React-Perimeter</code></strong> library</li>
+<li><span>c</span>the <strong><code>React-virtualized</code></strong> library</li>
+<li><span>d</span>the <strong><code>React Fiber</code></strong> rewrite</li>
+<li><span>e</span>the <strong><code>React-Canvas</code></strong> library</li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="11-6-2">
+<span class="pos">11-6-2</span>
+<div class="slidecontent">
+<p>We&#39;ve already mentioned <strong><code>shouldComponentUpdate</code></strong> as a <strong>lifecycle method</strong>, which lets us <strong>short-circuit the rerender</strong>.</p>
+<p>But we repeat it here since it is the <strong>single most important thing</strong> you can do to improve app performance.</p>
+</div></section>
+<section class="slide" data-pos="11-6-3">
+<span class="pos">11-6-3</span>
+<div class="slidecontent"><p>The logic behind when to short-circuit is <strong>very context specific</strong>, but React contains a ready-made <a href="https://facebook.github.io/react/docs/react-api.html#react.purecomponent">PureComponent class to inherit from</a> (or a <a href="https://facebook.github.io/react/docs/pure-render-mixin.html">PureRender mixin</a> if you&#39;re not using classes) that implements a <strong>good default</strong>: it <strong>returns false if state and props are the same</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-6-4">
+<span class="pos">11-6-4</span>
+<div class="slidecontent"><p>Note that the <strong>comparison is shallow</strong>, so for complex data structures we <strong>might need additional logic</strong>.</p>
+<p>Also consider using something like <a href="https://facebook.github.io/immutable-js/">ImmutableJS</a> which <strong>helps make identical objects have the same reference</strong>.</p>
+<p>This <strong>saves you from having to do recursive comparisons</strong>, and can be a significant performance boost.</p>
+</div></section>
+<section class="slide num numB" data-pos="11-6-5">
+<span class="pos">11-6-5</span>
+<div class="slidecontent">
+<p>Recently (2017-03-17) the <a href="https://github.com/aweary/react-perimeter">React-Perimeter library</a> was released.</p>
+<p>It lets us <strong>execute logic</strong> when the <strong>cursor breaches the perimeter</strong> of a given component.</p>
+<p>This <strong>can be used for a lot of things</strong>, but it is <strong>especially interesting for performance enhancements</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-6-6">
+<span class="pos">11-6-6</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>simple example</strong> from the official page:</p>
+<pre><code><span class="hljs-keyword">import</span> perimeter <span class="hljs-keyword">from</span> <span class="hljs-string">'react-perimeter'</span>
+
+<span class="hljs-keyword">const</span> LoadMoreButton = (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Perimeter</span>
+      <span class="hljs-attr">onBreach</span>=<span class="hljs-string">{this.prefetch}</span>
+      <span class="hljs-attr">padding</span>=<span class="hljs-string">{80}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{this.fetch}</span>&gt;</span>Load more<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Perimeter</span>&gt;</span></span>
+);
+</code></pre></div></section>
+<section class="slide" data-pos="11-6-7">
+<span class="pos">11-6-7</span>
+<div class="slidecontent"><p>Also note how <code>React-Perimeter</code> is a <strong>prime example of the power of the component abstraction</strong>!</p>
+</div></section>
+<section class="slide num numC" data-pos="11-6-8">
+<span class="pos">11-6-8</span>
+<div class="slidecontent">
+<p>The <a href="https://github.com/bvaughn/react-virtualized"><code>React-Virtualized</code> library</a> contains <strong>ready-made components</strong> for dealing with <strong>huge lists</strong>, which is a common performance bottleneck.</p>
+<p>It accomplishes this through <strong>windowing</strong>, in essence not rendering stuff that isn&#39;t on screen.</p>
+</div></section>
+<section class="slide num numD" data-pos="11-6-9">
+<span class="pos">11-6-9</span>
+<div class="slidecontent">
+<p>Behind the curtains, the React team is working on a <strong>complete rewrite of the core reconciliation engine</strong>. This project is currently called <strong><code>React Fiber</code></strong>.</p>
+<p>In essence it is an <strong>implementation of the call stack in a render sense</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-6-10">
+<span class="pos">11-6-10</span>
+<div class="slidecontent"><p>A <strong>full explanation is long and hard</strong>, so here are some links:</p>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=aV1271hd9ew&amp;feature=youtu.be">Andrew Clarke&#39;s talk</a> from ReactNext 2016</li>
+<li><a href="https://www.youtube.com/watch?v=crM1iRVGpGQ">Interview with React core members</a> from dec 2016</li>
+<li><a href="https://www.youtube.com/watch?v=ZCuYPiUIONs&amp;t=6s">Lin Clark&#39;s talk</a> from ReactConf 2017</li>
+<li>An overview of the <a href="http://isfiberreadyyet.com/">current state of Fiber</a>, dynamically updated</li>
+</ul>
+</div></section>
+<section class="slide num numE" data-pos="11-6-11">
+<span class="pos">11-6-11</span>
+<div class="slidecontent">
+<p>The <a href="https://github.com/Flipboard/react-canvas">React-Canvas</a> library is really just <strong>another rendering target</strong>, much like React-SVG and the others we mentioned previously.</p>
+</div></section>
+<section class="slide" data-pos="11-6-12">
+<span class="pos">11-6-12</span>
+<div class="slidecontent"><p>However, for <strong>complex components</strong>, using a canvas element can mean a <strong>performance boost</strong>. </p>
+<p>This is not an app-wide decision - you can <strong>render a particularily heavy component onto a canvas</strong>, but leave the surrounding app as a regular DOM app.</p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/8</div>
+      <h3>Working with the DOM</h3>
+      <p>DOM DOM DOM</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-7-1">
+<span class="pos">11-7-1</span>
+<div class="slidecontent"><p>We&#39;ve already touched on it several times during the course: since <strong>React wants ownership of the DOM</strong>, it can be awkward when <strong>others want to play with the DOM too</strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-7-2">
+<span class="pos">11-7-2</span>
+<div class="slidecontent"><p>This can be <strong>especially problematic</strong> when you want to <strong>include DOM-operating libraries in a React app</strong>.</p>
+<p>For example, the <a href="https://d3js.org/">D3 animation library</a>, which expects to be fed a DOM element to render the beautiful graphs into. How do we fit this into React?</p>
+</div></section>
+<section class="slide" data-pos="11-7-3">
+<span class="pos">11-7-3</span>
+<div class="slidecontent"><p>A good, general case solution is to use <a href="https://github.com/Olical/react-faux-dom">React-faux-DOM</a>. It <strong>creates a faux DOM element</strong> which you can give to a DOM manipulation library.</p>
+<p><img src="resources/graphviz/faux-dom.svg" alt=""></p>
+<p>The fake node has a <code>.toReact</code> method which <strong>converts it to Virtual DOM</strong>, ready to be rendered by React!</p>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/8</div>
+      <h3>Mixins</h3>
+      <p>Mixing it up</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="11-8-1">
+<span class="pos">11-8-1</span>
+<div class="slidecontent"><p><strong>Mixins</strong> are <strong>objects</strong> with <strong>pre-made functionality</strong> that we can <strong>mix into components</strong>.</p>
+<p>This API <strong>only works with the <code>React.createClass</code> syntax</strong>, and not with the newer class components!</p>
+</div></section>
+<section class="slide" data-pos="11-8-2">
+<span class="pos">11-8-2</span>
+<div class="slidecontent"><p>We use mixins by supplying them to the <strong><code>mixins</code> property</strong> in the <strong>component definition</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Component = React.createClass({
+  <span class="hljs-attr">mixins</span>: [amixin, anothermixin, athirdmixin],
+  <span class="hljs-comment">// rest of component follows</span>
+});
+</code></pre>
+<p>Now <strong>all methods in the mixins</strong> will be <strong>available on instances of <code>Component</code></strong>.</p>
+</div></section>
+<section class="slide" data-pos="11-8-3">
+<span class="pos">11-8-3</span>
+<div class="slidecontent"><p>Let&#39;s make a <strong>ticker</strong> mixin which...</p>
+<ul>
+<li><strong>inits</strong> a <strong>state variable</strong> called <strong><code>tick</code></strong> to <strong>0</strong></li>
+<li><strong>increases</strong> that variable <strong>every second</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="11-8-4">
+<span class="pos">11-8-4</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>code</strong> to accomplish this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> ticker = {
+  getInitialState() { <span class="hljs-keyword">return</span> {<span class="hljs-attr">tick</span>:<span class="hljs-number">0</span>}; },
+  tick() {
+    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">tick</span>:<span class="hljs-keyword">this</span>.state.tick + <span class="hljs-number">1</span>});
+  },
+  componentDidMount() {
+    <span class="hljs-keyword">this</span>._ticker = setInterval(<span class="hljs-keyword">this</span>.tick,<span class="hljs-number">1000</span>);
+  },
+  componentWillUnmount() {
+    clearInterval(<span class="hljs-keyword">this</span>._ticker);
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-8-5">
+<span class="pos">11-8-5</span>
+<div class="slidecontent"><p>We can now easily make a <strong>Timer component</strong> by <strong>mixing in ticker</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Timer = React.createClass({
+  <span class="hljs-attr">mixins</span>: [ticker],
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      Seconds since start: {this.state.tick}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+});
+</code></pre>
+<p><strong>Try this out</strong> in the <a href="resources/site/demos/mixin.html" target="_blank">Mixin</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="11-8-6">
+<span class="pos">11-8-6</span>
+<div class="slidecontent">
+<p>But, hang on - what is <strong>different</strong> from simply <strong>merging the objects ourselves</strong>?</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Component = React.createClass(<span class="hljs-built_in">Object</span>.assign(
+  {}, amixin, anothermixin, athirdmixin, {
+  <span class="hljs-comment">// rest of component follows</span>
+});
+</code></pre>
+</div></section>
+<section class="slide answer" data-pos="11-8-7">
+<span class="pos">11-8-7</span>
+<div class="slidecontent">
+<p>The React <strong>mixin API</strong> takes care of <strong>merging lifecycle methods</strong>.</p>
+<p>Recall that <strong>ticker</strong> needed to use both <strong><code>getInitialState</code></strong> and <strong><code>componentDidMount</code></strong>, as well as <strong><code>componentWillUnmount</code></strong> for cleanup.</p>
+<p>If our component used any of those and we <strong>merged the objects ourselves</strong>, there would be a <strong>clash</strong>!</p>
+</div></section>
+<section class="slide" data-pos="11-8-8">
+<span class="pos">11-8-8</span>
+<div class="slidecontent"><p>A <strong>powerful pattern</strong> that allows for <strong>customisable mixins</strong> is to use <strong>mixin factories</strong>.</p>
+<p>While a <strong>regular mixin</strong> is an <strong>object</strong>, a <strong>mixin factory</strong> is a <strong>function</strong> that takes <strong>option parameters</strong> and <strong>returns</strong> a corresponding <strong>mixin object</strong>.</p>
+<p><img src="resources/graphviz/react-mixin-factory.svg" alt="mixin factory"></p>
+</div></section>
+<section class="slide" data-pos="11-8-9">
+<span class="pos">11-8-9</span>
+<div class="slidecontent"><p>As an example, here&#39;s a <strong>version of <code>ticker</code></strong> that let&#39;s us  <strong>specify the interval</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> MakeTicker = <span class="hljs-function">(<span class="hljs-params">interval</span>)=&gt;</span> ({
+  getInitialState(){ <span class="hljs-keyword">return</span> {<span class="hljs-attr">tick</span>:<span class="hljs-number">0</span>}; },
+  tick() {
+    <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">tick</span>:<span class="hljs-keyword">this</span>.state.tick + <span class="hljs-number">1</span>});
+  },
+  componentDidMount() {
+    <span class="hljs-keyword">this</span>._ticker = setInterval(<span class="hljs-keyword">this</span>.tick,interval);
+  },
+  componentWillUnmount() {
+    clearInterval(<span class="hljs-keyword">this</span>._ticker);
+  }
+});
+</code></pre>
+</div></section>
+<section class="slide" data-pos="11-8-10">
+<span class="pos">11-8-10</span>
+<div class="slidecontent"><p>You can <strong>try</strong> the customisable ticker in the <a href="resources/site/demos/mixinfactory.html" target="_blank">Mixin Factory</a> demo.</p>
+<p>Also, remember the <a href="resources/site/demos/lifecycle.html" target="_blank">Lifecycle</a> demo? We remade that as a <strong>more advanced mixin factory demo</strong> called <a href="resources/site/demos/mixinfactory2.html" target="_blank">Mixin&nbsp;Factory&nbsp;2</a>.</p>
+</div></section>
+<section class="slide" data-pos="11-8-11">
+<span class="pos">11-8-11</span>
+<div class="slidecontent"><p>It is <strong>rarely useful</strong> to <strong>make your own mixins</strong>. The <strong>most common use case</strong> is to have <strong>library-supplied mixins</strong> that <strong>act as an API bridge</strong> for the component.</p>
+</div></section>
+<section class="slide" data-pos="11-8-12">
+<span class="pos">11-8-12</span>
+<div class="slidecontent"><p>Dan Abramov makes the same point in <a href="https://facebook.github.io/react/blog/2016/07/13/mixins-considered-harmful.html" class="link">this official React blog post</a> where he <strong>adviced against mixin usage</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(11-1);
+        } else if (code >= 49 && code <= 8+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (11 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(11+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

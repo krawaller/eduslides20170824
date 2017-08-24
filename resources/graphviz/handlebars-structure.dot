@@ -1,0 +1,8 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	template [shape=box]
+	data -> template
+	template -> DOM
+}

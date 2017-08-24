@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: refjquery</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>refjquery</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+jQuery.fn.swedify = function(){
+	return jQuery(this).css({
+		border: "5px solid blue",
+		backgroundColor: "yellow",
+		padding: 5
+	});
+}
+
+let Component = ()=> (
+	<div>
+		<p ref={(el) => jQuery(el).swedify()}>
+			I will be Swedified!
+		</p>
+	</div>
+);
+
+ReactDOM.render(
+	<Component/>,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

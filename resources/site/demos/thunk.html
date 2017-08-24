@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: thunk</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>thunk</span></div></div>
+<div class="wrapper">
+
+  <div id="container">
+  	<p>Counter is now at <span id="num"></span>.</p>
+  	<p>
+  		<button id="incbtn">Increase</button>
+  		<span> by </span>
+  		<input type="number" id="amount" value=1 />
+  	</p>
+  </div>
+
+
+<script type="text/babel">
+
+
+let initialstate = 0;
+
+let reducer = (state,action)=> {
+  switch(action.type){
+    case 'INCREMENT': return state + action.by;
+    default: return state;
+  }
+};
+
+let logger = middlewareAPI => next => action => {
+  console.log("Dispatching action:",action);
+  let result = next(action);
+  let newstate = middlewareAPI.getState();
+  console.log("State after dispatch:",newstate);
+  return result;
+};
+
+let middlewares = Redux.applyMiddleware(ReduxThunk,logger);
+
+let store = Redux.createStore(reducer,initialstate,middlewares);
+
+let actionCreators = {
+  increment: (amount)=> (dispatch,getState)=> {
+    dispatch({
+      type: 'WARNING',
+      msg: 'Now '+getState()+', will add '+amount+'!'
+    });
+    setTimeout(function(){
+      dispatch({
+        type: 'INCREMENT',
+        by: amount
+      });
+    },3000);
+  }
+};
+
+let updateUI = (state,arg2)=> {
+  let element = $("#num");
+  element.innerHTML = state;
+};
+
+$("#incbtn").addEventListener("click", ()=> {
+  let input = $("#amount"),
+    increase = parseInt(input.value),
+    action = actionCreators.increment(increase);
+  store.dispatch(action);
+});
+
+store.subscribe(()=> {
+  updateUI(store.getState());
+});
+updateUI(store.getState());
+
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

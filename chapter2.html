@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Introducing React</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 2 of 12 </div>
+            <h1>Introducing React</h1>
+            <span>What&#39;s the fuss about?</p>
+</span>
+          </div>
+        </section>
+        
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/2">Templating</a></li><li><a href="#/3">Enter&nbsp;React</a></li><li><a href="#/4">Expressing&nbsp;the&nbsp;UI</a></li><li><a href="#/5">JSX&nbsp;Basics</a></li><li><a href="#/6">Installing&nbsp;JSX</a></li><li><a href="#/7">Updating&nbsp;the&nbsp;UI</a></li><li><a href="#/8">Nested&nbsp;components</a></li><li><a href="#/9">Connecting&nbsp;to&nbsp;the&nbsp;DOM</a></li><li><a href="#/10">React&nbsp;devtools</a></li><li><a href="#/11">Exercise&nbsp;1</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/10</div>
+      <h3>Templating</h3>
+      <p>Converting data to UI</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-1-1">
+<span class="pos">2-1-1</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>first thing</strong> you should <strong>learn about React</strong>: it is, at its heart, a <strong>templating solution</strong> for dynamic web sites.</p>
+<p>That means that React <strong>converts data to UI</strong>. Commonly this step in an application is called the <strong>View layer</strong>, also known as the <strong>V in MVC</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-1-2">
+<span class="pos">2-1-2</span>
+<div class="slidecontent"><p>(...although React is <strong>more than that</strong>, but this is where we start!)</p>
+</div></section>
+<section class="slide" data-pos="2-1-3">
+<span class="pos">2-1-3</span>
+<div class="slidecontent"><p>If you have ever used an <strong>application framework</strong> on any platform, you have already used <strong>some sort of templating</strong>.</p>
+<p>But even so, let&#39;s take a <strong>closer look at the templating problem</strong> before we get started with React.</p>
+<p>We&#39;ll use the <a href="http://handlebarsjs.com" class="link" target="_blank">Handlebars</a> templating library, for no other reason than the fact that it is <strong>very typical</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-1-4">
+<span class="pos">2-1-4</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>Handlebars template definition</strong> for showing a <strong>user</strong>. Likely this is harboured in a file called <code>user.hbt</code>, where <code>.hbt</code> is short for HandleBars Template.</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"user"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"{{imgurl}}"</span>/&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h4</span>&gt;</span>{{firstname}} {{lastname}}<span class="hljs-tag">&lt;/<span class="hljs-name">h4</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{{description}}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>Notice the <strong>double curly braces</strong> which are of course <strong>data placeholders</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-1-5">
+<span class="pos">2-1-5</span>
+<div class="slidecontent"><p>If we send the content of such a file into <strong><code>Handlebars.compile</code></strong>...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> usertemplate = Handlebars.compile(definition);
+</code></pre>
+<p>...then we get back a <strong>template function</strong> that, when called with some <code>data</code>, will <strong>return the corresponding DOM</strong> structure.</p>
+</div></section>
+<section class="slide" data-pos="2-1-6">
+<span class="pos">2-1-6</span>
+<div class="slidecontent"><p>So if we have this user object...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> data = {
+    <span class="hljs-attr">firstname</span>: <span class="hljs-string">'John'</span>,
+    <span class="hljs-attr">lastname</span>: <span class="hljs-string">'Doe'</span>,
+    <span class="hljs-attr">imgurl</span>: <span class="hljs-string">'http://some.url'</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">'Best imagination EVER.'</span>
+};
+</code></pre>
+<p>...and feed it to the template function...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> DOM = usertemplate(data);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-1-7">
+<span class="pos">2-1-7</span>
+<div class="slidecontent"><p>...then <code>DOM</code> will be:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"user"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"http://some.url"</span>/&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h4</span>&gt;</span>John Doe<span class="hljs-tag">&lt;/<span class="hljs-name">h4</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Best imagination EVER.<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>Here&#39;s the original template definition for comparison:</p>
+<pre><code class="lang-handlebars"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"user"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"</span></span></span><span class="hljs-template-variable">{{imgurl}}</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">"</span>/&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h4</span>&gt;</span></span><span class="hljs-template-variable">{{firsname}}</span><span class="xml"> </span><span class="hljs-template-variable">{{lastname}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">h4</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><span class="hljs-template-variable">{{description}}</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-1-8">
+<span class="pos">2-1-8</span>
+<div class="slidecontent"><p>Let&#39;s look at the flow zoomed out.</p>
+<p>First we <strong>compiled</strong> a <strong>template</strong> from a <strong>definition</strong>:</p>
+<p><img src="resources/graphviz/template-compile.svg" alt="Handlebars flow"></p>
+<p>That <strong>template</strong> can then <strong>transform data to DOM</strong>:</p>
+<p><img src="resources/graphviz/template-usefunc.svg" alt="Handlebars flow"></p>
+</div></section>
+<section class="slide" data-pos="2-1-9">
+<span class="pos">2-1-9</span>
+<div class="slidecontent"><p>We&#39;ve now peeked at how <strong>Handlebars solves the data-to-UI problem</strong>.</p>
+<p><strong>What about React?</strong> Let&#39;s find out!</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/10</div>
+      <h3>Enter React</h3>
+      <p>There&#39;s a new sheriff in town</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-2-1">
+<span class="pos">2-2-1</span>
+<div class="slidecontent"><p>At <a href="https://www.youtube.com/watch?v=GW0rj4sNH2w" class="link" target="_blank">JSConfUS 2013</a>, <strong>Facebook introduced a new library</strong> - React - with a <strong>radically different approach</strong> to the templating problem that <strong>lifted quite a few eyebrows</strong>.</p>
+<p>Then at <a href="https://www.youtube.com/watch?v=x7cQ3mrcKaY" class="link" target="_blank">JSConfEU 2013</a> they gave <strong>more details</strong>, which made people <strong>even more sceptic</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-2-2">
+<span class="pos">2-2-2</span>
+<div class="slidecontent"><p>Both these videos are <strong>well worth watching</strong>, both for their <strong>explanation of React</strong> and their <strong>historical significance</strong>!</p>
+</div></section>
+<section class="slide" data-pos="2-2-3">
+<span class="pos">2-2-3</span>
+<div class="slidecontent"><p>So! Remember how a <strong>template function</strong> turns data into UI?</p>
+<p><img src="resources/graphviz/template-usefunc.svg" alt="Handlebars flow"></p>
+</div></section>
+<section class="slide" data-pos="2-2-4">
+<span class="pos">2-2-4</span>
+<div class="slidecontent"><p><strong>React</strong> does the exact <strong>same thing</strong>, just with a couple of <strong>name changes</strong>:</p>
+<p><img src="resources/graphviz/react-basic-component.svg" alt="React flow"></p>
+</div></section>
+<section class="slide" data-pos="2-2-5">
+<span class="pos">2-2-5</span>
+<div class="slidecontent"><p>So a React app is made up by <strong>components</strong>. They are <strong>functions</strong> which you <strong>feed data</strong>, called <strong>props</strong> in React lingo, and you <strong>get DOM back</strong>.</p>
+</div></section>
+<section class="slide question" data-pos="2-2-6">
+<span class="pos">2-2-6</span>
+<div class="slidecontent">
+<p>Ok, so a React component <strong>serves the same purpose</strong> as a handlebars template. Then what is the fuss about? <strong>What is different</strong> about React?</p>
+</div></section>
+<section class="slide answer" data-pos="2-2-7">
+<span class="pos">2-2-7</span>
+<div class="slidecontent">
+<p>Many things;</p>
+<ul>
+<li>We <strong>express the UI in JS</strong> instead of HTML</li>
+<li>We <strong>rerender the whole UI on every update</strong> (what?!)</li>
+<li>Components are <strong>inherently composable</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="2-2-8">
+<span class="pos">2-2-8</span>
+<div class="slidecontent"><p>We&#39;ll <strong>take a look</strong> at these differences, and more, in the upcoming sections!</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/10</div>
+      <h3>Expressing the UI</h3>
+      <p>Dissecting a React component</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-3-1">
+<span class="pos">2-3-1</span>
+<div class="slidecontent"><p>In Handlebars you <strong>write a definition</strong> in <strong>html</strong> which is then <strong>compiled</strong> into a <strong>template function</strong></p>
+<p>In React there is <strong>no compilation</strong>. Instead you <strong>work with JS</strong> and <strong>write the template function yourself</strong>!</p>
+</div></section>
+<section class="slide" data-pos="2-3-2">
+<span class="pos">2-3-2</span>
+<div class="slidecontent"><p>Here&#39;s the mandatory <a href="resources/site/demos/helloworld.html" target="_blank">HelloWorld</a> demo!</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> HelloWorld = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> &lt;div&gt;Hello world!<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+<p>As you can see the <code>HelloWorld</code> <strong>component</strong> is a <strong>plain JavaScript function</strong>, although with some <strong>weird xml syntax</strong> mixed in! That&#39;s called <strong>JSX</strong>, short for <strong>JavaScript XML</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-3-3">
+<span class="pos">2-3-3</span>
+<div class="slidecontent"><p>The previous example was a bit boring as it was <strong>completely static</strong>. Here instead is a <a href="resources/site/demos/hellosomeone.html" target="_blank">HelloSomeone</a> component which greets whoever you tell it to:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> HelloSomeone = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> &lt;div&gt;Hello, {props.who}!<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+<p>So, <strong>inside JSX</strong> we use <strong>single braces</strong> to <strong>switch back to JavaScript</strong>.</p>
+</div></section>
+<section class="slide question" data-pos="2-3-4">
+<span class="pos">2-3-4</span>
+<div class="slidecontent">
+<p>Hang on - how was that better than Handlebars? Wasn&#39;t the earlier Handlebars version...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Hello, {{who}}!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>...much easier to both read and write?</p>
+</div></section>
+<section class="slide answer" data-pos="2-3-5">
+<span class="pos">2-3-5</span>
+<div class="slidecontent">
+<p>For this simple example, yes. But! Just <strong>regular HTML is rarely enough</strong> to formulate the view.</p>
+<p>A competent templating solution needs to <strong>provide more opportunity to express logic</strong> in connection with describing what the output should look like.</p>
+</div></section>
+<section class="slide" data-pos="2-3-6">
+<span class="pos">2-3-6</span>
+<div class="slidecontent"><p>Consider for example a view that is supposed to render a bunch of <strong>links to a list of posts</strong>. We need to...</p>
+<ul>
+<li><strong>repeat</strong> some HTML for every link</li>
+<li>or <strong>conditionally</strong> display an apologetic message if there are no posts yet.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="2-3-7">
+<span class="pos">2-3-7</span>
+<div class="slidecontent"><p>Here&#39;s a <strong>Handlebars solution</strong> to the aforementioned problem:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"posts"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Posts<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+  {{#if posts}}
+  {{#each posts}}
+  <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"post"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"{{this.url}}"</span>&gt;</span>{{this.title}}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span>
+  {{/each}}
+  {{else}}
+  <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>No posts :(<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+  {{/if}}
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-3-8">
+<span class="pos">2-3-8</span>
+<div class="slidecontent"><p>As you saw, <strong>Handlebars</strong> - like so many other templating solutions - has <strong>augmented HTML</strong> with <strong>additional logic helpers</strong>, to accommodate for the fact that <strong>views often need logic</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-3-9">
+<span class="pos">2-3-9</span>
+<div class="slidecontent"><p>This invariably means that you <strong>have to learn these augmentations</strong>, which are always <strong>solution-specific</strong>. Your knowledge on Handlebars helpers is <strong>useless outside a Handlebars context</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-3-10">
+<span class="pos">2-3-10</span>
+<div class="slidecontent"><p>Here is a <strong>React solution</strong> to the same problem:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> ListOfPosts = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> posts = (props.posts || []).map(<span class="hljs-function"><span class="hljs-params">p</span> =&gt;</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"post"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">{p.url}</span>&gt;</span>{p.title}<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></span>;
+  );
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"posts"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Posts<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+      { props.posts ? posts : <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>No posts :( <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span> }
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-3-11">
+<span class="pos">2-3-11</span>
+<div class="slidecontent"><p>Apart from the JSX syntax, everything else in the code is <strong>just pure JavaScript</strong>. Being an actual programming language, it has <strong>no problem with expressing logic</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-3-12">
+<span class="pos">2-3-12</span>
+<div class="slidecontent"><p><strong>HTML</strong> is of course <strong>better</strong> at <strong>expressing markup</strong>, since it is a markup language. This is why Facebook added the <strong>JSX syntax</strong> to JavaScript.</p>
+</div></section>
+<section class="slide" data-pos="2-3-13">
+<span class="pos">2-3-13</span>
+<div class="slidecontent"><p>In essense: In a view we need to <strong>describe nested data</strong> (HTML) in connection with <strong>logic</strong>. This gives us two options:</p>
+<ol>
+<li>Use a <strong>nested data language</strong> with <strong>logic helpers</strong></li>
+<li>Use a <strong>logic langauge</strong> with <strong>nested data helpers</strong></li>
+</ol>
+</div></section>
+<section class="slide" data-pos="2-3-14">
+<span class="pos">2-3-14</span>
+<div class="slidecontent"><p>Since <strong>logic is much more complex than nested data</strong>, option 2 seems much easier.</p>
+<p>Yet, <strong>everyone but React chose option 1</strong>!</p>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/10</div>
+      <h3>JSX Basics</h3>
+      <p>Waiter, there&#39;s HTML in my JS!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-4-1">
+<span class="pos">2-4-1</span>
+<div class="slidecontent"><p>As the previous section taught us, <strong>JSX</strong> is a <strong>light syntactic sugar</strong> aiming to make it <strong>easier to express nested data structures</strong> with JavaScript. Let&#39;s explore how it works!</p>
+</div></section>
+<section class="slide" data-pos="2-4-2">
+<span class="pos">2-4-2</span>
+<div class="slidecontent"><p>Consider this line of JSX code:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">foo</span>=<span class="hljs-string">"bar"</span>&gt;</span>Hello <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>WORLD<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-3">
+<span class="pos">2-4-3</span>
+<div class="slidecontent"><p>If we <strong>indent</strong> it to show off the <strong>structure</strong>, then it would look like this:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">foo</span>=<span class="hljs-string">"bar"</span>&gt;</span>
+  Hello
+  <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>
+    WORLD
+  <span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+  !
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-4">
+<span class="pos">2-4-4</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>same structure as a diagram</strong>:</p>
+<p><img src="resources/graphviz/htmlexample.svg" alt=""></p>
+</div></section>
+<section class="slide" data-pos="2-4-5">
+<span class="pos">2-4-5</span>
+<div class="slidecontent"><p>The JSX is simply <strong>transformed</strong> into matching <strong>nested <code>React.createElement</code></strong> calls:</p>
+<pre><code class="lang-javascript">React.createElement(
+  <span class="hljs-string">"div"</span>,                 <span class="hljs-comment">// tagname</span>
+  {<span class="hljs-attr">foo</span>:<span class="hljs-string">"bar"</span>},           <span class="hljs-comment">// properties</span>
+  <span class="hljs-string">"Hello "</span>,              <span class="hljs-comment">// child 1 </span>
+  React.createElement(   <span class="hljs-comment">// child 2</span>
+    <span class="hljs-string">"strong"</span>,                  <span class="hljs-comment">// tagname</span>
+    <span class="hljs-literal">null</span>,                      <span class="hljs-comment">// properties</span>
+    <span class="hljs-string">"WORLD"</span>                    <span class="hljs-comment">// child 1</span>
+  ),
+  <span class="hljs-string">"!"</span>                    <span class="hljs-comment">// child 3</span>
+)
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-6">
+<span class="pos">2-4-6</span>
+<div class="slidecontent"><p>Here&#39;s the signature for <code>React.createElement</code>:</p>
+<pre><code class="lang-javascript">React.createElement(tagNameOrReactClass, props, child1, child2,...)
+</code></pre>
+<p>Only the <strong>first parameter</strong> is <strong>required</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-4-7">
+<span class="pos">2-4-7</span>
+<div class="slidecontent"><p>Each <strong>child</strong> is either...</p>
+<ul>
+<li>a <strong>string</strong> in which case it is treated as a <strong>text node</strong></li>
+<li>another <strong><code>React.createElement</code> call</strong>.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="2-4-8">
+<span class="pos">2-4-8</span>
+<div class="slidecontent"><p>Some developers <strong>don&#39;t much care for the JSX syntax</strong>. Especially with some <strong>clever aliasing</strong> it is perfectly fine to <strong>make the calls manually</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-4-9">
+<span class="pos">2-4-9</span>
+<div class="slidecontent"><p>If we up top do this <strong>aliasing</strong>...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> E = React.createElement, N = <span class="hljs-literal">null</span>;
+</code></pre>
+<p>...then this JSX line...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">foo</span>=<span class="hljs-string">"bar"</span>&gt;</span>Hello <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>WORLD<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>...can be replaced by this:</p>
+<pre><code class="lang-javascript">E(<span class="hljs-string">"div"</span>,{<span class="hljs-attr">foo</span>:<span class="hljs-string">"bar"</span>},<span class="hljs-string">"Hello "</span>,E(<span class="hljs-string">"strong"</span>,N,<span class="hljs-string">"WORLD"</span>),<span class="hljs-string">"!"</span>)
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-10">
+<span class="pos">2-4-10</span>
+<div class="slidecontent"><p>Some even take it a step further and create <strong>methods for all tag names</strong>. So instead of doing this...</p>
+<pre><code class="lang-javascript">E(<span class="hljs-string">"div"</span>,{<span class="hljs-attr">foo</span>:<span class="hljs-string">"bar"</span>},<span class="hljs-string">"Hello "</span>,E(<span class="hljs-string">"strong"</span>,N,<span class="hljs-string">"WORLD"</span>),<span class="hljs-string">"!"</span>)
+</code></pre>
+<p>...they can do this:</p>
+<pre><code class="lang-javascript">div({<span class="hljs-attr">foo</span>:<span class="hljs-string">"bar"</span>},<span class="hljs-string">"Hello "</span>,strong(N,<span class="hljs-string">"WORLD"</span>),<span class="hljs-string">"!"</span>)
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-11">
+<span class="pos">2-4-11</span>
+<div class="slidecontent"><p>The <strong>point</strong> of showing you this isn&#39;t that you shouldn&#39;t use JSX (because you should), but that <strong>JSX isn&#39;t magic</strong>.</p>
+<p>It is just a <strong>very small syntax extension</strong> to let us <strong>describe nested data</strong> in a convenient and familiar manner.</p>
+</div></section>
+<section class="slide" data-pos="2-4-12">
+<span class="pos">2-4-12</span>
+<div class="slidecontent"><p>We keep saying the <strong>syntax is simple</strong>, but, <strong>how exactly do we use it</strong>?</p>
+<p>Well - we <strong>enter JSX mode</strong> simply by <strong>opening a tag</strong>. If you <strong>close the (last) tag</strong> then you are <strong>back in JS mode</strong> again.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> License = <span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Steal this and we'll <span class="hljs-tag">&lt;<span class="hljs-name">em</span>&gt;</span>SMACK YOU SILLY<span class="hljs-tag">&lt;/<span class="hljs-name">em</span>&gt;</span>!<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-13">
+<span class="pos">2-4-13</span>
+<div class="slidecontent"><p>If we want to <strong>go to JS</strong> from <strong>inside JSX</strong> mode, we use curly braces:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> msg = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>Hello, {target || 'mate'}!<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-4-14">
+<span class="pos">2-4-14</span>
+<div class="slidecontent"><p>Thus the <strong>map</strong> for <strong>travelling between JS and JSX</strong> could be described like this:</p>
+<p><img src="resources/graphviz/jsx-js.svg" alt="JS-JSX"></p>
+</div></section>
+<section class="slide" data-pos="2-4-15">
+<span class="pos">2-4-15</span>
+<div class="slidecontent"><p>Although note that this can be <strong>nested to any depth</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{<span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{<span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{"Inception!"}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/10</div>
+      <h3>Installing JSX</h3>
+      <p>Who put the HTML in the JS?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-5-1">
+<span class="pos">2-5-1</span>
+<div class="slidecontent"><p>Since <strong>JSX isn&#39;t</strong> (yet) a <strong>part of the language</strong>, some kind of <strong>transpilation</strong> must occur. </p>
+<p><img src="resources/graphviz/jsx-transpile.svg" alt="transpile"></p>
+<p>Otherwise the <strong>browser wouldn&#39;t know</strong> how to interpret the code. But <strong>where does this happen</strong>?</p>
+</div></section>
+<section class="slide" data-pos="2-5-2">
+<span class="pos">2-5-2</span>
+<div class="slidecontent"><p>The absolute <strong>majority of React developers</strong> have a <strong>build step</strong> that doesn&#39;t just take care of <strong>JSX</strong>, but also allows the use of <strong>modules</strong> and perhaps <strong>other ES6/ES7 features</strong>.</p>
+<p>This isn&#39;t unique to React, but true for <strong>JavaScript development in general</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-5-3">
+<span class="pos">2-5-3</span>
+<div class="slidecontent"><p>The <strong>most popular tools</strong> for this are <a href="https://webpack.github.io/" class="link" target="_blank">Webpack</a> and <a href="http://browserify.org/" class="link" target="_blank">Browserify</a>.</p>
+<p>They run <strong>JavaScript code on your local machine</strong> using <a href="https://nodejs.org/en/" class="link" target="_blank">Node</a>, which in turn allows you to <strong>download dependencies</strong> using <a href="https://www.npmjs.com/" class="link" target="_blank">NPM</a>.</p>
+</div></section>
+<section class="slide" data-pos="2-5-4">
+<span class="pos">2-5-4</span>
+<div class="slidecontent"><p>There&#39;s a lot <strong>more to be said about the build step</strong>, but we&#39;ll leave it for now as we&#39;ll use an <strong>in-browser solution</strong> to avoid complexity.</p>
+</div></section>
+<section class="slide" data-pos="2-5-5">
+<span class="pos">2-5-5</span>
+<div class="slidecontent"><p>What we&#39;ll do is use a browser version of <a href="https://babeljs.io/" class="link" target="_blank">Babel</a>, a library that can do all sorts of <strong>transformations on JavaScript code</strong>, including handling JSX.</p>
+</div></section>
+<section class="slide" data-pos="2-5-6">
+<span class="pos">2-5-6</span>
+<div class="slidecontent"><p>Our setup is very easy - we <strong>include babel as a script tag</strong> along with everything else we need...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Playing with React<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/react.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/react-dom.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/babel.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-5-7">
+<span class="pos">2-5-7</span>
+<div class="slidecontent"><p>...and then we put our <strong>code</strong> in <strong>script tags</strong> with <strong>type</strong> set to <strong><code>text/babel</code></strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/babel"</span>&gt;</span>
+  let MyReactComponent = props =&gt; (
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>I can use <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>JSX<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>;
+  );
+<span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+</code></pre>
+<p>Babel will <strong>notice the type</strong> and <strong>perform the conversion</strong> to regular JS when the <strong>document loads</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-5-8">
+<span class="pos">2-5-8</span>
+<div class="slidecontent"><p>Note however that this solution is <strong>only for toying and demoing</strong>!</p>
+<p>In a <strong>production environment</strong> you should <strong>precompile</strong> in a <strong>build step</strong> as previously discussed.</p>
+</div></section>
+<section class="slide question" data-pos="2-5-9">
+<span class="pos">2-5-9</span>
+<div class="slidecontent">
+<p>Whether we do it in a build step or in the browser - why isn&#39;t <strong>converting JSX</strong> a <strong>part of React</strong>?</p>
+</div></section>
+<section class="slide answer" data-pos="2-5-10">
+<span class="pos">2-5-10</span>
+<div class="slidecontent">
+<p>Two main reasons;</p>
+<ul>
+<li>As shown <strong>JSX isn&#39;t mandatory</strong>, you can use React just fine without it.</li>
+<li>Also, <strong>JSX has uses outside of React</strong>. It <strong>isn&#39;t a part of React</strong>, but a convenient way to <strong>express nested data</strong>.</li>
+</ul>
+</div></section>
+<section class="slide" data-pos="2-5-11">
+<span class="pos">2-5-11</span>
+<div class="slidecontent"><p>As a <strong>non-React example</strong>: here&#39;s JSX being used in <a href="http://cycle.js.org/" class="link" target="_blank">CycleJS</a> code:</p>
+<pre><code class="lang-javascript">/** @jsx hJSX */   // &lt;-- this points JSX to use hJSX instead
+
+import {hJSX} from '@cycle/dom';
+
+function main(drivers) {
+  return {
+    DOM: Observable.timer(0, 1000)
+      .map(i =&gt; &lt;div&gt;Seconds elapsed: {i}&lt;/div&gt;)
+  };
+}
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/10</div>
+      <h3>Updating the UI</h3>
+      <p>acting on changes</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-6-1">
+<span class="pos">2-6-1</span>
+<div class="slidecontent"><p>Let&#39;s zoom back out for a bit and consider the problem of <strong>updating our UI</strong> whenever <strong>data changes</strong>.</p>
+<p>Handlebars doesn&#39;t solve this problem at all, it just provides the <strong>initial DOM</strong>. In a dynamic app we need <strong>additional functionality</strong> to <strong>update</strong> the UI when something happens.</p>
+</div></section>
+<section class="slide" data-pos="2-6-2">
+<span class="pos">2-6-2</span>
+<div class="slidecontent"><p>React instead takes a super-simple, brute force approach; it <strong>rerenders everything on every data update</strong>, using the <strong>same function</strong> for the <strong>initial render</strong> and every <strong>subsequent update</strong>.</p>
+</div></section>
+<section class="slide question" data-pos="2-6-3">
+<span class="pos">2-6-3</span>
+<div class="slidecontent">
+<p>Fine, <strong>rerendering everything on every update</strong> makes life easier for us developers, but surely that must have a huge <strong>performance penalty</strong>, lead to <strong>loss of scroll position</strong> and lots of other headaches for the user?</p>
+</div></section>
+<section class="slide answer" data-pos="2-6-4">
+<span class="pos">2-6-4</span>
+<div class="slidecontent">
+<p>Nope! And here&#39;s why. We actually lied before - a <strong>React component</strong> doesn&#39;t output DOM, but <strong>virtual DOM</strong>.</p>
+<p><img src="resources/graphviz/react-basic-component-virtual.svg" alt="React flow"></p>
+</div></section>
+<section class="slide" data-pos="2-6-5">
+<span class="pos">2-6-5</span>
+<div class="slidecontent"><p>The <strong>virtual DOM</strong> is simply a <strong>JavaScript representation</strong> of a DOM structure. For example, this HTML...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"excerpt"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Chapter 1<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>When Macgyver learned to fly<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-6-6">
+<span class="pos">2-6-6</span>
+<div class="slidecontent"><p>...could be <strong>represented in JS</strong> through something like this:</p>
+<pre><code>let virtualDOM = {
+<span class="hljs-symbol">  type:</span> <span class="hljs-string">"div"</span>,
+<span class="hljs-symbol">  attributes:</span> {<span class="hljs-string">"class"</span>:<span class="hljs-string">"excerpt"</span>},
+<span class="hljs-symbol">  children:</span> [{
+<span class="hljs-symbol">    type:</span> <span class="hljs-string">"h2"</span>,
+<span class="hljs-symbol">    children:</span> [<span class="hljs-string">"Chapter 1"</span>]
+  },{
+<span class="hljs-symbol">    type:</span> <span class="hljs-string">"p"</span>,
+<span class="hljs-symbol">    children:</span> [<span class="hljs-string">"When Macgyver learned to fly"</span>]
+  }]
+};
+</code></pre></div></section>
+<section class="slide" data-pos="2-6-7">
+<span class="pos">2-6-7</span>
+<div class="slidecontent"><p>To see what <strong>virtual DOM actually looks like</strong>, check out the <a href="resources/site/demos/virtualdom.html" target="_blank">VirtualDOM</a> demo!</p>
+</div></section>
+<section class="slide" data-pos="2-6-8">
+<span class="pos">2-6-8</span>
+<div class="slidecontent"><p>The point of the <strong>virtual DOM</strong> is that it <strong>allows React to compare new output with the previous output</strong>, and figure out what changes needs to be made to the actual DOM.</p>
+<p><strong>Only those changes</strong> are actually made, so the <strong>complete rerender is just conceptual</strong>.</p>
+</div></section>
+<section class="slide" data-pos="2-6-9">
+<span class="pos">2-6-9</span>
+<div class="slidecontent"><p>So here is what <strong>actually happens</strong> when the props of a component updates:</p>
+<p><img src="resources/graphviz/react-basic-component-actual.svg" alt="virtual DOM flow"></p>
+</div></section>
+<section class="slide" data-pos="2-6-10">
+<span class="pos">2-6-10</span>
+<div class="slidecontent"><p>This seemingly simple idea is one of the <strong>biggest advantages of React</strong>, as it <strong>removes lots of complexity</strong> and makes <strong>components easy to reason about</strong>.</p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/10</div>
+      <h3>Nested components</h3>
+      <p>Matryoshka time!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-7-1">
+<span class="pos">2-7-1</span>
+<div class="slidecontent"><p>It might already be evident, but still worth emphasising: we can <strong>use components within components</strong>.</p>
+<p>This sounds banal, but the <strong>composability</strong> that follows from this is a <strong>huge advantage</strong> of React.</p>
+</div></section>
+<section class="slide" data-pos="2-7-2">
+<span class="pos">2-7-2</span>
+<div class="slidecontent"><p>As an example, let&#39;s say we&#39;ve made <strong>components</strong> for the three <strong>sections of a news site</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Topbar = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>The Superhero Tattler<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span></span>;
+);
+
+<span class="hljs-keyword">let</span> Main = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="hljs-keyword">return</span> <span class="hljs-comment">// lots of stuff to generate the main section;</span>
+);
+
+<span class="hljs-keyword">let</span> Footer = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div"</span>&gt;</span>© The Tattler 2016<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-7-3">
+<span class="pos">2-7-3</span>
+<div class="slidecontent"><p>We can now <strong>use these components</strong> in an all-encompassing <strong><code>Site</code> component</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Site = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Topbar</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Main</span>/&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">Footer</span>/&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+</code></pre>
+<p>You can try this example in the <a href="resources/site/demos/nestedcomponents.html" target="_blank">Nested components</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="2-7-4">
+<span class="pos">2-7-4</span>
+<div class="slidecontent">
+<p>How can JSX <strong>tell the difference between an HTML element and a component</strong>?</p>
+<pre><code><span class="hljs-keyword">let</span> output1 = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Topbar</span>/&gt;</span></span>;  <span class="hljs-comment">// Here we mean a component</span>
+<span class="hljs-keyword">let</span> output2 = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>/&gt;</span></span>;     <span class="hljs-comment">// Here we mean a regular HTML div element</span>
+</code></pre></div></section>
+<section class="slide answer" data-pos="2-7-5">
+<span class="pos">2-7-5</span>
+<div class="slidecontent">
+<p>It is ridiculously simple - if the <strong>name is lower case</strong>, it is assumed to be a <strong>DOM tag</strong>, </p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> output1 = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>/&gt;</span></span>; <span class="hljs-comment">// --&gt; React.createElement("div");</span>
+</code></pre>
+<p>While <strong>upper case</strong> means a <strong>component</strong> which has to be an actual name in your code.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> output2 = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Div</span>/&gt;</span></span>; <span class="hljs-comment">// --&gt; React.createElement(Div);</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/10</div>
+      <h3>Connecting to the DOM</h3>
+      <p>Where does the plug go?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-8-1">
+<span class="pos">2-8-1</span>
+<div class="slidecontent"><p>We&#39;ve mentioned that <strong>React components don&#39;t output DOM</strong>, but <strong>virtual DOM</strong> (expressed with JSX). But eventually we do of course want to <strong>turn that into actual DOM</strong>.</p>
+<p>How is this done?</p>
+</div></section>
+<section class="slide" data-pos="2-8-2">
+<span class="pos">2-8-2</span>
+<div class="slidecontent"><p>Meet <strong><code>ReactDOM</code></strong>. This tiny helper library takes <strong>virtual DOM</strong> and puts it into a <strong>target DOM node</strong>.</p>
+<pre><code class="lang-javascript">ReactDOM.render(
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Hello world!<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>,
+  <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"container"</span>)
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-8-3">
+<span class="pos">2-8-3</span>
+<div class="slidecontent"><p>The <strong>virtual DOM input</strong> can of course also be the result of a <strong>component render</strong>:</p>
+<pre><code class="lang-javascript">let User = props =&gt; &lt;div&gt;Name: {props.name}&lt;/div&gt;;
+
+ReactDOM.render(
+  &lt;User name="David"/&gt;,
+  document.getElementById("container")
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-8-4">
+<span class="pos">2-8-4</span>
+<div class="slidecontent"><p>Note that <strong><code>ReactDOM</code> is sold separately</strong>! We have to <strong>explicitly include it</strong>, as the fox-eyed among you noticed already in our Babel example:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Playing with React<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/react.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/react-dom.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">scripτ</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"lib/babel.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">scripτ</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="2-8-5">
+<span class="pos">2-8-5</span>
+<div class="slidecontent"><p>There is <strong>much to tell still</strong>, but now you have <strong>enough to say hello to the world</strong>!</p>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--STARTSECTION9--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 9/10</div>
+      <h3>React devtools</h3>
+      <p>The component petri dish</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-9-1">
+<span class="pos">2-9-1</span>
+<div class="slidecontent"><p>So, hopefully you <strong>remember</strong> the <a href="resources/site/demos/nestedcomponents.html" target="_blank">Nested components</a> from a couple sections seconds back? If we open the demo and check <strong>webkit inspector</strong> we&#39;d see something like this:</p>
+<p><img src="resources/images/react-devtools-without.png" alt="webkit inspector"></p>
+</div></section>
+<section class="slide" data-pos="2-9-2">
+<span class="pos">2-9-2</span>
+<div class="slidecontent"><p>That is <strong>not super useful</strong>, as there is <strong>no way of telling what output comes from what component</strong>.</p>
+<p>As React developers it is very convenient to <strong>think in components</strong>, so not being able to do that in the debugger is <strong>very detrimental</strong>!</p>
+</div></section>
+<section class="slide" data-pos="2-9-3">
+<span class="pos">2-9-3</span>
+<div class="slidecontent"><p>Enter <strong>React devtools</strong>, a <strong>plugin</strong> to <strong>Chrome</strong> or <strong>Firefox</strong>. It provide a <strong>React tab</strong>, which gives the following view instead:</p>
+<p><img src="resources/images/react-devtools-with.png" alt="webkit inspector"></p>
+<p>Now we can <strong>easily distinguish between the components</strong>!</p>
+</div></section>
+<section class="slide" data-pos="2-9-4">
+<span class="pos">2-9-4</span>
+<div class="slidecontent"><p>It can also <strong>show component details</strong> such as <strong>what props were passed</strong>. Below we show this for the <a href="resources/site/demos/hellosomeone.html" target="_blank">HelloSomeone</a> demo:</p>
+<p><img src="resources/images/react-devtools-details.png" alt="webkit inspector"></p>
+</div></section>
+<section class="slide" data-pos="2-9-5">
+<span class="pos">2-9-5</span>
+<div class="slidecontent"><p>For more details, check the <a href="https://github.com/facebook/react-devtools" class="link" target="_blank">React Devtools</a> homepage.</p>
+<p>The devtools also do <strong>a lot more</strong>, such as showing <strong>state</strong> and <strong>context</strong>. But you don&#39;t know about any of that yet, so, never mind!</p>
+</div></section>
+</section>
+<!--ENDSECTION9--><!--STARTSECTION10--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 10/10</div>
+      <h3>Exercise 1</h3>
+      <p>Dipping our toe in the water</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="2-10-1">
+<span class="pos">2-10-1</span>
+<div class="slidecontent"><p>Now you are ready to try your hand at the first exercise! You&#39;ll find it in the course resources, named <a href="resources/site/exercises/01_myfirstcomponent/" target="_blank">MyFirstComponent</a>.</p>
+</div></section>
+</section>
+<!--ENDSECTION10--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(2-1);
+        } else if (code >= 49 && code <= 10+48) {
+          window.location.hash = "#/" + (code-48+1+0);
+        }
+        if (2 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(2+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

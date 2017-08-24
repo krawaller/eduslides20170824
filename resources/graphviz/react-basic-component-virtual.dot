@@ -1,0 +1,9 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+	
+	component [shape=box]
+	DOM [label="virtual DOM"]
+	props -> component
+	component -> DOM
+}

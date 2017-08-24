@@ -1,0 +1,11 @@
+digraph {
+	rankdir = LR
+	bgcolor = transparent
+
+	virtual [label="virtual DOM"]
+
+	component [shape=box]
+	props -> component
+	state -> component
+	component -> virtual
+}

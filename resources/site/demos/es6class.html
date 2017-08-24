@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: es6class</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>es6class</span></div></div>
+<div class="wrapper">
+
+  <div id="container"></div>
+
+
+<script type="text/babel">
+
+class Song extends React.Component {
+  constructor(props) {
+    super(props); // because we must
+    this.state = {count:1};
+    this.increase = this.increase.bind(this);
+  }
+  increase() {
+    this.setState({count: this.state.count+1});
+  }
+  render() {
+    var now = this.state.count,
+      txt = this.props[now === 1 ? "singular" : "plural"];
+    return <div onClick={this.increase}>{now+' '+txt}</div>;
+  }
+}
+
+ReactDOM.render(
+  <div>
+    <h4>Sing along! (by clicking the lyrics)</h4>
+    <Song singular="bottle of beer" plural="bottles of beer"/>
+  </div>,
+  document.getElementById("container")
+);
+
+	</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+#container {
+  margin: 1em 4em;
+}
+
+
+#frontpage h1 {
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  font-size: 70px;
+  text-align: center;
+  padding-top: 200px;
+}
+
+#frontpage div {
+  text-align: center;
+}
+
+.splash {
+  font-size: 30px;
+  margin-bottom: 200px;
+}
+
+.logo {
+  margin: 0 auto;
+  width: 250px;
+  display: block;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+}
+
+.footer span:first-child {
+  float: left;
+}
+
+.footer span:last-child {
+  float: right;
+}
+
+.footer:after {
+  content: ' ';
+  display: block;
+  clear: both;
+  color: white;
+}
+
+
+
+
+#overview {
+  break-before: page;
+}
+
+#overview h2, .lookupindex h2 {
+  padding-top: 10px;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  font-size: 50px;
+  text-align: center;
+}
+
+.overviewlist {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.overviewlist h4 {
+  margin-bottom: 3px;
+}
+
+.overviewlist ol {
+  margin-top: 3px;
+}
+
+.overviewlist > div:first-child {
+    padding-right: 30px;
+}
+
+.overviewlist > div:last-child {
+    padding-left: 30px;
+}
+
+.chapterstart {
+  break-before: page;
+  border-bottom: 1px dashed #CCC;
+  text-align: center;
+  padding-top: 30px;
+  margin-bottom: 60px;
+}
+
+.chapterstart h2 {
+  font-size: 50px;
+  font-weight: bold;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  margin-top: 4px;
+}
+
+.chapterstart h2 + p {
+  font-style: italic;
+}
+
+.chaptersectionlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.slide {
+  break-inside: avoid;
+}
+
+.slide ul, .slide ol {
+  margin-left: 30px;
+}
+
+
+/* The slide containing the list of sections in a chapter */
+.chaptercontents > div{
+  display: flex;
+  flex-direction: column;
+    align-items: center;
+}
+
+
+.sectionheader div {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 0 120px;
+  break-inside: avoid;
+  text-align: center;
+}
+
+.sectionheader h3 {
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+}
+
+.sectionheader h3 span {
+  font-style: inherit;
+}
+
+.sectionheader span, .sectionheader p {
+  font-style: italic;
+}
+
+pre {
+  margin: 25px 30px;
+    font-size: 0.95em;
+}
+
+.chaptercontainer {
+  padding-right: 2em;
+}
+
+.imgcontainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+img {
+  width: auto;
+  height: auto;
+  max-width: 500px;
+  margin-left: 30px;
+}
+
+img[src^="graphviz"] { /* because that'll be davids structure charts which are transparent */
+  background-color: #FEFEFE;
+  border-radius: 13px;
+  padding: 7px;
+}
+
+:right slide {
+  border: 1px solid red;
+}
+
+.slide .pos {
+    float: right;
+    color: #BCBCBC;
+    font-size: 0.8em;
+    position: relative;
+    top: 1.2em;
+    right: -90px;
+    font-style: italic;
+}
+
+#demoindex {
+  break-before: page;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/*  index styles */
+
+#index {
+  break-after: page;
+}
+
+#index > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 2em;
+    align-items: center;
+}
+
+#index > div h3 {
+  margin-top: 0;
+  text-align: center;
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+}
+
+#index > div > div:first-child {
+    display: inline-block;
+    width: 62%;
+}
+
+#index > div > div:nth-child(2) {
+    display: inline-block;
+    width: 35%;
+}
+
+
+section.list ul {
+  list-style-type: none;
+}
+
+section.list li > span {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  padding: 3px;
+  border-radius: 34px;
+  min-width: 18px;
+  text-align: center;
+  margin-right: 5px;
+  border: 1px solid black;
+}
+
+
+/* divider between two "normal" slides, also used for slidemarking */
+
+.slide + .slide:before, .sectionheader:before, .sectionheader + .slide:before {
+  display: block;
+  text-align: center;
+  clear: both;
+  background-color: red;
+  color: white;
+  padding: 3px;
+  border-radius: 34px;
+  margin: 31px auto;
+  width: 18px;
+  height: 18px;
+  position: relative;
+
+  content: " ";
+  margin-left: -10000px; /* hidden for now! :) */
+  border: 1px solid black;
+}
+
+.slide.num:before, .slide.question:before, .slide.answer:before {
+  top: 53px;
+  margin-left: -40px;
+}
+
+.slide.numA:before {content: "a";}
+.slide.numB:before {content: "b";}
+.slide.numC:before {content: "c";}
+.slide.numD:before {content: "d";}
+.slide.numE:before {content: "e";}
+.slide.numF:before {content: "f";}
+.slide.numG:before {content: "g";}
+.slide.numH:before {content: "h";}
+.slide.numI:before {content: "i";}
+.slide.numJ:before {content: "j";}
+
+.slide.question:before {content: "Q";}
+.slide.answer:before {content: "A";}
+
+
+.chaptersectionlist ul {
+  list-style-type: none;
+}
+
+.lookupindex {
+  page-break-inside: avoid;
+  break-before: page;
+}
+
+.linklist .lookuplist span:first-child {
+  color: #BCBCBC;
+  font-size: 0.8em;
+  font-style: italic;
+  width: 48px;
+  display: inline-block;
+  text-align: right;
+  margin-right: 10px;
+}
+
+.linklist .lookuplist span:nth-child(2) {
+  font-size: 12px;
+}
+
+.linklist .lookuplist span:nth-child(2):after {
+  content: ": "
+}
+
+#slides a, #slides a:visited {
+  color: rgb(0,0,238);
+}
+
+.lookuplist a {
+  font-size: 10px;
+  color: rgb(0,0,238);
+}
+
+
+

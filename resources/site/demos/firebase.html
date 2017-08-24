@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: firebase</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>firebase</span></div></div>
+<div class="wrapper">
+<div id="container"></div>
+
+<script type="text/babel">
+
+firebase.initializeApp({
+	apiKey: "AIzaSyCMxaH4vKLmnq963uCyL6B2j6JH19ZZKA0",
+	databaseURL: "https://ed-firebase-demo.firebaseio.com"
+});
+
+let DB = firebase.database().ref("simple");
+
+class App extends React.Component {
+	constructor(){
+		super();
+		this.state = { data: {} };
+		this.addMsg = this.addMsg.bind(this);
+	}
+	componentDidMount() {
+		DB.on('value',(snapshot)=> {
+			this.setState({data: snapshot.val() || {}})
+		});
+	}
+	addMsg(e) {
+		DB.push(this.refs.chatmsg.value);
+		this.refs.chatmsg.value = '';
+		e.preventDefault();
+	}
+	render() {
+		let msgs = _.map(this.state.data,(msg,id)=> {
+			return <li key={id}>{msg}</li>;
+		}).reverse();
+		return <div>
+			<form onSubmit={this.addMsg}>
+				<input ref="chatmsg"></input>
+				<button type="submit">Chat</button>
+			</form>
+			<ul>{msgs}</ul>
+		</div>;
+	}
+}
+
+ReactDOM.render(<App/>,document.getElementById("container"))
+
+</script>
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

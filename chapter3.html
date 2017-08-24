@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>Rendering lessons</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 3 of 12 </div>
+            <h1>Rendering lessons</h1>
+            <span>reindeering</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p><strong>Before</strong> we turn to <strong>more involved components</strong>, let&#39;s <strong>master</strong> the art of <strong>rendering</strong>!</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">Faulty&nbsp;render&nbsp;return</a></li><li><a href="#/4">Close&nbsp;all&nbsp;elements</a></li><li><a href="#/5">Single&nbsp;VS&nbsp;double&nbsp;braces</a></li><li><a href="#/6">Reserved&nbsp;names</a></li><li><a href="#/7">Translation&nbsp;issues</a></li><li><a href="#/8">Spacing&nbsp;trick</a></li><li><a href="#/9">Conditional&nbsp;render</a></li><li><a href="#/10">Component&nbsp;children</a></li><li><a href="#/11">Component&nbsp;props&nbsp;VS&nbsp;Element&nbsp;props</a></li><li><a href="#/12">Rendering&nbsp;a&nbsp;list</a></li><li><a href="#/13">Rendering&nbsp;HTML&nbsp;strings</a></li><li><a href="#/14">Exercise&nbsp;2</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/12</div>
+      <h3>Faulty render return</h3>
+      <p>There can be only 1</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-1-1">
+<span class="pos">3-1-1</span>
+<div class="slidecontent"><p>There&#39;s a <strong>very common mistake</strong> that&#39;ll trip most people up at least once regarding <strong>render output</strong>, which involves doing something like this:</p></p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">return</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">h4</span>&gt;</span>Sidebar!<span class="hljs-tag">&lt;/<span class="hljs-name">h4</span>&gt;</span></span>
+  &lt;MyComp somedata={data} /&gt;
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">footer</span>&gt;</span>Copyright<span class="hljs-tag">&lt;/<span class="hljs-name">footer</span>&gt;</span></span>
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-1-2">
+<span class="pos">3-1-2</span>
+<div class="slidecontent"><p>That <strong>won&#39;t work</strong>, since <strong>each element corresponds to a <code>React.createElement</code> call</strong>.</p>
+<p>It makes no sense to return 3 function calls.</p>
+</div></section>
+<section class="slide" data-pos="3-1-3">
+<span class="pos">3-1-3</span>
+<div class="slidecontent"><p>If we want to <strong>return 3 things</strong> from a regular function, we have to <strong>put those in an array</strong>.</p>
+<pre><code class="lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">someData</span>)</span>{
+  <span class="hljs-comment">// ... lots of advanced computations</span>
+  <span class="hljs-keyword">return</span> [
+    something,
+    somethingElse,
+    sometOtherThing
+  ];
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-1-4">
+<span class="pos">3-1-4</span>
+<div class="slidecontent"><p>The equivalent here is to <strong>wrap it all in a <code>div</code></strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">return</span> (
+  &lt;div&gt;
+    &lt;h4&gt;Sidebar!&lt;/h4&gt;
+    &lt;MyComp somedata={data} /&gt;
+    &lt;footer&gt;Copyright&lt;/footer&gt;
+  &lt;div&gt;
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-1-5">
+<span class="pos">3-1-5</span>
+<div class="slidecontent"><p>In essence: always <strong>return exactly 1 element</strong> from the render function.</p>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/12</div>
+      <h3>Close all elements</h3>
+      <p>lock all doors</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-2-1">
+<span class="pos">3-2-1</span>
+<div class="slidecontent"><p>In HTML there are several elements which are considered to be <strong>self-closing</strong> (the proper name is <strong>void elements</strong> if you want to get specific).</p>
+<p>For example, you <strong>don&#39;t need to close an image</strong> element:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"../imgs/logo.png"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"Logo"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">h2</span>&gt;</span>Edument<span class="hljs-tag">&lt;/<span class="hljs-name">h2</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-2-2">
+<span class="pos">3-2-2</span>
+<div class="slidecontent"><p>But in JSX we <strong>have to close all elements</strong>, since they are translated to function calls.</p>
+<p>The <strong>closing tag</strong> becomes the <strong>end parens</strong> of the invocation.</p>
+</div></section>
+<section class="slide" data-pos="3-2-3">
+<span class="pos">3-2-3</span>
+<div class="slidecontent"><p>Thus when we want to render an image in JSX, we have to either <strong>self-close</strong> it or provide a <strong>closing tag</strong>.</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"../imgs/logo.png"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"Logo"</span> /&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"../imgs/logo.png"</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">"Logo"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">img</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-2-4">
+<span class="pos">3-2-4</span>
+<div class="slidecontent"><p>If you forget this then the transpiler will throw a <strong>compile time error</strong>.</p>
+<p>In other words, this particular error is <strong>easy to catch</strong> and <strong>cannot cause bugs</strong> in your application.</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/12</div>
+      <h3>Single VS double braces</h3>
+      <p>The more the merrier?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-3-1">
+<span class="pos">3-3-1</span>
+<div class="slidecontent"><p>As you&#39;ve seen, we go from JSX to JS through using a <strong>single pair of curly braces</strong>. In many other templating languages (Angular, Handlebars) we use double braces.</p>
+</div></section>
+<section class="slide" data-pos="3-3-2">
+<span class="pos">3-3-2</span>
+<div class="slidecontent"><p>In JSX, <strong>double braces</strong> would mean <strong>switching to JS</strong> (the outer braces) and then <strong>defining an object</strong> (the inner braces).</p>
+<p>This is sometimes useful if we want to <strong>pass an object to a prop on a component</strong>:</p>
+<pre><code class="lang-javascript">&lt;User data={{<span class="hljs-attr">name</span>:<span class="hljs-string">'Steve'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">7</span>}} /&gt;
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-3-3">
+<span class="pos">3-3-3</span>
+<div class="slidecontent"><p>A <strong>more clear</strong> but also <strong>verbose</strong> way is to <strong>first define the object</strong>...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> user = {<span class="hljs-attr">name</span>:<span class="hljs-string">'Steve'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">7</span>}
+</code></pre>
+<p>...and then <strong>pass in the variable</strong> instead:</p>
+<pre><code class="lang-javascript">&lt;User data={user} /&gt;
+</code></pre>
+</div></section>
+<section class="slide question" data-pos="3-3-4">
+<span class="pos">3-3-4</span>
+<div class="slidecontent">
+<p>What happens if you forget yourself and <strong>just use single braces</strong> when you <strong>declare an object in a property</strong>?</p>
+<pre><code class="lang-javascript">&lt;User data={<span class="hljs-attr">name</span>:<span class="hljs-string">'Steve'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">7</span>} /&gt;
+</code></pre>
+</div></section>
+<section class="slide answer" data-pos="3-3-5">
+<span class="pos">3-3-5</span>
+<div class="slidecontent">
+<p>An <strong>error is thrown</strong> when the JSX is being interpreted, since this...</p>
+<pre><code class="lang-javascript">&lt;User data={<span class="hljs-attr">name</span>:<span class="hljs-string">'Steve'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">7</span>} /&gt;
+</code></pre>
+<p>...means that we try to do this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> dataprop = name:<span class="hljs-string">'Steve'</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">7</span> <span class="hljs-comment">// syntax error!</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/12</div>
+      <h3>Reserved names</h3>
+      <p>Lost in translation</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-4-1">
+<span class="pos">3-4-1</span>
+<div class="slidecontent"><p>Because <strong>JSX translates to JavaScript</strong>, words that are <strong>reserved in JS</strong> are <strong>avoided as attribute names</strong>.</p>
+</div></section>
+<section class="slide" data-pos="3-4-2">
+<span class="pos">3-4-2</span>
+<div class="slidecontent"><p>Remember how this JSX string...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">foo</span>=<span class="hljs-string">"bar"</span>&gt;</span>Hello<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>...is translated to this JS call:</p>
+<pre><code class="lang-javascript">React.createElement(<span class="hljs-string">"div"</span>,{<span class="hljs-attr">foo</span>:<span class="hljs-string">"bar"</span>},<span class="hljs-string">"Hello"</span>);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-4-3">
+<span class="pos">3-4-3</span>
+<div class="slidecontent"><p>The <strong>attribute names</strong> in JSX becomes <strong>object keys</strong> in JS.</p>
+<p>So if we write...</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">"heading"</span>&gt;</span>Hello<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>...then the transpiler would output...</p>
+<pre><code class="lang-javascript">React.createElement(<span class="hljs-string">"div"</span>,{<span class="hljs-attr">class</span>:<span class="hljs-string">"heading"</span>},<span class="hljs-string">"Hello"</span>);
+</code></pre>
+<p>...which would <strong>blow up</strong> in older browsers since <strong><code>class</code> previously wasn&#39;t allowed as a key name</strong>.</p>
+</div></section>
+<section class="slide" data-pos="3-4-4">
+<span class="pos">3-4-4</span>
+<div class="slidecontent"><p>To work around that we <strong>use <code>className</code> instead</strong>:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"heading"</span>&gt;</span>Hello<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p><strong>React</strong> will <strong>take care of making sure</strong> that the resulting DOM node gets the <strong>correct <code>class</code> attribute</strong>.</p>
+</div></section>
+<section class="slide" data-pos="3-4-5">
+<span class="pos">3-4-5</span>
+<div class="slidecontent"><p>For the same reason we also <strong>use <code>htmlFor</code> instead of <code>for</code></strong> in form labels.</p>
+<p>Forgetting about all this and typing <code>class</code> instead of <code>className</code> is a <strong>very common mistake</strong> among beginners and veterans alike, so be warned!</p>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/12</div>
+      <h3>Translation issues</h3>
+      <p>English to French to English shenanigans</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-5-1">
+<span class="pos">3-5-1</span>
+<div class="slidecontent"><p>When we &quot;<strong>send JS into JSX</strong>&quot; using curly braces...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{someValue}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+<p>...what can we send, and <strong>how is it interpreted</strong>?</p>
+</div></section>
+<section class="slide" data-pos="3-5-2">
+<span class="pos">3-5-2</span>
+<div class="slidecontent"><p>Here&#39;s what!</p>
+<p><strong>Strings</strong> or <strong>numbers</strong> end up as <strong>text nodes</strong>, as we&#39;ve seen many times already:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> name = <span class="hljs-string">'Steve'</span>, number = <span class="hljs-number">5</span>;
+<span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>My friend {name} has {number} bottles of beer<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+<span class="hljs-comment">// --&gt; "&lt;div&gt;My friend Steve has 5 bottles of beer&lt;/div&gt;"</span>
+</code></pre>
+<p><strong>Earlier versions</strong> of React put a <strong><code>span</code> around the strings</strong>, but that <strong>doesn&#39;t happen anymore</strong>.</p>
+</div></section>
+<section class="slide" data-pos="3-5-3">
+<span class="pos">3-5-3</span>
+<div class="slidecontent"><p><strong>JSX</strong> elements are passed straight through:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> friend = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>Steve<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span></span>;
+<span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>My friend {friend} is thirsty<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+<span class="hljs-comment">// --&gt; "&lt;div&gt;My friend &lt;strong&gt;Steve&lt;/strong&gt; is thirsty&lt;/div&gt;"</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-5-4">
+<span class="pos">3-5-4</span>
+<div class="slidecontent"><p><strong><code>undefined</code>, <code>null</code> and <code>false</code></strong> don&#39;t create anything:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> favourite = <span class="hljs-literal">null</span>; 
+<span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Steve's favourite meal: {favourite}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+<span class="hljs-comment">// --&gt; "&lt;div&gt;Steve's favourite meal: &lt;/div&gt;"</span>
+</code></pre>
+<p>Curiously, <strong>neither does <code>true</code> or functions</strong>.</p>
+</div></section>
+<section class="slide" data-pos="3-5-5">
+<span class="pos">3-5-5</span>
+<div class="slidecontent"><p>Items in an <strong>array</strong> will be <strong>interpreted individually</strong> (with no space in-between):</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> numbers = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];
+<span class="hljs-keyword">let</span> output = <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Steve can count: {numbers} bottles of beer<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+<span class="hljs-comment">// --&gt; "&lt;div&gt;Steve can count: 123 bottles of beer&lt;/div&gt;"</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-5-6">
+<span class="pos">3-5-6</span>
+<div class="slidecontent"><p>And finally, for completion&#39;s sake</p>
+<ul>
+<li>an <strong>object</strong> throws an <strong>error</strong></li>
+<li><code>NaN</code> renders the string <code>&quot;NaN&quot;</code>.</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/12</div>
+      <h3>Spacing trick</h3>
+      <p>Room to breathe</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-6-1">
+<span class="pos">3-6-1</span>
+<div class="slidecontent"><p>Here&#39;s what happens. You define your structure like this:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Comp1</span>/&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Comp2</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>...but since both <code>Comp1</code> and <code>Comp2</code> are <strong>inline elements</strong>, you need a 
+<strong>space between them</strong>. There won&#39;t be.</p>
+</div></section>
+<section class="slide" data-pos="3-6-2">
+<span class="pos">3-6-2</span>
+<div class="slidecontent"><p>Solve through this little trick:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">Comp1</span>/&gt;</span>{' '}
+  <span class="hljs-tag">&lt;<span class="hljs-name">Comp2</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+<p>The little <code>{&#39; &#39;}</code> spacing will result in a <strong>one-space string</strong> at the correct location:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">Comp1</span>/&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">Comp2</span>/&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/12</div>
+      <h3>Conditional render</h3>
+      <p>It depends</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-7-1">
+<span class="pos">3-7-1</span>
+<div class="slidecontent"><p>Let&#39;s talk a bit about how to <strong>return different things</strong> depending on the data!</p>
+<p>First off, in React, this is a <strong>pure JavaScript problem</strong>. We don&#39;t have to look up any specific logic helpers tacked on to the side of HTML, as in Handlebars.</p>
+</div></section>
+<section class="slide" data-pos="3-7-2">
+<span class="pos">3-7-2</span>
+<div class="slidecontent"><p>The <strong>simplest solution</strong>, as shown in the <a href="resources/site/demos/conditionalreturn.html" target="_blank">ConditionalReturn</a> demo, is to simply <strong>branch the return statement</strong>:</p>
+<pre><code class="lang-javascript">Mirror = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+  <span class="hljs-keyword">if</span> (props.betruthful){
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>The fairest of all is <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>Snow-white<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>The fairest of all is <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>You<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-7-3">
+<span class="pos">3-7-3</span>
+<div class="slidecontent"><p>Often, as in this case, it is more convenient to do the <strong>branching inside the return statement</strong>:</p>
+<pre><code class="lang-javascript">Mirror = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    The fairest of all is
+    <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>{props.betruthful ? "Snow-white" : "You"}<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+</code></pre>
+<p>We show this in the <a href="resources/site/demos/conditionalreturn2.html" target="_blank">ConditionalReturn2</a> demo.</p>
+</div></section>
+<section class="slide" data-pos="3-7-4">
+<span class="pos">3-7-4</span>
+<div class="slidecontent"><p>Some prefer to <strong>do the branching before returning</strong> by using <strong>variables</strong>, which also works fine:</p>
+<pre><code class="lang-javascript">Mirror = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> {
+  <span class="hljs-keyword">let</span> prettiest = props.betruthful ? <span class="hljs-string">"Snow-white"</span> : <span class="hljs-string">"You"</span>;
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      The fairest of all is <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>{prettiest}<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-7-5">
+<span class="pos">3-7-5</span>
+<div class="slidecontent"><p>Sometimes we don&#39;t need to branch between different output, but instead display <strong>something or nothing</strong>.</p>
+<p>A convenient solution is to use the <strong>JavaScript <code>&amp;&amp;</code> operator</strong> inside JSX as in the <a href="resources/site/demos/onlyiftrue.html" target="_blank">OnlyIfTrue</a> demo:</p>
+<pre><code class="lang-javascript">Mirror = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>The fairest of all is you!<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+    {props.betruthful &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>...no, actually it's Snow-white.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>}
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+);
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--STARTSECTION8--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 8/12</div>
+      <h3>Component children</h3>
+      <p>What happens to the little ones?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-8-1">
+<span class="pos">3-8-1</span>
+<div class="slidecontent"><p>It is a <strong>very natural thing</strong> to wrap elements in other elements. That is how we <strong>express the nested structure</strong> of what we want.</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>milk<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>toilet paper<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">li</span>&gt;</span>bread<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-8-2">
+<span class="pos">3-8-2</span>
+<div class="slidecontent"><p>But what happens when we <strong>wrap elements inside a component</strong>?</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">Component</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>What will happen to me?<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">Component</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-8-3">
+<span class="pos">3-8-3</span>
+<div class="slidecontent"><p>Inside a component, we can <strong>access elements</strong> that were passed in like this through <strong><code>props.children</code></strong>:</p>
+<pre><code class="lang-javascript">Highlighter = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">"highlight"</span>&gt;</span>{props.children}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+);
+
+<span class="hljs-keyword">let</span> output = (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Highlighter</span>&gt;</span>
+    Clean up <span class="hljs-tag">&lt;<span class="hljs-name">strong</span>&gt;</span>NOW<span class="hljs-tag">&lt;/<span class="hljs-name">strong</span>&gt;</span>!
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Highlighter</span>&gt;</span></span>
+);
+
+<span class="hljs-comment">// output is &lt;div className="highlight"&gt;Clean... &lt;/div&gt;</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION8--><!--STARTSECTION9--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 9/12</div>
+      <h3>Component props VS Element props</h3>
+      <p>You say tomato</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-9-1">
+<span class="pos">3-9-1</span>
+<div class="slidecontent"><p>When we <strong>render an element</strong>...</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">'something'</span> <span class="hljs-attr">data-myvar</span>=<span class="hljs-string">'sth else'</span>&gt;</span>...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+</code></pre>
+<p>the props will end up on the actual DOM node:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">'something'</span> <span class="hljs-attr">data-myvar</span>=<span class="hljs-string">'sth else'</span>&gt;</span>...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-9-2">
+<span class="pos">3-9-2</span>
+<div class="slidecontent"><p>But when we render a <strong>component</strong>, the <strong>attributes become properties</strong> that are passed to the component, as we&#39;ve seen many times already.</p>
+<pre><code class="lang-javascript">let User = props =&gt; &lt;span&gt;Name: {props.name}&lt;/span&gt;;
+
+let output = &lt;User name="David"/&gt;; // ---&gt; Name: David
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-9-3">
+<span class="pos">3-9-3</span>
+<div class="slidecontent"><p>A <strong>common mistake</strong> is to confuse this and type:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">MyComp</span> <span class="hljs-attr">className</span>=<span class="hljs-string">'someclass'</span>&gt;</span>
+</code></pre>
+<p>This <strong>won&#39;t put the className on the DOM node</strong>, unless <code>MyComp.render</code> explicitly passes it on to its output:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">{props.className}</span>&gt;</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION9--><!--STARTSECTION10--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 10/12</div>
+      <h3>Rendering a list</h3>
+      <p>What makes me special?</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-10-1">
+<span class="pos">3-10-1</span>
+<div class="slidecontent"><p>It is quite common to want to <strong>render a dynamic array</strong> of something.</p>
+<pre><code><span class="hljs-keyword">let</span> <span class="hljs-attr">chores</span> = [<span class="hljs-string">"do dishes"</span>, <span class="hljs-string">"take out trash"</span>, <span class="hljs-string">"water plants"</span>];
+
+<span class="hljs-keyword">let</span> <span class="hljs-attr">output</span> = &lt;Chores <span class="hljs-attr">chores={chores}</span> /&gt;;
+</code></pre></div></section>
+<section class="slide" data-pos="3-10-2">
+<span class="pos">3-10-2</span>
+<div class="slidecontent"><p>This can be easily accomplished by <strong>prerendering</strong> the list in a <strong>variable</strong> which is then <strong>referenced</strong> in the <strong>output</strong>.</p>
+<pre><code class="lang-javascript">let Chores = props =&gt; {
+  let renderedChores = props.chores.map(chore =&gt; &lt;li&gt;{chore}&lt;/li&gt;);
+  return (
+    &lt;div&gt;
+      &lt;h4&gt;My chores:&lt;/h4&gt;
+      &lt;ul&gt;{renderedChores}&lt;/ul&gt;
+    &lt;/div&gt;
+  );
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-10-3">
+<span class="pos">3-10-3</span>
+<div class="slidecontent"><p>However, if we run the code on the previous slide, React will give a <strong>warning</strong> in the <strong>console</strong>:</p>
+<p><img src="resources/images/react-listwarning.png" alt="warning"></p>
+</div></section>
+<section class="slide" data-pos="3-10-4">
+<span class="pos">3-10-4</span>
+<div class="slidecontent"><p>Since the <code>map</code> method is called with the <strong>index</strong> as second argument, we can use that <strong>as unique key</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> renderedChores = props.chores.map(<span class="hljs-function">(<span class="hljs-params">chore,n</span>)=&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{n}</span>&gt;</span>{chore}<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span>; <span class="hljs-comment">// &lt;-- note the `key` prop</span>
+);
+</code></pre>
+<p>Now we will no longer be given a warning.</p>
+</div></section>
+<section class="slide" data-pos="3-10-5">
+<span class="pos">3-10-5</span>
+<div class="slidecontent"><p><strong>Try this out</strong> in the <a href="resources/site/demos/renderlist.html" target="_blank">Renderlist</a> demo.</p>
+</div></section>
+<section class="slide question" data-pos="3-10-6">
+<span class="pos">3-10-6</span>
+<div class="slidecontent">
+<p>Hey, but, since the code <strong>worked without a key</strong> you might wonder - <strong>what&#39;s the big deal?</strong></p>
+</div></section>
+<section class="slide answer" data-pos="3-10-7">
+<span class="pos">3-10-7</span>
+<div class="slidecontent">
+<p>It usually doesn&#39;t matter, but if we do <strong>dynamic updates</strong> in a list, then React <strong>must be able to distinguish</strong> between components.</p>
+</div></section>
+</section>
+<!--ENDSECTION10--><!--STARTSECTION11--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 11/12</div>
+      <h3>Rendering HTML strings</h3>
+      <p>microwave meals ftw</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-11-1">
+<span class="pos">3-11-1</span>
+<div class="slidecontent"><p>Imagine you got a string of HTML from somewhere:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> longList = <span class="hljs-string">"&lt;ul&gt;&lt;li&gt;...&lt;/li&gt;&lt;/ul&gt;"</span>;
+</code></pre>
+<p>How do we <strong>render that from inside a component</strong>?</p>
+</div></section>
+<section class="slide" data-pos="3-11-2">
+<span class="pos">3-11-2</span>
+<div class="slidecontent"><p>Simply <strong>outputting the string doesn&#39;t work</strong>, it will just render as plain text.</p>
+<pre><code class="lang-javascript">let Static = props =&gt; &lt;div&gt;{props.static}&lt;/div&gt;;
+
+let output = &lt;Static static="&lt;h2&gt;Hello!&lt;/h2&gt;"/&gt;;
+// ---&gt; "&lt;h2&gt;Hello!&lt;/h2&gt;"
+</code></pre>
+</div></section>
+<section class="slide" data-pos="3-11-3">
+<span class="pos">3-11-3</span>
+<div class="slidecontent"><p>Here&#39;s how to do it: We <strong>put the string in the <code>__html</code> prop</strong> of an object:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> htmlObj = {<span class="hljs-attr">__html</span>:longList};
+</code></pre>
+<p>...and then we <strong>feed that to the <code>dangerouslySetInnerHTML</code> attribute</strong> of a container tag:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">dangerouslySetInnerHTML</span>=<span class="hljs-string">{htmlObj}</span> /&gt;</span>
+</code></pre></div></section>
+<section class="slide" data-pos="3-11-4">
+<span class="pos">3-11-4</span>
+<div class="slidecontent"><p>Or we can <strong>do it in one swoop</strong> without going via <code>htmlObj</code>:</p>
+<pre><code><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">dangerouslySetInnerHTML</span>=<span class="hljs-string">{{__html:longList}}</span> /&gt;</span>
+</code></pre><p>Note how we end up with <strong>double braces</strong> - the <strong>outer pair</strong> is to <strong>shift from JSX to JavaScript</strong>, and the <strong>inner pair declares an object</strong>.</p>
+</div></section>
+<section class="slide question" data-pos="3-11-5">
+<span class="pos">3-11-5</span>
+<div class="slidecontent">
+<p>Wasn&#39;t that <strong>needlessly complicated</strong>?</p>
+</div></section>
+<section class="slide answer" data-pos="3-11-6">
+<span class="pos">3-11-6</span>
+<div class="slidecontent">
+<p>Yes. This is <strong>by design</strong> as injecting html like this is often a bad (and unsafe) idea.</p>
+</div></section>
+</section>
+<!--ENDSECTION11--><!--STARTSECTION12--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 12/12</div>
+      <h3>Exercise 2</h3>
+      <p>Turning up the heat</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="3-12-1">
+<span class="pos">3-12-1</span>
+<div class="slidecontent"><p>Let us now hone our rendering skills by taking on <strong>Exercise 2</strong>!</p>
+<p>Find it in the course resources with the name <a href="resources/site/exercises/02_renderchallenges/" target="_blank">RenderChallenges</a>.</p>
+</div></section>
+</section>
+<!--ENDSECTION12--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(3-1);
+        } else if (code >= 49 && code <= 12+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (3 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(3+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

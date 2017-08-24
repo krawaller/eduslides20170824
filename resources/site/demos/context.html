@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: context</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>context</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+class ContextProvider extends React.Component {
+  static get childContextTypes() {
+    return {
+      title: React.PropTypes.string
+    };
+  }
+  getChildContext() {
+    return {title: this.props.headline};
+  }
+  render(){
+    return this.props.children;
+  }
+};
+
+
+let ContextConsumer = (props, context) => <h4>{context.title}</h4>;
+
+ContextConsumer.contextTypes = {
+  title: React.PropTypes.string
+};
+
+ReactDOM.render(
+  <ContextProvider headline="Of global importance">
+    <div>
+      <div>
+        <div>
+          <ContextConsumer/>
+        </div>
+      </div>
+    </div>
+  </ContextProvider>,
+  document.getElementById("container")
+);
+
+
+
+</script>
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

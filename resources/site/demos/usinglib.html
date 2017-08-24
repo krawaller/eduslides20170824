@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: usinglib</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>usinglib</span></div></div>
+<div class="wrapper">
+
+  <div id="container"></div>
+
+<script type="text/babel">
+
+
+
+// ******** Redux section ************
+
+
+let reducer = (state,action)=> {
+  switch(action.type){
+    case 'ADD': return state.concat(action.text);
+    default: return state;
+  }
+};
+
+let initial = ['Carpe diem'];
+
+let store = Redux.createStore(reducer,initial);
+
+let actionCreators = {
+  addQuote: (text)=> ({type:'ADD',text:text})
+};
+
+
+// ********* React components ***********
+
+
+let QuoteList = (props)=> {
+  let list = props.quotes.map((q,n)=> <li key={n}>{q}</li>);
+  return (
+    <div className="quoteslist">
+      <h3>Words of Wisdom</h3>
+      <ul>{list}</ul>
+    </div>
+  );
+};
+
+class QuoteForm extends React.Component {
+  submit(e){
+    this.props.callback(this.field.value);
+    this.field.value = '';
+    e.preventDefault();
+  }
+  render(){
+    return (
+      <form onSubmit={e=> this.submit(e)}>
+        <input ref={i=> this.field = i} />
+        <button type='submit'>Add</button>
+      </form>
+    );
+  }
+}
+
+
+// ********* Component wrappers ***********
+
+
+let mapStateToQuoteListProps = (state)=> ({quotes: state});
+
+let QuoteListContainer = ReactRedux.connect(
+  mapStateToQuoteListProps
+)(QuoteList);
+
+
+let QuoteFormContainer = ReactRedux.connect(
+  null,
+  {callback: actionCreators.addQuote}
+)(QuoteForm);
+
+
+// ********* Initialization section ***********
+
+
+let Provider = ReactRedux.Provider;
+
+ReactDOM.render(
+  <Provider store={store}>
+    <div>
+      <QuoteListContainer />
+      <QuoteFormContainer />
+    </div>
+  </Provider>,
+  document.getElementById("container")
+);
+store.dispatch({type:'BOGUSEVENT'});
+
+	</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

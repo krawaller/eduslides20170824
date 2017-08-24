@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: controlled</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>controlled</span></div></div>
+<div class="wrapper">
+
+	<div id="container"></div>
+
+<script type="text/babel">
+
+class Form extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {
+			submittedname: '',
+			fieldname: ''
+		};
+		this.changeName = this.changeName.bind(this);
+		this.submitName = this.submitName.bind(this);
+	}
+	changeName(e) {
+		this.setState({fieldname: e.target.value });
+	}
+	submitName() {
+		this.setState({submittedname: this.state.fieldname});
+	}
+	render() {
+		let s = this.state;
+		return <div>
+			<fieldset>
+				<legend>Enter your name</legend>
+				<input type="text" onChange={this.changeName} value={s.fieldname} />
+				<button onClick={this.submitName}>Submit!</button>
+			</fieldset>
+			{s.submittedname ? 'Is '+s.submittedname+' really your real name?' : 'Who are you?'}
+		</div>;
+	}
+}
+
+ReactDOM.render(
+	<Form/>,
+	document.getElementById("container")
+);
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

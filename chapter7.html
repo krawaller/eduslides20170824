@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+
+    <title>React and Redux</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="mc2/styles/bootstrapgrid.css">
+    <link rel="stylesheet" href="mc2/styles/reveal.css">
+    <link rel="stylesheet" href="mc2/styles/theme.css" id="theme">
+    <link rel="stylesheet" href="mc2/styles/code.css">
+    <link rel="stylesheet" href="mc2/styles/chapter.css">
+    <link rel="stylesheet" href="mc2/font/roboto/font-roboto.css">
+    <link rel="stylesheet" href="mc2/font/baskerville/font-baskerville.css">
+    <!--STARTCOURSESPECIFICSTYLES--><link rel="stylesheet" href="styles/react.css"><!--ENDCOURSESPECIFICSTYLES-->
+  </head>
+
+  <body>
+    <div id="pos"></div>
+    <div class="reveal">
+      <div class="slides">
+        <section class="slide chaptertitle">
+          <div class="slidecontent">
+            <div class="chapternumber"> chapter 7 of 12 </div>
+            <h1>React and Redux</h1>
+            <span>sitting in a tree</p>
+</span>
+          </div>
+        </section>
+        <section class="slide">
+
+<div class="slidecontent"><p>We have looked at <strong>React</strong> and <strong>Redux</strong> in <strong>isolation</strong>. The time has now come to <strong>marry the two</strong>!</p>
+</div></section>
+        <!--STARTSECTIONINDEX--><section class="slide sectionlist">
+  <div class="slidecontent">
+    <h3>Sections in this chapter</h3>
+    <ol>
+    <li><a href="#/3">Presenting&nbsp;the&nbsp;app</a></li><li><a href="#/4">Redux&nbsp;parts</a></li><li><a href="#/5">React&nbsp;parts</a></li><li><a href="#/6">Vanilla&nbsp;integration</a></li><li><a href="#/7">Examining&nbsp;React&#8209;Redux</a></li><li><a href="#/8">React&#8209;Redux&nbsp;integration</a></li><li><a href="#/9">Exercise&nbsp;5</a></li>
+    </ol>
+  </div>
+</section>
+<!--ENDSECTIONINDEX-->
+        <!--STARTCHAPTERCONTENT--><!--STARTSECTION1--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 1/7</div>
+      <h3>Presenting the app</h3>
+      <p>Prepare to be dazzled!</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="7-1-1">
+<span class="pos">7-1-1</span>
+<div class="slidecontent"><p>Here&#39;s what we&#39;re going to build:</p>
+<p><img src="resources/images/reactredux-example-screen.png" alt="screen"></p>
+</div></section>
+<section class="slide" data-pos="7-1-2">
+<span class="pos">7-1-2</span>
+<div class="slidecontent"><p>The functionality is very simple; there is a <strong>list of quotes</strong>, and the user can also <strong>add new quotes</strong>.</p>
+</div></section>
+<section class="slide" data-pos="7-1-3">
+<span class="pos">7-1-3</span>
+<div class="slidecontent"><p>In the upcoming sections we will...</p>
+<ul>
+<li>first build the <strong>Redux parts</strong>,</li>
+<li>then the <strong>React parts</strong>, and finally we&#39;ll</li>
+<li>look at how to <strong>merge the two together</strong>.</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION1--><!--STARTSECTION2--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 2/7</div>
+      <h3>Redux parts</h3>
+      <p>Installing the plumbing</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="7-2-1">
+<span class="pos">7-2-1</span>
+<div class="slidecontent"><p>Our <strong>app state</strong> will be an <strong>array of strings</strong>.</p>
+<p>Let&#39;s make our <strong>initial state</strong> prepopulated with a quote to set the tone:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> initial = [<span class="hljs-string">'Carpe diem'</span>];
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-2-2">
+<span class="pos">7-2-2</span>
+<div class="slidecontent"><p>The single <strong>action</strong> that can happen, <strong>adding a quote</strong>, should look like this:</p>
+<pre><code class="lang-javascript">{
+  <span class="hljs-attr">type</span>: <span class="hljs-string">'ADD'</span>,
+  <span class="hljs-attr">text</span>: <span class="hljs-string">'Do unto others etc etc'</span>
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-2-3">
+<span class="pos">7-2-3</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>reducer</strong> to handle this setup:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> reducer = <span class="hljs-function">(<span class="hljs-params">state,action</span>)=&gt;</span> {
+  <span class="hljs-keyword">switch</span>(action.type){
+    <span class="hljs-keyword">case</span> <span class="hljs-string">'ADD'</span>: <span class="hljs-keyword">return</span> state.concat(action.text);
+    <span class="hljs-keyword">default</span>: <span class="hljs-keyword">return</span> state;
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-2-4">
+<span class="pos">7-2-4</span>
+<div class="slidecontent"><p>A <strong>side note</strong> regarding this statement:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">return</span> state.concat(action.text);
+</code></pre>
+<p>Because <code>.concat</code> <strong>returns a new array</strong> we <strong>don&#39;t need to copy the state</strong>.</p>
+<p>If we used <code>.push</code> instead we would have to.</p>
+</div></section>
+<section class="slide" data-pos="7-2-5">
+<span class="pos">7-2-5</span>
+<div class="slidecontent"><p>We <strong>instantiate the store</strong> as per usual:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> store = Redux.createStore(reducer,initial);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-2-6">
+<span class="pos">7-2-6</span>
+<div class="slidecontent"><p>We only need <strong>one action creator</strong> to interact with our store:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> actionCreators = {
+  addQuote(text) {
+    <span class="hljs-keyword">return</span> {<span class="hljs-attr">type</span>:<span class="hljs-string">'ADD'</span>,<span class="hljs-attr">text</span>:text};
+  }
+};
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-2-7">
+<span class="pos">7-2-7</span>
+<div class="slidecontent"><p>Now <strong>all the Redux parts</strong> needed to support our functionality <strong>are in place</strong>!</p>
+</div></section>
+</section>
+<!--ENDSECTION2--><!--STARTSECTION3--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 3/7</div>
+      <h3>React parts</h3>
+      <p>Dressing the doll</p>
+</p>
+    </div>
+  </section>
+  <section class="slide list" data-pos="7-3-1">
+<span class="pos">7-3-1</span>
+<div class="slidecontent">
+<p>Let&#39;s say your team has prepared <strong>a couple of React components</strong> for the app:</p>
+<ul>
+<li><span>a</span><code>QuoteList</code> to <strong>display the quotes</strong></li>
+<li><span>b</span><code>QuoteForm</code> to hold the <strong>form for new quotes</strong></li>
+</ul>
+</div></section>
+<section class="slide" data-pos="7-3-2">
+<span class="pos">7-3-2</span>
+<div class="slidecontent"><p>Because they didn&#39;t know what data handling solution the app would use, they&#39;ve made the components <strong>portable</strong>.</p>
+<p>This of course is <strong>good practice</strong> in any scenario, as it makes the code <strong>easier to test</strong> and <strong>less coupled</strong>.</p>
+</div></section>
+<section class="slide num numA" data-pos="7-3-3">
+<span class="pos">7-3-3</span>
+<div class="slidecontent">
+<p>Let&#39;s check out <strong><code>QuoteList</code></strong>, responsible for <strong>rendering the list of quotes</strong>.</p>
+<p>It <strong>expects to receive an array of quotes</strong> as a property.</p>
+<p><img src="resources/graphviz/quotelist.svg" alt="quotelist"></p>
+</div></section>
+<section class="slide" data-pos="7-3-4">
+<span class="pos">7-3-4</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>code</strong> for the <code>QuoteList</code> component:</p>
+<pre><code class="lang-javascript">let QuoteList = props =&gt; {
+  let list = props.quotes.map((q,n) =&gt; &lt;li key={n}&gt;{q}&lt;/li&gt;);
+  return (
+    &lt;div className="quoteslist"&gt;
+      &lt;h3&gt;Words of Wisdom&lt;/h3&gt;
+      &lt;ul&gt;{list}&lt;/ul&gt;
+    &lt;/div&gt;
+  );
+};
+</code></pre>
+</div></section>
+<section class="slide num numB" data-pos="7-3-5">
+<span class="pos">7-3-5</span>
+<div class="slidecontent">
+<p>And then we have <strong><code>QuoteForm</code></strong>, which <strong>renders the form</strong> where the user enters a new quote.</p>
+<p>This components <strong>expects to receive a callback</strong> which will be invoked with the text of the new quote when the user clicks the button.</p>
+<p><img src="resources/graphviz/quoteform.svg" alt="quoteform"></p>
+</div></section>
+<section class="slide" data-pos="7-3-6">
+<span class="pos">7-3-6</span>
+<div class="slidecontent"><p>Here&#39;s the source code:</p>
+<pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">QuoteForm</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  submit(e){
+    <span class="hljs-keyword">this</span>.props.callback(<span class="hljs-keyword">this</span>.field.value);
+    <span class="hljs-keyword">this</span>.field.value = <span class="hljs-string">''</span>;
+    e.preventDefault();
+  }
+  render(){
+    <span class="hljs-keyword">return</span> (
+      <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">onSubmit</span>=<span class="hljs-string">{e</span>=&gt;</span> this.submit(e)}&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{i</span>=&gt;</span> this.field = i} /&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">'submit'</span>&gt;</span>Add<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+    );
+  }
+}</span>
+</code></pre>
+</div></section>
+</section>
+<!--ENDSECTION3--><!--STARTSECTION4--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 4/7</div>
+      <h3>Vanilla integration</h3>
+      <p>Marriage attempt, take 1</p>
+</p>
+    </div>
+  </section>
+  <section class="slide num numA" data-pos="7-4-1">
+<span class="pos">7-4-1</span>
+<div class="slidecontent">
+<p>It is customary to create <strong>container components</strong> around <strong>portable components</strong> like we have now, in order to <strong>provide them what they need</strong>. So let&#39;s do that for our two components:</p>
+<ul>
+<li>QuoteListContainer</li>
+<li>QuoteFormContainer</li>
+</ul>
+</div></section>
+<section class="slide num numB" data-pos="7-4-2">
+<span class="pos">7-4-2</span>
+<div class="slidecontent">
+<p>First we have <code>QuoteList</code>, which expects to be given an <strong>array of quotes</strong> as a prop. Since we must also <strong>update when the data changes</strong>, we need to create a component that <strong>has Redux data as state</strong>.</p>
+</div></section>
+<section class="slide" data-pos="7-4-3">
+<span class="pos">7-4-3</span>
+<div class="slidecontent"><pre><code class="lang-javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">QuoteListContainer</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> </span>{
+  <span class="hljs-keyword">constructor</span>(){
+    <span class="hljs-keyword">super</span>();
+    <span class="hljs-keyword">this</span>.state = {<span class="hljs-attr">quotes</span>:[]};
+  }
+  componentDidMount() {
+    store.subscribe(<span class="hljs-function"><span class="hljs-params">()</span>=&gt;</span>
+      <span class="hljs-keyword">this</span>.setState({<span class="hljs-attr">quotes</span>: store.getState()})
+    );
+  }
+  render() {
+    <span class="hljs-keyword">return</span> <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">QuoteList</span> <span class="hljs-attr">quotes</span>=<span class="hljs-string">{this.state.quotes}</span> /&gt;</span>;
+  }
+}</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-4-4">
+<span class="pos">7-4-4</span>
+<div class="slidecontent"><p>In the <code>componentDidMount</code> lifecycle hook we <strong>initiate a store subscription</strong>, which will <strong>update the component state</strong> on every change.</p>
+</div></section>
+<section class="slide num numC" data-pos="7-4-5">
+<span class="pos">7-4-5</span>
+<div class="slidecontent">
+<p>Moving on to <code>QuoteForm</code> - that component needs to be given a <strong>callback</strong> which it <strong>invokes with new quotes</strong>. This should of course be <strong>passed along to the store</strong>.</p>
+</div></section>
+<section class="slide" data-pos="7-4-6">
+<span class="pos">7-4-6</span>
+<div class="slidecontent"><p>First we create <strong>bound action creators</strong> for our component to use:</p>
+<pre><code>let <span class="hljs-keyword">boundActionCreators </span>= Redux.<span class="hljs-keyword">bindActionCreators(
+</span>  actionCreators,
+  store.<span class="hljs-keyword">dispatch
+</span>)<span class="hljs-comment">;</span>
+</code></pre></div></section>
+<section class="slide" data-pos="7-4-7">
+<span class="pos">7-4-7</span>
+<div class="slidecontent"><p>We then make a container that passes in the bound action creator:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> QuoteFormContainer = <span class="hljs-function"><span class="hljs-params">props</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">QuoteForm</span> <span class="hljs-attr">callback</span>=<span class="hljs-string">{boundActionCreators.addQuote}/</span>&gt;</span>;
+);</span>
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-4-8">
+<span class="pos">7-4-8</span>
+<div class="slidecontent"><p><strong>Initialising this app</strong> is pretty straightforward:</p>
+<pre><code>ReactDOM.render(
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">QuoteListContainer</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">QuoteFormContainer</span> /&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>,
+  <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"container"</span>)
+);
+store.dispatch({<span class="hljs-attr">type</span>:<span class="hljs-string">'BOGUSEVENT'</span>}); <span class="hljs-comment">// triggers initial render</span>
+</code></pre><p>Try it in a demo here: <a href="resources/site/demos/vanilla.html" target="_blank">Vanilla</a></p>
+</div></section>
+<section class="slide" data-pos="7-4-9">
+<span class="pos">7-4-9</span>
+<div class="slidecontent"><p>This vanilla solution <strong>works just fine</strong>. The only downside is that we had to <strong>access our store to create our containers</strong>;</p>
+<ul>
+<li><strong><code>QuoteListContainer</code></strong> needed <strong><code>store.subscribe</code></strong> and <strong><code>store.getState</code></strong>.</li>
+<li><strong><code>QuoteFormContainer</code></strong> needed <strong><code>store.dispatch</code></strong>.</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION4--><!--STARTSECTION5--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 5/7</div>
+      <h3>Examining React-Redux</h3>
+      <p>Meeting the matchmaker</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="7-5-1">
+<span class="pos">7-5-1</span>
+<div class="slidecontent"><p>The <a href="https://github.com/reactjs/react-redux" class="link" target="_blank">React-Redux</a> provide <strong>official bindings</strong> that <strong>generates wrapper components for us</strong> for us, saving us from having to create our own and spread around references to the store.</p>
+</div></section>
+<section class="slide" data-pos="7-5-2">
+<span class="pos">7-5-2</span>
+<div class="slidecontent"><p><code>React-Redux</code> works through a <strong><code>.connect</code></strong> method with the following signature:</p>
+<pre><code class="lang-javascript">ReactRedux.connect(
+  mapStateToProps,     <span class="hljs-comment">// connecting to store state</span>
+  mapDispatchToProps,  <span class="hljs-comment">// connecting to store dispatch</span>
+  mergeProps           <span class="hljs-comment">// baking all props together</span>
+)(ComponentToWrap)       <span class="hljs-comment">// the component to be wrapped</span>
+</code></pre>
+</div></section>
+<section class="slide list" data-pos="7-5-3">
+<span class="pos">7-5-3</span>
+<div class="slidecontent">
+<p>Let&#39;s <strong>explore the three parameters</strong> one at a time!</p>
+<ul>
+<li><span>a</span><code>mapStateToProps</code></li>
+<li><span>b</span><code>mapDispatchToProps</code></li>
+<li><span>c</span><code>mergeProps</code></li>
+</ul>
+</div></section>
+<section class="slide num numA" data-pos="7-5-4">
+<span class="pos">7-5-4</span>
+<div class="slidecontent">
+<p>First, <strong><code>mapStateToProps</code></strong>. It is a <strong>function</strong> which will be <strong>invoked with the store state</strong>, and what you <strong>return</strong> from the method will become <strong>additional props on the component</strong>.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> mapStateToProps = <span class="hljs-function"><span class="hljs-params">appstate</span> =&gt;</span> ({
+  <span class="hljs-attr">numberOfPosts</span>: appstate.posts.length
+});
+</code></pre>
+</div></section>
+<section class="slide num numB" data-pos="7-5-5">
+<span class="pos">7-5-5</span>
+<div class="slidecontent">
+<p>Then <strong><code>mapDispatchToProps</code></strong> It can be an object or a function.</p>
+<p>If it is an <strong>object</strong> it is assumed to <strong>contain action creators</strong>. They&#39;ll be made <strong>available as props on the component</strong> which will <strong>automatically pipe what they&#39;re returning to the store dispatch</strong>.</p>
+</div></section>
+<section class="slide" data-pos="7-5-6">
+<span class="pos">7-5-6</span>
+<div class="slidecontent"><p>If <code>mapDispatchToProps</code> is a <strong>function</strong> then it&#39;ll be <strong>invoked with the store dispatch</strong>, and you must manually return props just like with <code>mapStateToProps</code>.</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> mapDispatchToProps = <span class="hljs-function"><span class="hljs-params">dispatch</span> =&gt;</span> ({
+  addPost(text) {
+    <span class="hljs-keyword">let</span> action = actionCreators.addPost(text);
+    dispatch(action);
+  }
+})
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-5-7">
+<span class="pos">7-5-7</span>
+<div class="slidecontent"><p>Note how <strong><code>mapDispatchToProps</code></strong> serves the exact <strong>same purpose</strong> as <strong><code>bindActionCreators</code></strong>, namely <strong>passing actions</strong> from the view to the store <strong>without</strong> needing a <strong>store reference</strong>!</p>
+</div></section>
+<section class="slide num numC" data-pos="7-5-8">
+<span class="pos">7-5-8</span>
+<div class="slidecontent">
+<p>Finally the <strong><code>mergeProps</code></strong> function handles the fact that a connected component <strong>receives props from 3 sources</strong> which must somehow be <strong>baked together</strong>:</p>
+<p><img src="resources/graphviz/rr-propsources.svg" alt="bake props"></p>
+</div></section>
+<section class="slide" data-pos="7-5-9">
+<span class="pos">7-5-9</span>
+<div class="slidecontent"><p>If <strong><code>mergeProps</code> isn&#39;t supplied</strong> then <code>ReactRedux</code> will do the following <strong>by default</strong>:</p>
+<pre><code class="lang-javascript">props = <span class="hljs-built_in">Object</span>.assign({}, parentProps, stateProps, dispatchProps)
+</code></pre>
+<p>For the majority of cases this is fine.</p>
+</div></section>
+<section class="slide" data-pos="7-5-10">
+<span class="pos">7-5-10</span>
+<div class="slidecontent"><p>But if you want control, <strong>provide <code>mergeProps</code></strong> and do your own baking. It is <strong>called with all three sources</strong> like this:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> mergeProps = <span class="hljs-function">(<span class="hljs-params">fromState,fromDispatch,fromParent</span>)=&gt;</span> {
+  <span class="hljs-comment">// do your own baking and return it</span>
+  <span class="hljs-keyword">return</span> myBakedProps;
+}
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-5-11">
+<span class="pos">7-5-11</span>
+<div class="slidecontent"><p>The protocol of the <strong><code>.connect</code></strong> method and the mapping functions is actually <strong>more versatile</strong> than we have detailed here. See the <a href="https://github.com/reactjs/react-redux" class="link" target="_blank">React-Redux</a> homepage for the full details.</p>
+</div></section>
+</section>
+<!--ENDSECTION5--><!--STARTSECTION6--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 6/7</div>
+      <h3>React-Redux integration</h3>
+      <p>Employing the matchmaker</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="7-6-1">
+<span class="pos">7-6-1</span>
+<div class="slidecontent"><p>We start with <strong>making the <code>QuoteListContainer</code></strong>.</p>
+<p>Remember, <strong><code>QuoteList</code></strong> expected the array of <strong>quotes as a props</strong>, which must also be <strong>kept live</strong> as the data updates.</p>
+<p>Thus we&#39;ll <strong>need to use the <code>mapStateToProps</code></strong> function.</p>
+</div></section>
+<section class="slide" data-pos="7-6-2">
+<span class="pos">7-6-2</span>
+<div class="slidecontent"><p>We need to <strong>map</strong> the <strong>entire app state</strong>, which is the array of quotes, <strong>to the <code>quotes</code> property</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> mapStateToQuoteListProps = <span class="hljs-function"><span class="hljs-params">state</span> =&gt;</span> ({<span class="hljs-attr">quotes</span>: state});
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-6-3">
+<span class="pos">7-6-3</span>
+<div class="slidecontent"><p>Now we <strong>create the container</strong> using the <strong><code>.connect</code></strong> method:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> QuoteListContainer = ReactRedux.connect(
+  mapStateToQuoteListProps
+  <span class="hljs-comment">// we don't need `mapDispatch` or a custom `mergeProps`</span>
+)(QuoteList);
+</code></pre>
+<p>This <code>QuoteListContainer</code> will <strong>act exactly like the vanilla version</strong>, including keeping the data updated.</p>
+</div></section>
+<section class="slide" data-pos="7-6-4">
+<span class="pos">7-6-4</span>
+<div class="slidecontent"><p>Now for <strong><code>QuoteFormContainer</code></strong>.</p>
+<p>It doesn&#39;t need to map state, but it <strong>expects the <code>callback</code> prop</strong> to be a method whose <strong>return value should be <code>dispatch</code>ed</strong>.</p>
+</div></section>
+<section class="slide" data-pos="7-6-5">
+<span class="pos">7-6-5</span>
+<div class="slidecontent"><p>Thus it suffices to simply <strong>rename the <code>addQuote</code> action creator</strong> to &quot;callback&quot;:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> QuoteFormContainer = ReactRedux.connect(
+  <span class="hljs-literal">null</span>, <span class="hljs-comment">// don't need state</span>
+  {<span class="hljs-attr">callback</span>: actionCreators.addQuote}
+)(QuoteForm);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-6-6">
+<span class="pos">7-6-6</span>
+<div class="slidecontent"><p>If we had been <strong>allowed to edit</strong> the code of <code>QuoteForm</code> to <strong>use <code>props.addQuote</code> instead</strong> of <code>props.callback</code>, then we could have <strong>passed in the actionCreators object</strong> directly:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> QuoteFormContainer = ReactRedux.connect(
+  <span class="hljs-literal">null</span>,
+  actionCreators
+)(QuoteForm);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-6-7">
+<span class="pos">7-6-7</span>
+<div class="slidecontent"><p>But, wait - now there&#39;s <strong>no single reference to the store</strong> anywhere in our code. How does <code>.connect</code> <strong>actually connect</strong> our components to the store?</p>
+</div></section>
+<section class="slide" data-pos="7-6-8">
+<span class="pos">7-6-8</span>
+<div class="slidecontent"><p>Here&#39;s the <strong>final piece</strong> of the puzzle: we must <strong>wrap our entire app in a <code>Provider</code></strong> component which is <strong>given a store reference</strong>:</p>
+<pre><code class="lang-javascript"><span class="hljs-keyword">let</span> Provider = ReactRedux.Provider;
+
+ReactDOM.render(
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">{store}</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">QuoteListContainer</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">QuoteFormContainer</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>,
+  <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"container"</span>)
+);
+</code></pre>
+</div></section>
+<section class="slide" data-pos="7-6-9">
+<span class="pos">7-6-9</span>
+<div class="slidecontent"><p>Behind the scenes the Provider component uses something called <strong><code>Context</code></strong> to supply the store to interested children.</p>
+<p>We&#39;ll <strong>take a closer look at <code>Context</code></strong> in the <strong>Advanced React</strong> chapter.</p>
+</div></section>
+<section class="slide" data-pos="7-6-10">
+<span class="pos">7-6-10</span>
+<div class="slidecontent"><p>Here&#39;s a demo with this <strong>library-helped integration</strong> version of the app:
+<a href="resources/site/demos/usinglib.html" target="_blank">Usinglib</a></p>
+</div></section>
+</section>
+<!--ENDSECTION6--><!--STARTSECTION7--><section>
+  <section class="slide sectiontitle">
+    <div class="slidecontent">
+      <div class='sectioncount'>Section 7/7</div>
+      <h3>Exercise 5</h3>
+      <p>The final boss</p>
+</p>
+    </div>
+  </section>
+  <section class="slide" data-pos="7-7-1">
+<span class="pos">7-7-1</span>
+<div class="slidecontent"><p>As the final test of your new 1337 skillz - <strong>return to the solution you made for exercise 4</strong>, and:</p>
+<ul>
+<li><strong>make it use React for UI</strong> instead of the jQuery/vanilla solution you have now</li>
+<li><strong>use ReactRedux</strong> as a bridge between React and Redux!</li>
+</ul>
+</div></section>
+</section>
+<!--ENDSECTION7--><!--ENDCHAPTERCONTENT-->
+        
+
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var basehref = window.location.href.replace(/chapter\d.*?$/,'')
+
+      document.addEventListener("keydown",function(e){
+        var code = e.which || e.keyCode;
+        if (code===13){
+          window.location.href = basehref+"index.html?from="+(7-1);
+        } else if (code >= 49 && code <= 7+48) {
+          window.location.hash = "#/" + (code-48+1+1);
+        }
+        if (7 < 12) {
+          if (code===99){ // the letter C for next Chapter
+            window.location.href = basehref+"chapter"+(7+1)+".html"
+          }
+        }
+      });
+    </script>
+    <script src="mc2/scripts/head.js" type="text/javascript"></script>
+    <script src="mc2/scripts/reveal.js" type="text/javascript"></script>
+    <script src="mc2/scripts/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: true,
+    showNotes: false,
+    transition: 'slide',
+    dependencies: [
+      { src: 'mc2/scripts/plugin/notes/notes.js', async: true }
+    ]
+  })
+
+    window.onload = function(){
+
+      var links = document.querySelectorAll("a.link");
+      for(var i=0;i<links.length;i++){
+        var link = links[i];
+        link.innerHTML = link.innerHTML.replace(/ /g,'&nbsp;')
+      }
+      var posElem = document.getElementById('pos')
+      function updateReference(){
+        setTimeout(function(){
+          var currentpos = document.querySelector('section.present[data-pos]')
+          if (currentpos){
+            posElem.innerHTML = currentpos.getAttribute('data-pos')
+          } else {
+            posElem.innerHTML = ''
+          }
+          if (document.querySelector('.present.chaptertitle')){
+            document.body.classList.add('atchaptertitle');
+          } else {
+            document.body.classList.remove('atchaptertitle');
+          }
+        },10)
+      }
+
+      window.addEventListener("hashchange",updateReference);
+
+      updateReference();
+    };
+
+    </script>
+    <!--STARTCOURSESPECIFICSCRIPTS--><!--ENDCOURSESPECIFICSCRIPTS-->
+    <script type="text/javascript" src="mc2/scripts/reload.js"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+digraph {
+	bgcolor = transparent
+	rankdir = LR
+	actioncreator [label="Action\ncreator",shape=box]
+	storedispatch [label="Store\ndispatch",shape=box]
+	actioncreator -> Action
+	Action -> storedispatch
+}

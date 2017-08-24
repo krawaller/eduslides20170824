@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: style</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>style</span></div></div>
+<div class="wrapper">
+<div id="container"></div>
+
+<script type="text/babel">
+
+let Child = (props)=> {
+	let basic = {
+		borderRadius: '8px',
+		borderSize: '5px',
+		display: 'flex',
+		justifyContent: 'center',
+		width: '100px',
+		height: '100px',
+		alignItems: 'center',
+		fontWeight: 'bold',
+		transition: 'color 1s, background-color 1s'
+	};
+	return <div style={Object.assign(basic,props.style)}>{props.text}</div>;
+};
+
+class App extends React.Component {
+	constructor(props){
+		super(props);
+		this.modeStyles = {
+			day: {
+				color: 'black',
+				backgroundColor: 'white',
+				borderColor: '#AAA'
+			},
+			night: {
+				color: 'white',
+				backgroundColor: '#285666',
+				borderColor: '#E6B863'		
+			}
+		};
+		this.state = {mode: 'day'};
+		this.toggle = () => {
+			this.setState({mode: this.state.mode === 'day' ? 'night' : 'day'});
+		}
+	}
+	render() {
+		let containerStyle = {
+			display: 'flex', justifyContent: 'space-around'
+		};
+		let mode = this.state.mode;
+		let modeStyle = this.modeStyles[mode];
+		let texts = ['Batman','Superman','Spiderman','He-man'].map((t,n)=> (
+			<Child key={n} style={modeStyle} text={t}/>
+		));
+		return <div>
+			<p>
+				<input id='mode' type='checkbox' onChange={this.toggle} checked={mode === 'night'}/>
+				<label htmlFor='mode'>Night mode</label>
+			</p>
+			<div style={containerStyle}>{texts}</div>
+		</div>;
+	}
+}
+
+ReactDOM.render(
+	<App/>,
+	document.getElementById("container")
+);
+
+
+
+</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>

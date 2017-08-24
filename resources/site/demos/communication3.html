@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Demo: communication3</title>
+	<script type="text/javascript" src="../libs/browserassets.js"></script>
+	<script type="text/javascript" src="../libs/babel.js"></script>
+	<script type="text/javascript" src="../libs/prism.js"></script>
+	<script type="text/javascript" src="../libs/jquery.js"></script>
+	<script type="text/javascript" src="../libs/addsource.js"></script>
+	<link rel="stylesheet" href="../libs/prism.css">
+	<link rel="stylesheet" href="../libs/demo.css">
+	<link rel="stylesheet" href="../libs/all.css">
+	
+</head>
+<body>
+<div class='topbar'><div>Edument React course &nbsp;&nbsp;&nbsp;&nbsp;<a href='../index.html'>Home</a> - <a href='./index.html'>Demos</a> - <span>communication3</span></div></div>
+<div class="wrapper">
+
+  <div id="container"></div>
+
+
+<script type="text/babel">
+
+let Button = (props)=> (
+  <button onClick={props.click}>
+    Button {props.name} is clicked {props.count} times
+  </button>
+);
+
+class Contest extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {clicked1: 0, clicked2: 0};
+    this.onClick1 = this.onClick1.bind(this);
+    this.onClick2 = this.onClick2.bind(this);
+  }
+  onClick1() {
+    this.setState({clicked1: this.state.clicked1+1});
+  }
+  onClick2() {
+    this.setState({clicked2: this.state.clicked2+1});
+  }
+  render() {
+    let c1 = this.state.clicked1;
+    let c2 = this.state.clicked2;
+    let msg = "Let the race begin!";
+    if (c1 < c2){
+      msg = "Button 2 is in the lead!";
+    } else if (c1 > c2) {
+      msg = "Button 1 is winning!";
+    } else if (c1){
+      msg = "The buttons are tied!";
+    }
+    return (
+      <div>
+        <h4>State demo</h4>
+        <Button name="1" click={this.onClick1} count={c1}/><br/>
+        <Button name="2" click={this.onClick2} count={c2}/>
+        <p>{msg}</p>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<Contest/>,document.getElementById("container"));
+
+	</script>
+
+</div>
+<div id="sourcecode"></div>
+</body>
+</html>
